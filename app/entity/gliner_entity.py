@@ -1,27 +1,21 @@
-import json
-import re
 import torch
-from typing import List, Dict, Tuple, Optional, TypeVar
-
-from coloredlogs import Empty
+from typing import List, Dict, Optional, TypeVar
 from gliner import GLiNER
-from docx import Document
-import networkx as nx
-import yaml
 
+from app.entity.abstract_entity import AbstractEntity
 from app.logger import LoggerWrapper
 
 logger = LoggerWrapper
 
 """
 Input: config.yaml with path to ticket gliner model [gliner][ticket] and limit parameter [gliner][threshold]
-       text_ext 
+       documents_extraction - List[str],  gliner_label - List[str] is that need extract from document_extraction  
 Output: gliner entities List[Dict]. Example [{'start': 28, 'end': 48, 'text': 'USA', 'label': 'country', 'score': 0.55}, ...]
 """
 
 T = TypeVar("T")
 
-class EntityObject:
+class GlinerEntity(AbstractEntity):
     def __init__(self):
 
         self.gliner: Optional[T] = None
@@ -52,7 +46,7 @@ class EntityObject:
     def set_text_extraction(self, text_extraction: List[str]):
         self.documents_extraction = text_extraction
 
-    def get_extract_entities(self):
+    def get_extract_entities(self) -> List[Dict]:
         return self.gliner_entities
 
     def extractor_entity(self):
@@ -67,6 +61,7 @@ class EntityObject:
                     'end': entity['end'],
                     'score': entity['score'],
                     'method': 'gliner'
-                    })
+                })
 
         self.gliner_entities.sort(key=lambda x: x['score'], reverse=True)
+        logger(f"Entities extracted: {len(self.gliner_entities)} by GLiNER model")
