@@ -1,0 +1,36 @@
+system:
+  name: "RAG Experiment"
+  version: "0.1"
+
+paths:
+  documents_dir: "documents"
+  models_dir: "models"
+
+models:
+  embedding: "intfloat/multilingual-e5-large"
+  llm: "llama3.2:latest"  # ИЛИ "llama3.2:3b" для 3B версии
+  ner: "urchade/gliner_multi"
+
+gliner:
+  threshold: 0.1
+
+rag:
+  chunk_size: 1000
+  chunk_overlap: 150
+  retrieval_limit: 5
+  temperature: 0.5
+  top_p: 0.9
+  max_length: 1500
+
+knowledge_graph:
+  enable: true
+  entity_threshold: 0.7
+  relation_threshold: 0.6
+  max_entities_per_doc: 50
+
+ollama:
+  url: "http://localhost:11434"
+  timeout: 60
+  temperature: 0.5
+  top_p: 0.9
+  max_length: 1500

@@ -1,0 +1,42 @@
+[
+    {
+        "Error 10": "Cannot search GPU or don't have video memory",
+        "Description": "Error emerge in memory distribution section"
+    },
+    {
+        "Error 40": "config File not Found (yaml)",
+        "Description": "path by default - ./config.yaml"
+    },
+    {
+        "Error 41": "prompt_template File not Found (without format)",
+        "Description": "path by default - ./prompt_template.yaml"
+    },
+    {
+        "Error 50": "Bad connection to Ollama server",
+        "Description": "URL by default - http://localhost:11434/api/generate. Other parameters (temperature, top_p) loads from config.yaml"
+    },
+    {
+        "Error 51": "Bad connection to Other Service",
+        "Description": "Client by default - Open AI Wrapper to send request"
+    },
+    {
+        "Error 60": "Embedding model install ERROR",
+        "Description": "txtai module use for embedding model. Ticker from HuggingFace"
+    },
+    {
+        "Error 61": "Documents Indexing Error",
+        "Description": "txtai method index don't work correctly. Input List[str]"
+    },
+    {
+        "Error 62": "Documents retrieve Error",
+        "Description": "txtai method retriever don't work correctly. Input List[str]"
+    },
+    {
+        "Error 70": "File didn't handle in WordHandler",
+        "Description": "Input word files in docs or doc format. Output List[str]"
+    },
+    {
+        "Error 80": "GLiNER model install ERROR",
+        "Description": "Gliner from HuggingFace don't load"
+    }
+]
