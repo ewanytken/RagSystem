@@ -9,9 +9,9 @@ paths:
 models:
   embedding: "intfloat/multilingual-e5-large"
   llm: "llama3.2:latest"  # ИЛИ "llama3.2:3b" для 3B версии
-  ner: "urchade/gliner_multi"
 
 gliner:
+  ticket: "urchade/gliner_multi"
   threshold: 0.1
 
 rag:

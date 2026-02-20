@@ -14,8 +14,9 @@ from app.logger import LoggerWrapper
 logger = LoggerWrapper
 
 """
-Input: config.yaml with path to ticket gliner model [models][ner]
-Output: List[Dict] with retrieved documents 
+Input: config.yaml with path to ticket gliner model [gliner][ticket] and limit parameter [gliner][threshold]
+       text_ext 
+Output: gliner entities List[Dict]. Example [{'start': 28, 'end': 48, 'text': 'USA', 'label': 'country', 'score': 0.55}, ...]
 """
 
 T = TypeVar("T")
@@ -25,7 +26,7 @@ class EntityObject:
 
         self.gliner: Optional[T] = None
         self.gliner_label: Optional[List[str]] = []
-        self.text_extraction: Optional[List[str]] = []
+        self.documents_extraction: Optional[List[str]] = []
         self.config: Optional[Dict] = None
         self.gliner_entities: Optional[List[Dict]] = []
 
@@ -49,25 +50,23 @@ class EntityObject:
         self.gliner_label = extracting_label
 
     def set_text_extraction(self, text_extraction: List[str]):
-        self.text_extraction = text_extraction
+        self.documents_extraction = text_extraction
 
     def get_extract_entities(self):
         return self.gliner_entities
 
     def extractor_entity(self):
-        if self.gliner is not None and not self.gliner_label and not self.text_extraction:
-            gliner_entities = self.gliner.predict_entities(self.text_extraction, self.gliner_label, threshold=self.config['gliner']['threshold'])
+        if self.gliner is not None and not self.gliner_label and not self.documents_extraction:
+            gliner_entities = self.gliner.predict_entities(self.documents_extraction, self.gliner_label, threshold=self.config['gliner']['threshold'])
 
-            for gliner_entity in gliner_entities:
-                if not self.is_duplicate(gliner_entity, all_entities):
-                    all_entities.append({
-                        'text': gliner_entity['text'],
-                        'label': gliner_entity['label'],
-                        'start': gliner_entity['start'],
-                        'end': gliner_entity['end'],
-                        'score': gliner_entity['score'],
-                        'method': 'gliner'
-                    })  # {'start': 28, 'end': 48, 'text': 'Российской Федерации', 'label': 'страна', 'score': 0.5556266903877258}, {'start': 167, 'end': 174, 'text': 'Украины', 'label': 'страна', 'score': 0.8722123503684998}
+            for entity in gliner_entities:
+                self.gliner_entities.append({
+                    'text': entity['text'],
+                    'label': entity['label'],
+                    'start': entity['start'],
+                    'end': entity['end'],
+                    'score': entity['score'],
+                    'method': 'gliner'
+                    })
 
-        # Сортировка по позиции в тексте
-        all_entities.sort(key=lambda x: x['start'])
+        self.gliner_entities.sort(key=lambda x: x['score'], reverse=True)
