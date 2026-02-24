@@ -4,12 +4,16 @@
         "Description": "Error emerge in memory distribution section"
     },
     {
-        "Error 40": "config File not Found (yaml)",
+        "Error 40": "File config not Found (yaml)",
         "Description": "path by default - ./config.yaml"
     },
     {
-        "Error 41": "prompt_template File not Found (without format)",
+        "Error 41": "File prompt_template not Found (without format)",
         "Description": "path by default - ./prompt_template.yaml"
+    },
+    {
+        "Error 42": "Dictionary file not found",
+        "Description": "path by default - ./dictionary/dictionary.jsonl"
     },
     {
         "Error 50": "Bad connection to Ollama server",

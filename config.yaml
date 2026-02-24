@@ -1,5 +1,5 @@
 system:
-  name: "RAG Experiment"
+  name: "RAG System"
   version: "0.1"
 
 paths:
@@ -8,7 +8,7 @@ paths:
 
 models:
   embedding: "intfloat/multilingual-e5-large"
-  llm: "llama3.2:latest"  # ИЛИ "llama3.2:3b" для 3B версии
+  llm: "llama3.2:latest"
 
 gliner:
   ticket: "urchade/gliner_multi"
@@ -21,12 +21,6 @@ rag:
   temperature: 0.5
   top_p: 0.9
   max_length: 1500
-
-knowledge_graph:
-  enable: true
-  entity_threshold: 0.7
-  relation_threshold: 0.6
-  max_entities_per_doc: 50
 
 ollama:
   url: "http://localhost:11434"

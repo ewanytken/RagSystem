@@ -17,7 +17,8 @@ class WordHandler(DocumentHandler):
     def __init__(self):
         super().__init__()
         self.config: Optional[Dict] = None
-        self.handled_document: Optional[List] = []
+        self.handled_documents: Optional[List] = []
+        self.chunked_documents: Optional[List[List[str]]] = []
 
     def set_config(self, config: Dict):
         self.config = config
@@ -39,7 +40,39 @@ class WordHandler(DocumentHandler):
                     logger(f"File didn't handle 70 {file_path}: {e}")
 
                 if full_text is not None:
-                    self.handled_document.append(full_text)
+                    self.handled_documents.append(full_text)
+                    self.chunked_documents.append(self.text_chunking(full_text))
 
-    def get_handled_documents(self) -> List[str]:
-        return self.handled_document
+    def get_handled_documents(self) -> List[List[str]]:
+        return self.chunked_documents
+
+    def get_chunked_documents(self) -> List[str]:
+        return self.handled_documents
+
+    def text_chunking(self, document: str, chunk_size: int = 1000, overlap: int = 150) -> List[str]:
+        chunks:Optional[List] = []
+
+        sentences = document.split('. ')
+        current_chunk = ""
+
+        for sentence in sentences:
+            if len(current_chunk) + len(sentence) < chunk_size:
+                current_chunk += sentence + '. '
+            else:
+                if current_chunk:
+                    chunks.append(current_chunk.strip())
+                current_chunk = sentence + '. '
+
+        if current_chunk:
+            chunks.append(current_chunk.strip())
+
+        if len(chunks) > 1 and overlap > 0:
+            overlapped_chunks = []
+            for i in range(len(chunks) - 1):
+                chunk = chunks[i]
+                next_chunk_start = chunks[i + 1][:overlap]
+                overlapped_chunks.append(chunk + ' ' + next_chunk_start)
+            overlapped_chunks.append(chunks[-1])
+            chunks = overlapped_chunks
+
+        return chunks

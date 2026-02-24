@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Optional, Dict
+from typing import Optional
 
 from app.logger import LoggerWrapper
 

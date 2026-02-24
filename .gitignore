@@ -1,8 +1,10 @@
 .env
 documents
 tests
-train_data2.jsonl
+modules/train_data2.jsonl
 modules
 modules/utilizer.py
 .idea
 .venv
+dictionary
+dictionary/dictionary.json
