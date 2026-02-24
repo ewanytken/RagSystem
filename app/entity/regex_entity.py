@@ -14,11 +14,11 @@ Output: regex entities List[Dict]. Example [{'start': 28, 'end': 48, 'text': 'US
 class RegexEntity(AbstractEntity):
 
     def __init__(self):
-        self.documents_extraction: Optional[List[str]] = []
+        self.document: Optional[str] = ""
         self.regex_entities: Optional[List[Dict]] = []
 
-    def set_text_extraction(self, text_extraction: List[str]):
-        self.documents_extraction = text_extraction
+    def set_text_extraction(self, document: List[str]):
+        self.document = document
 
     def get_extract_entities(self):
         return self.regex_entities
@@ -51,20 +51,19 @@ class RegexEntity(AbstractEntity):
             (specific_patterns, "аббревиатура")
         ]
 
-        for document in self.documents_extraction:
-            for pattern_list, label in patterns:
-                for pattern in pattern_list:
-                    matches = re.finditer(pattern, document, re.IGNORECASE)
-                    for match in matches:
-                        text = match.group()
-                        if label == "аббревиатура":
-                            text = re.sub(r'\d+\s*', '', text.strip())
+        for pattern_list, label in patterns:
+            for pattern in pattern_list:
+                matches = re.finditer(pattern, self.document, re.IGNORECASE)
+                for match in matches:
+                    text = match.group()
+                    if label == "аббревиатура":
+                        text = re.sub(r'\d+\s*', '', text.strip())
 
-                        self.regex_entities.append({
-                            'text': text,
-                            'label': label,
-                            'score': 0.9,
-                            'method': 'regex'
-                        })
+                    self.regex_entities.append({
+                        'text': text,
+                        'label': label,
+                        'score': 0.9,
+                        'method': 'regex'
+                    })
 
         logger(f"Entities extracted: {len(self.regex_entities)} by REGEX patterns")

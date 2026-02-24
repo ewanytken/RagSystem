@@ -14,3 +14,4 @@ class AbstractEntity(ABC):
     @abstractmethod
     def extractor_entity(self):
         pass
+

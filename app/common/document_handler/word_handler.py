@@ -23,7 +23,7 @@ class WordHandler(DocumentHandler):
     def set_config(self, config: Dict):
         self.config = config
 
-    def handle_documents(self):
+    def handle_documents(self) -> None:
 
         logger(f"Path to document load {self.config['paths']['documents_dir']}")
 
@@ -43,10 +43,10 @@ class WordHandler(DocumentHandler):
                     self.handled_documents.append(full_text)
                     self.chunked_documents.append(self.text_chunking(full_text))
 
-    def get_handled_documents(self) -> List[List[str]]:
+    def get_chunked_documents(self) -> List[List[str]]:
         return self.chunked_documents
 
-    def get_chunked_documents(self) -> List[str]:
+    def get_handled_documents(self) -> List[str]:
         return self.handled_documents
 
     def text_chunking(self, document: str, chunk_size: int = 1000, overlap: int = 150) -> List[str]:
