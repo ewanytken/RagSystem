@@ -1,15 +1,13 @@
 import time
 from typing import Optional, Dict, Any
-
 import requests
-
 from app.logger import LoggerWrapper
 from app.respondent.external_model.abstract_external_model import AbstractModelExternal
 from app.respondent.interface_respondent import Respondent
 
 logger = LoggerWrapper
 
-class TargetOllama(AbstractModelExternal, Respondent):
+class OllamaModel(AbstractModelExternal, Respondent):
 
     config: Optional[Dict[str, Any]] = None
 
@@ -19,9 +17,6 @@ class TargetOllama(AbstractModelExternal, Respondent):
                  json_payload: dict = None) -> None:
 
         super().__init__(model_name, url)
-        self.json_payload = json_payload
-
-    def __call__(self, json_payload):
         self.json_payload = json_payload
 
     def set_payload(self, json_payload) -> None:

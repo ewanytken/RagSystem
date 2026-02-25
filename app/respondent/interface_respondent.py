@@ -1,3 +1,7 @@
+from abc import abstractmethod
 
 class Respondent:
-    pass
+
+    @abstractmethod
+    def generate(self, prompt, **kwargs):
+        pass

@@ -1,7 +1,7 @@
-from pathlib import Path
 from typing import Optional
 
 from app.logger import LoggerWrapper
+from app.utils import Utils
 
 logger = LoggerWrapper
 
@@ -16,7 +16,7 @@ class PromptObject:
 
         self.user_query: Optional[str] = "Query don't specify"
         self.context: Optional[str] = "Context don't specify"
-        self.entities: Optional[str] = "Entities doesn't specify"
+        self.entities: Optional[str] = None
         self.template: Optional[str] = "Template don't load"
 
         self.prompt: Optional[str] = "Empty prompt"
@@ -60,20 +60,9 @@ class PromptObjectBuilder:
         return self
 
     def set_path_to_template(self, path_to_template: str):
-        self.prompt_object.template = PromptObjectBuilder.load_prompt_template(path_to_template)
+        self.prompt_object.template = Utils.load_template(path_to_template)
         return self
 
     def build(self):
         return self.prompt_object
 
-    @staticmethod
-    def load_prompt_template(path_to_template: str) -> str:
-        path = Path(__file__).parent.parent / path_to_template
-        try:
-            with open(path, 'r', encoding='utf-8') as file:
-                content = file.read()
-            return content
-        except FileNotFoundError:
-            logger(f"prompt_template File not Found (without format) 41 {path}.")
-        except Exception as e:
-            logger(f"An error occurred: {e}")

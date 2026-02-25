@@ -1,7 +1,8 @@
 
-from typing import List, Optional, Dict
+from typing import List, Optional, Set
+
 from app.entity.abstract_entity import AbstractEntity
-from app.graph.graph_object import GraphObject
+from app.graph.graph_entity import GraphEntity
 from app.logger import LoggerWrapper
 
 logger = LoggerWrapper
@@ -19,14 +20,13 @@ class EntityExtractor:
 
         self.extractors: Optional[List[AbstractEntity]] = extractors
         self.documents: Optional[List[str]] = []
-        self.chunked_documents: Optional[List[List[str]]] = []
 
         self.entities: Optional[set] = set()
-        self.graph: Optional[GraphObject] = None
+        self.graph: Optional[GraphEntity] = None
 
         logger(f"(All methods) Entities extracted: {len(self.get_entity())} ")
 
-    def document_extractor(self):
+    def document_extractor(self) -> None:
         if not self.documents:
             logger(f"Entities from documents extracting...")
             for document in self.documents:
@@ -35,29 +35,16 @@ class EntityExtractor:
                     extractor.extractor_entity()
                     self.entities.add(*extractor.get_extract_entities())
 
-                    self.graph.set_entities(extractor.get_extract_entities())
-                    self.graph.add_to_knowledge_graph(document)
+                    if self.graph is not None:
+                        self.graph.set_entities(extractor.get_extract_entities())
+                        self.graph.add_to_knowledge_graph(document)
 
-    def chunk_extractor(self):
-        if not self.chunked_documents:
-            logger(f"Entities from chunks extracting...")
-            for document in self.chunked_documents: # document not str -> List[str] need changed
-                for extractor in self.extractors:
-                    extractor.set_text_extraction(document)
-                    extractor.extractor_entity()
-                    self.entities.add(*extractor.get_extract_entities())
 
-                    self.graph.set_entities(extractor.get_extract_entities())
-                    self.graph.add_to_knowledge_graph(document)
-
-    def set_documents(self, documents: List[str]):
+    def set_documents(self, documents: List[str]) -> None:
         self.documents = documents
 
-    def set_chunked_documents(self, chunked_documents: List[List[str]]):
-        self.chunked_documents = chunked_documents
-
-    def set_graph(self, graph: GraphObject):
+    def set_graph(self, graph: GraphEntity) -> None:
         self.graph = graph
 
-    def get_entity(self):
+    def get_entity(self) -> Set:
         return self.entities

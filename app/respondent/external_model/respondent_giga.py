@@ -1,25 +1,18 @@
-import time
 import json
-
+import time
 import requests
+from app.respondent.external_model.abstract_external_model import AbstractModelExternal
 
-
-
-from app.core.target_external.abstract_model_ext import AbstractModelExternal
-
-from app.respondent.interface_respondent import Respondent
-
-
-class TargetGiga(AbstractModelExternal, Respondent):
+class TargetGiga(AbstractModelExternal):
 
     def __init__(self, authorization: str, uuid: str):
         super().__init__()
         self.giga_rest = GigaRest(authorization, uuid)
 
 
-    def generate(self, json_payload: dict) -> str:
+    def generate(self, message: str, **kwargs) -> str:
         time.sleep(3)
-        return self.giga_rest.get_message(json_payload["query"])
+        return self.giga_rest.get_message(message)
 
 class GigaRest:
 
@@ -92,24 +85,3 @@ class GigaRest:
 
         return response.json()["choices"][0]["message"]["content"]
 
-class ResponseFromService:
-
-    @staticmethod
-    def send_response(response: str, uri: str = "http://localhost:5005/giga-answer") -> str:
-        try:
-            headers = {
-                "Content-Type": "application/json",
-                "Accept": "application/json",
-            }
-
-            json_payload = {
-                "query": response
-            }
-
-            result = requests.post(uri,
-                          data=json_payload,
-                          headers=headers)
-        except:
-            raise RuntimeError
-
-        return result.text

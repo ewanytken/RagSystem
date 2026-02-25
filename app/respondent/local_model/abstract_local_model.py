@@ -2,19 +2,19 @@ import math
 from abc import ABC
 from abc import abstractmethod
 from typing import Union, Any, Dict, Optional
-
 import psutil
 import pynvml
 import torch
 from huggingface_hub import snapshot_download
 from torch import nn
-
 from app.logger import LoggerWrapper
 from accelerate import infer_auto_device_map, init_empty_weights, load_checkpoint_and_dispatch
 
+from app.respondent.interface_respondent import Respondent
+
 logger = LoggerWrapper()
 
-class AbstractLocalRespondent(ABC):
+class AbstractLocalRespondent(ABC, Respondent):
 
     model: Union[Any, None] = None
     tokenizer: Union[Any, None] = None
@@ -33,11 +33,8 @@ class AbstractLocalRespondent(ABC):
         assert model is not None, "Exception: NO MODEL"
         assert tokenizer is not None, "Exception: NO TOKENIZER"
 
-    def __call__(self, **kwargs): #generate response
-        self.model = self.model(**kwargs)
-
     @abstractmethod
-    def generate(self, *kwargs):
+    def generate(self, prompt: str, *kwargs):
         raise NotImplemented
 
     def set_gpu_distribution(self) -> None:

@@ -44,6 +44,17 @@ class Utils:
 
         return abbreviations_dictionary
 
+    @staticmethod
+    def load_template(path_to_template: str) -> str:
+        path = Path(__file__).parent.parent / path_to_template
+        try:
+            with open(path, 'r', encoding='utf-8') as file:
+                content = file.read()
+            return content
+        except FileNotFoundError:
+            logger(f"prompt_template File not Found (without format) 41 {path}.")
+        except Exception as e:
+            logger(f"An error occurred: {e}")
 
     @staticmethod
     def get_docx_files(directory: str) -> List[str]:

@@ -1,19 +1,12 @@
 from abc import ABC, abstractmethod
-from typing import Union, Dict, List
+from app.respondent.interface_respondent import Respondent
 
-
-class AbstractModelExternal(ABC):
+class AbstractModelExternal(ABC, Respondent):
 
     def __init__(self, model_name: str = None, api_key: str = None, base_url: str = None) -> None:
         self.model_name = model_name
         self.api_key = api_key
         self.base_url = base_url
-
-        self.system_tag = ['your_role', 'instruction', 'constraint', 'clue', 'context']
-
-
-    def set_system_tag(self, tag: list) -> None:
-        self.system_tag = tag
 
     def set_base_url(self, base_url) -> None:
         self.base_url = base_url
@@ -25,22 +18,5 @@ class AbstractModelExternal(ABC):
         self.api_key = api_key
 
     @abstractmethod
-    def generate(self, json_payload: dict) -> str:
+    def generate(self, prompt: str, **kwargs) -> str:
         pass
-
-    def template(self, inst_prompt: dict) -> Union[Dict[str, str], List[Dict[str, str]]]:
-
-        list_of_dict = []
-        list_of_system = self.system_tag
-
-        for k, v in inst_prompt.items():
-            chat = {}
-            if k in list_of_system:
-                chat.update({"role": "system"})
-                chat.update({"content": f"<{k}>{v}</{k}>"})
-            else:
-                chat.update({"role": "user"})
-                chat.update({"content": f"<{k}>{v}</{k}>"})
-            list_of_dict.append(chat)
-
-        return list_of_dict

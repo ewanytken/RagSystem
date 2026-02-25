@@ -14,6 +14,10 @@ gliner:
   ticket: "urchade/gliner_multi"
   threshold: 0.1
 
+graph:
+  prompts: "prompts_templates/extraction_template"
+  limit: 10
+
 rag:
   chunk_size: 1000
   chunk_overlap: 150

@@ -6,23 +6,23 @@ from app.logger import LoggerWrapper
 logger = LoggerWrapper
 
 """
-Input:   
-Output:
+Input: entities - List[Dict]. Use simple nx.Graph  
+Output: list of dict: entity, label, score
 """
 
-class GraphObject:
+class GraphEntity:
 
-    def __init__(self):
+    def __init__(self, ):
         self.knowledge_graph = nx.Graph()
         self.entities: Optional[List[Dict]] = []
 
-    def set_entities(self, entities):
+    def set_entities(self, entities) -> None:
         self.entities = entities
 
     def add_to_knowledge_graph(self, document: str) -> None:
 
         doc_node = f"doc_{hash(document) % 1000000}"
-        self.knowledge_graph.add_node(doc_node, type='document', text=document) # was documents[:100]
+        self.knowledge_graph.add_node(doc_node, type='document', text=document[:100])
 
         for entity in self.entities:
             entity_node = f"ent_{hash(entity['text']) % 1000000}"

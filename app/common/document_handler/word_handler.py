@@ -10,7 +10,7 @@ logger = LoggerWrapper
 
 """
 Input: config.yaml with path to Word documents [paths][documents_dir]
-Output: List[str] str is word's document 
+Output: List[document - str]   
 """
 
 class WordHandler(DocumentHandler):
@@ -18,7 +18,7 @@ class WordHandler(DocumentHandler):
         super().__init__()
         self.config: Optional[Dict] = None
         self.handled_documents: Optional[List] = []
-        self.chunked_documents: Optional[List[List[str]]] = []
+        self.chunked_documents: Optional[List[str]] = []
 
     def set_config(self, config: Dict):
         self.config = config
@@ -41,9 +41,9 @@ class WordHandler(DocumentHandler):
 
                 if full_text is not None:
                     self.handled_documents.append(full_text)
-                    self.chunked_documents.append(self.text_chunking(full_text))
+                    self.chunked_documents.extend(*self.text_chunking(full_text))
 
-    def get_chunked_documents(self) -> List[List[str]]:
+    def get_chunked_documents(self) -> List[str]:
         return self.chunked_documents
 
     def get_handled_documents(self) -> List[str]:
