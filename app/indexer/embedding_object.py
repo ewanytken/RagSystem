@@ -19,7 +19,7 @@ class EmbeddingObject:
         self.config: Optional[Dict] = None
         self.retrieve_documents: Optional[List[Dict]] = []
 
-    def set_embedding_model(self):
+    def set_embedding_model(self) -> None:
         try:
             model_ticker = self.config['models']['embedding']
             self.embeddings = Embeddings({

@@ -25,7 +25,7 @@ class OllamaModel(AbstractModelExternal, Respondent):
     def set_config(self, config) -> None:
         self.config = config
 
-    def generate(self, end_prompt: str, **kwargs) -> str:
+    def generate(self, prompt: str, **kwargs) -> str:
 
         for attempt in range(3):
             try:
@@ -33,7 +33,7 @@ class OllamaModel(AbstractModelExternal, Respondent):
                     url=self.base_url,
                     json={
                         "model": self.model_name,
-                        "prompt": end_prompt,
+                        "prompt": prompt,
                         "options": {
                             "num_predict": kwargs.get("max_length", self.config['ollama']['max_length']),
                             "temperature": kwargs.get("temperature", self.config['ollama']['temperature']),

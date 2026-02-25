@@ -3,7 +3,7 @@ from typing import Dict, Optional, List
 
 from docx import Document
 
-from app.common.document_handler.abstract_document_handler import DocumentHandler
+from app.documents_processor.abstract_document_handler import DocumentHandler
 from app.logger import LoggerWrapper
 
 logger = LoggerWrapper
@@ -41,7 +41,7 @@ class WordHandler(DocumentHandler):
 
                 if full_text is not None:
                     self.handled_documents.append(full_text)
-                    self.chunked_documents.extend(*self.text_chunking(full_text))
+                    self.chunked_documents.extend(self.text_chunking(full_text))
 
     def get_chunked_documents(self) -> List[str]:
         return self.chunked_documents

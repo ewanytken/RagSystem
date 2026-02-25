@@ -14,8 +14,8 @@ class TransformerWrapper(AbstractLocalRespondent):
         super().__init__(model, tokenizer, use_cpu_only)
 
 
-    def generate(self, inst_prompt: str, **kwargs) -> str:
-        template = {"role": "user", "content": inst_prompt}
+    def generate(self, prompt: str, **kwargs) -> str:
+        template = {"role": "user", "content": prompt}
         formatted_chat = self.tokenizer.apply_chat_template([template],
                                                             tokenize=False,
                                                             add_generation_prompt=True)

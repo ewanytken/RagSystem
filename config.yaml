@@ -3,8 +3,11 @@ system:
   version: "0.1"
 
 paths:
-  documents_dir: "documents"
+  documents_dir: "../documents"
   models_dir: "models"
+  prompts_templates:
+    extraction_template: "extraction_template_eng"
+    prompt_template: "prompt_template"
 
 models:
   embedding: "intfloat/multilingual-e5-large"

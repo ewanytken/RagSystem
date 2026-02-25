@@ -10,9 +10,9 @@ class TargetGiga(AbstractModelExternal):
         self.giga_rest = GigaRest(authorization, uuid)
 
 
-    def generate(self, message: str, **kwargs) -> str:
+    def generate(self, prompt: str, **kwargs) -> str:
         time.sleep(3)
-        return self.giga_rest.get_message(message)
+        return self.giga_rest.get_message(prompt)
 
 class GigaRest:
 

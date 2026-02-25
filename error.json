@@ -42,5 +42,9 @@
     {
         "Error 80": "GLiNER model install ERROR",
         "Description": "Gliner from HuggingFace don't load"
+    },
+    {
+        "Error 90": "Search triple Error",
+        "Description": "Cannot find triple in graph. By default nx.MultiDiGraph"
     }
 ]

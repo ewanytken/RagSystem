@@ -1,2 +1,2 @@
 
-from utilizer import Utils
+from .utilizer import Utils

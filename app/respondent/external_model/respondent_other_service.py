@@ -13,12 +13,12 @@ class ExternalModel(AbstractModelExternal):
         self.model_name = model_name
         self.client = OpenAI(base_url=base_url, api_key=api_key)
 
-    def generate(self, prompt_end, **kwargs) -> str:
+    def generate(self, prompt, **kwargs) -> str:
         time.sleep(3)
         try:
             response = self.client.chat.completions.create(
                 model=self.model_name,
-                messages = prompt_end,
+                messages = prompt,
                 max_tokens=1555
             )
             return response.choices[0].message.content

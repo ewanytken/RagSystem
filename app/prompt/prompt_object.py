@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 
 from app.logger import LoggerWrapper
 from app.utils import Utils
@@ -16,7 +16,7 @@ class PromptObject:
 
         self.user_query: Optional[str] = "Query don't specify"
         self.context: Optional[str] = "Context don't specify"
-        self.entities: Optional[str] = None
+        self.entities: Optional[List] = None
         self.template: Optional[str] = "Template don't load"
 
         self.prompt: Optional[str] = "Empty prompt"

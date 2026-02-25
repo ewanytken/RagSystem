@@ -16,19 +16,24 @@ class Utils:
 
     @staticmethod
     def get_config_file(config_path: str = "config.yaml") -> Any:
-        path = Path(__file__).parent.parent / config_path
+        path = Path(__file__).parent.parent.parent / config_path
         try:
-            return yaml.safe_load(open(path, 'r', encoding='utf-8'))
+            with open(path, "r", encoding='utf-8') as file:
+                result = yaml.safe_load(file)
+                return result
         except FileNotFoundError as e:
-            logger(f"Config file not found: 40 by path {path}. Stack trace: {e}")
+            logger(f"Config file not found: [[40]] by path {path}. Stack trace: {e}")
         except Exception as e:
             logger(f"An error occurred: {e}")
+        finally:
+            file.close()
+
 
     @staticmethod
     def load_dictionary(dictionary_path: str = "dictionary.jsonl") -> Dict[str, str]:
 
         abbreviations_dictionary = {}
-        json_path = Path(__file__).parent.parent / "dictionary" / dictionary_path
+        json_path = Path(__file__).parent.parent.parent/ "dictionary" / dictionary_path
         logger(f"Loading dictionary from {json_path}")
 
         try:
@@ -38,30 +43,24 @@ class Utils:
                     abbreviations_dictionary[item["transcript"]] = item["entity"]
 
         except FileNotFoundError as e:
-            logger(f"Dictionary file not found: 42 by path {json_path}. Stack trace: {e}")
+            logger(f"Dictionary file not found: [[42]] by path {json_path}. Stack trace: {e}")
         except Exception as e:
             logger(f"An error occurred: {e}")
+        finally:
+            file.close()
 
         return abbreviations_dictionary
 
     @staticmethod
-    def load_template(path_to_template: str) -> str:
-        path = Path(__file__).parent.parent / path_to_template
+    def load_template(template_path: str) -> str:
+        path = Path(__file__).parent.parent.parent / "prompts_templates" / template_path
         try:
             with open(path, 'r', encoding='utf-8') as file:
                 content = file.read()
             return content
         except FileNotFoundError:
-            logger(f"prompt_template File not Found (without format) 41 {path}.")
+            logger(f"prompt_template File not Found (without format) [[41]] {path}.")
         except Exception as e:
             logger(f"An error occurred: {e}")
-
-    @staticmethod
-    def get_docx_files(directory: str) -> List[str]:
-        docx_files = []
-        for filename in os.listdir(directory):
-            if filename.lower().endswith('.docx'):
-                docx_files.append(os.path.join(directory, filename))
-        return docx_files
-
-
+        finally:
+            file.close()
