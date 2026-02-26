@@ -11,7 +11,7 @@ dictionary/dictionary.json
 logs/app.log
 logs
 __pycache__/
-**/__pycache__/
+**/__pycache__/**
 **/**/__pycache__/
 **/**/**/__pycache__/
 **__pycache__
