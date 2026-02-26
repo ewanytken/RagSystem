@@ -7,7 +7,7 @@ from app.logger import LoggerWrapper
 from app.respondent.interface_respondent import Respondent
 from app.utils import Utils
 
-logger = LoggerWrapper
+logger = LoggerWrapper()
 
 """
 Input: nx.MultiDiGraph() by default     
@@ -25,13 +25,13 @@ class TripleExtractor:
         self.entities: Optional[List] = None
         self.documents: Optional[List[str]] = None
 
-
     def get_relation_from_documents(self) -> List:
         relation: Optional[List] = []
         if self.llm_model is not None and self.config is not None and self.documents is not None:
             for document in self.documents:
                 prompt_template = Utils.load_template(self.config["graph"]["prompts"])
                 prompt = prompt_template.format(document=document)
+
                 extracted_relation = self.llm_model.generate(prompt)
                 logger(f"Extracted relation: {extracted_relation}")
 
@@ -110,3 +110,6 @@ class TripleExtractor:
 
     def set_config(self, config: Dict) -> None:
         self.config = config
+
+    def get_extracted_relation(self):
+        return self.extracted_relation

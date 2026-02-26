@@ -1,18 +1,16 @@
 from typing import Optional, Dict, List
-
 import torch
 from txtai import Embeddings
-
 from app.logger import LoggerWrapper
 
-logger = LoggerWrapper
+logger = LoggerWrapper()
 
 """
 Input: config.yaml with path to ticket embedding model [models][embedding], [rag][retrieval_limit] 
 Output: List[Dict] with retrieved documents 
 """
 
-class EmbeddingObject:
+class Indexer:
 
     def __init__(self):
         self.embeddings: Optional[Embeddings] = None
@@ -21,12 +19,12 @@ class EmbeddingObject:
 
     def set_embedding_model(self) -> None:
         try:
-            model_ticker = self.config['models']['embedding']
+            model_ticker = self.config['embedding']['models']
             self.embeddings = Embeddings({
                 "path": model_ticker,
                 "gpu": torch.cuda.is_available(),
                 "content": True,
-                "batch_size": 32
+                "batch_size": self.config['embedding']['batch_size'],
             })
             logger(f"Model loaded {model_ticker} on {'GPU' if torch.cuda.is_available() else 'CPU'}. Batch size by default is 32")
         except Exception as e:
@@ -41,7 +39,7 @@ class EmbeddingObject:
         except Exception as e:
             logger(f"Documents Indexing Error 61: {e}")
 
-    def documents_retrieve(self, user_query: str):
+    def documents_retriever(self, user_query: str):
         limit = self.config['rag']['retrieval_limit']
         try:
             results = self.embeddings.search(user_query, limit=limit * 2)

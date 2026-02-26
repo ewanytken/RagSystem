@@ -19,15 +19,13 @@ class Utils:
         path = Path(__file__).parent.parent.parent / config_path
         try:
             with open(path, "r", encoding='utf-8') as file:
-                result = yaml.safe_load(file)
-                return result
+                return yaml.safe_load(file)
         except FileNotFoundError as e:
             logger(f"Config file not found: [[40]] by path {path}. Stack trace: {e}")
         except Exception as e:
             logger(f"An error occurred: {e}")
         finally:
             file.close()
-
 
     @staticmethod
     def load_dictionary(dictionary_path: str = "dictionary.jsonl") -> Dict[str, str]:
@@ -48,7 +46,6 @@ class Utils:
             logger(f"An error occurred: {e}")
         finally:
             file.close()
-
         return abbreviations_dictionary
 
     @staticmethod

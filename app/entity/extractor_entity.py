@@ -5,7 +5,7 @@ from app.entity.abstract_entity import AbstractEntity
 from app.graph.graph_entity import GraphEntity
 from app.logger import LoggerWrapper
 
-logger = LoggerWrapper
+logger = LoggerWrapper()
 
 """
 Aggregation entities extractors
@@ -24,7 +24,7 @@ class EntityExtractor:
         self.entities: Optional[set] = set()
         self.graph: Optional[GraphEntity] = None
 
-        logger(f"(All methods) Entities extracted: {len(self.get_entity())} ")
+        logger(f"Number of Entity Extractor downloaded: {len(self.extractors)} ")
 
     def document_extractor(self) -> None:
         if not self.documents:
@@ -39,6 +39,7 @@ class EntityExtractor:
                         self.graph.set_entities(extractor.get_extract_entities())
                         self.graph.add_to_knowledge_graph(document)
 
+        logger(f"Graph-entity status: {self.graph.get_knowledge_graph_stats()}")
 
     def set_documents(self, documents: List[str]) -> None:
         self.documents = documents

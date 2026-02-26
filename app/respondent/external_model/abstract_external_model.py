@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from app.respondent.interface_respondent import Respondent
+from app.respondent.abstract_respondent import Respondent
 
 class AbstractModelExternal(ABC, Respondent):
 

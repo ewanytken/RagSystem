@@ -1,11 +1,9 @@
-import torch
 from typing import List, Dict, Optional, TypeVar
 from gliner import GLiNER
-
 from app.entity.abstract_entity import AbstractEntity
 from app.logger import LoggerWrapper
 
-logger = LoggerWrapper
+logger = LoggerWrapper()
 
 """
 Input: config.yaml with path to ticket gliner model [gliner][ticket] and limit parameter [gliner][threshold]
@@ -27,13 +25,13 @@ class GlinerEntity(AbstractEntity):
 
     def set_gliner_model(self):
         try:
-            model_ticker = self.config['models']['ner']
+            model_ticker = self.config['gliner']['ticket']
             self.gliner = GLiNER.from_pretrained(
                 model_ticker,
                 local_files_only=True,
-                device='cuda' if torch.cuda.is_available() else 'cpu',
+                # device='cuda' if torch.cuda.is_available() else 'cpu',
             )
-            logger(f"Model loaded {model_ticker} on {'GPU' if torch.cuda.is_available() else 'CPU'}")
+            logger(f"Loaded {model_ticker} Model")
         except Exception as e:
             logger(f"GLiNER model install ERROR 80: {e}")
             raise
@@ -44,7 +42,7 @@ class GlinerEntity(AbstractEntity):
     def set_gliner_label(self, gliner_label: List[str]):
         self.gliner_label = gliner_label
 
-    def set_text_extraction(self, document: List[str]):
+    def set_text_extraction(self, document: str):
         self.document = document
 
     def get_extract_entities(self) -> List[Dict]:

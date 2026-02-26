@@ -5,7 +5,7 @@ from app.logger import LoggerWrapper
 from app.respondent.external_model.abstract_external_model import AbstractModelExternal
 from app.respondent.interface_respondent import Respondent
 
-logger = LoggerWrapper
+logger = LoggerWrapper()
 
 class OllamaModel(AbstractModelExternal, Respondent):
 

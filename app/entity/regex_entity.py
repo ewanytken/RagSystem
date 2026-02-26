@@ -3,7 +3,7 @@ import re
 from app.entity.abstract_entity import AbstractEntity
 from app.logger import LoggerWrapper
 
-logger = LoggerWrapper
+logger = LoggerWrapper()
 
 """
 Input: documents_extraction - List[str],  regex_entities - List[str] is that need extract from document_extraction  
@@ -17,7 +17,7 @@ class RegexEntity(AbstractEntity):
         self.document: Optional[str] = ""
         self.regex_entities: Optional[List[Dict]] = []
 
-    def set_text_extraction(self, document: List[str]):
+    def set_text_extraction(self, document: str):
         self.document = document
 
     def get_extract_entities(self):

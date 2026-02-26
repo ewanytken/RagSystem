@@ -3,7 +3,7 @@ from openai import OpenAI
 from app.logger import LoggerWrapper
 from app.respondent.external_model.abstract_external_model import AbstractModelExternal
 
-logger = LoggerWrapper
+logger = LoggerWrapper()
 
 class ExternalModel(AbstractModelExternal):
 

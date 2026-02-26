@@ -3,7 +3,7 @@ from typing import Optional, List
 from app.logger import LoggerWrapper
 from app.utils import Utils
 
-logger = LoggerWrapper
+logger = LoggerWrapper()
 
 """
 Input: str - user_query, str - context, str - entities, document in dir - template 

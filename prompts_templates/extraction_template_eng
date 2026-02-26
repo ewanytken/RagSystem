@@ -1,4 +1,4 @@
-<Role>
+"""<Role>
     Extract all subject-predicate-object triples from the following text.
     Output a JSON list of objects with the keys "subject", "predicate", and "object".
     Use exact phrases from the text whenever possible.
@@ -9,13 +9,13 @@
 
     <Output>
         [
-            {"subject": "Marie Curie", "predicate": "discovered", "object": "radium"},
-            {"subject": "Marie Curie", "predicate": "discovered", "object": "polonium"},
-            {"subject": "Marie Curie", "predicate": "received", "object": "two Nobel Prizes"}
+            {{"subject": "Marie Curie", "predicate": "discovered", "object": "radium"}},
+            {{"subject": "Marie Curie", "predicate": "discovered", "object": "polonium"}},
+            {{"subject": "Marie Curie", "predicate": "received", "object": "two Nobel Prizes"}}
         ]
     </Output>
 </Example>
 
 <Task>
     Text for extraction: {document}
-</Task>
+</Task>"""

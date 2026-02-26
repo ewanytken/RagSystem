@@ -8,4 +8,4 @@ modules/utilizer.py
 .venv
 dictionary
 dictionary/dictionary.json
-log
+logs/app.log

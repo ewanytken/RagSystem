@@ -10,15 +10,18 @@ paths:
     prompt_template: "prompt_template"
 
 models:
-  embedding: "intfloat/multilingual-e5-large"
   llm: "llama3.2:latest"
 
+embedding:
+  models: "intfloat/multilingual-e5-large"
+  batch_size: 32
+
 gliner:
-  ticket: "urchade/gliner_multi"
+  ticket: "urchade/gliner_multi-v2.1"
   threshold: 0.1
 
 graph:
-  prompts: "prompts_templates/extraction_template"
+  prompts: "extraction_template_eng"
   limit: 10
 
 rag:

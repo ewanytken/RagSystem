@@ -1,3 +1,4 @@
+from accelerate.test_utils.scripts.external_deps.test_ds_alst_ulysses_sp import tokenizer
 from transformers import (
     AutoTokenizer,
     AutoModelForCausalLM
@@ -22,6 +23,7 @@ class TransformerWrapper(AbstractLocalRespondent):
         inputs = self.tokenizer(formatted_chat,
                                 return_tensors="pt",
                                 add_special_tokens=False).to(self.device)
+
         output = self.model.generate(**inputs)
 
         return self.tokenizer.decode(output[0][inputs['input_ids'].size(1):],

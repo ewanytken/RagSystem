@@ -13,18 +13,18 @@ class LoggerWrapper:
             log_path = Path(__file__).parent.parent.parent / "logs"
             log_path.mkdir(exist_ok=True)
             log_file = log_path  / "app.log"
-            handlerFile = logging.FileHandler(log_file, mode='a', encoding='utf-8')
-            handlerConsole = logging.StreamHandler()
+
+            self.handlerFile = logging.FileHandler(log_file, mode='a', encoding='utf-8')
+            self.handlerConsole = logging.StreamHandler()
 
             formatter = logging.Formatter("%(asctime)s %(name)s %(levelname)s %(message)s")
 
-            handlerFile.setFormatter(formatter)
-            handlerConsole.setFormatter(formatter)
+            self.handlerFile.setFormatter(formatter)
+            self.handlerConsole.setFormatter(formatter)
 
-            self.logger.addHandler(handlerFile)
-            self.logger.addHandler(handlerConsole)
+            self.logger.addHandler(self.handlerFile)
+            self.logger.addHandler(self.handlerConsole)
 
-            self.logger.propagate = False
         else:
             self.level = level
 
@@ -32,3 +32,4 @@ class LoggerWrapper:
         self.logger.log(self.level, message)
         if hasattr(self, 'handlerFile'):
             self.handlerFile.flush()
+            self.handlerFile.close()

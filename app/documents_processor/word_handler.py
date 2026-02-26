@@ -6,7 +6,7 @@ from docx import Document
 from app.documents_processor.abstract_document_handler import DocumentHandler
 from app.logger import LoggerWrapper
 
-logger = LoggerWrapper
+logger = LoggerWrapper()
 
 """
 Input: config.yaml with path to Word documents [paths][documents_dir]

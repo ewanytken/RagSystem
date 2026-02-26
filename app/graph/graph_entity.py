@@ -3,7 +3,7 @@ import networkx as nx
 
 from app.logger import LoggerWrapper
 
-logger = LoggerWrapper
+logger = LoggerWrapper()
 
 """
 Input: entities - List[Dict]. Use simple nx.Graph  
@@ -12,7 +12,7 @@ Output: list of dict: entity, label, score
 
 class GraphEntity:
 
-    def __init__(self, ):
+    def __init__(self):
         self.knowledge_graph = nx.Graph()
         self.entities: Optional[List[Dict]] = []
 
