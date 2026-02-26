@@ -1,4 +1,3 @@
-from accelerate.test_utils.scripts.external_deps.test_ds_alst_ulysses_sp import tokenizer
 from transformers import (
     AutoTokenizer,
     AutoModelForCausalLM
