@@ -9,3 +9,8 @@ modules/utilizer.py
 dictionary
 dictionary/dictionary.json
 logs/app.log
+__pycache__
+**/__pycache__
+**/**/__pycache__
+**/**/**/__pycache__
+**__pycache__
