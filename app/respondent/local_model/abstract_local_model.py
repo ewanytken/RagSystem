@@ -32,10 +32,6 @@ class AbstractLocalRespondent(ABC, Respondent):
         assert model is not None, "Exception: NO MODEL"
         assert tokenizer is not None, "Exception: NO TOKENIZER"
 
-    @abstractmethod
-    def generate(self, prompt: str, *kwargs):
-        raise NotImplemented
-
     def set_gpu_distribution(self) -> None:
         logger("Memory distribution is working...")
         if torch.cuda.is_available() and self.use_cpu_only is False:

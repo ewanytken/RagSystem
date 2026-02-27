@@ -20,7 +20,6 @@ class GlinerEntity(AbstractEntity):
         self.gliner: Optional[T] = None
         self.gliner_label: Optional[List[str]] = []
         self.document: Optional[str] = ""
-        self.config: Optional[Dict] = None
         self.gliner_entities: Optional[List[Dict]] = []
 
     def set_gliner_model(self):
@@ -28,7 +27,7 @@ class GlinerEntity(AbstractEntity):
             model_ticker = self.config['gliner']['ticket']
             self.gliner = GLiNER.from_pretrained(
                 model_ticker,
-                local_files_only=True,
+                local_files_only=self.config['gliner']['local_only'],
                 # device='cuda' if torch.cuda.is_available() else 'cpu',
             )
             logger(f"Loaded {model_ticker} Model")
@@ -36,19 +35,18 @@ class GlinerEntity(AbstractEntity):
             logger(f"GLiNER model install ERROR 80: {e}")
             raise
 
-    def set_config(self, config: Dict):
-        self.config = config
-
     def set_gliner_label(self, gliner_label: List[str]):
         self.gliner_label = gliner_label
 
     def set_text_extraction(self, document: str):
+        self.document = ""
         self.document = document
 
     def get_extract_entities(self) -> List[Dict]:
         return self.gliner_entities
 
     def extractor_entity(self):
+        self.gliner_entities.clear()
         if self.gliner is not None and not self.gliner_label and not self.document:
             gliner_entities = self.gliner.predict_entities(self.document, self.gliner_label, threshold=self.config['gliner']['threshold'])
 

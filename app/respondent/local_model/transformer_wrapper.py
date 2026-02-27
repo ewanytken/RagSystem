@@ -1,3 +1,5 @@
+from typing import Optional, Dict
+
 from transformers import (
     AutoTokenizer,
     AutoModelForCausalLM
@@ -6,7 +8,11 @@ from app.respondent.local_model.abstract_local_model import AbstractLocalRespond
 
 class TransformerWrapper(AbstractLocalRespondent):
 
-    def __init__(self, model_name: str, use_cpu_only: bool = False, **kwargs):
+    def __init__(self, model_name: str = None, use_cpu_only: bool = False, **kwargs) -> None:
+
+        if model_name is None and self.config is not None:
+            model_name = self.config['models']['llm_local']
+
         model = AutoModelForCausalLM.from_pretrained(model_name, **kwargs)
         model = model.eval()
         tokenizer = AutoTokenizer.from_pretrained(model_name, use_fast=True)
@@ -25,5 +31,4 @@ class TransformerWrapper(AbstractLocalRespondent):
 
         output = self.model.generate(**inputs)
 
-        return self.tokenizer.decode(output[0][inputs['input_ids'].size(1):],
-                                     skip_special_tokens=True)
+        return self.tokenizer.decode(output[0][inputs['input_ids'].size(1):], skip_special_tokens=True)

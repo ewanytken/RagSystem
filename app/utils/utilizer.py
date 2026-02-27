@@ -10,6 +10,7 @@ logger = LoggerWrapper()
 """
 get_config_file: load yaml
 load_dictionary: load jsonl - ["entity": "", "transcript": ""] output: Dict[]
+load_template: load prompts_templates/*_template
 """
 
 class Utils:

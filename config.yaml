@@ -5,12 +5,10 @@ system:
 paths:
   documents_dir: "../documents"
   models_dir: "models"
-  prompts_templates:
-    extraction_template: "extraction_template_eng"
-    prompt_template: "prompt_template"
 
-models:
-  llm: "llama3.2:latest"
+templates:
+  extraction_template: "extraction_template_eng"
+  prompt_template: "prompt_template"
 
 embedding:
   models: "intfloat/multilingual-e5-large"
@@ -19,6 +17,7 @@ embedding:
 gliner:
   ticket: "urchade/gliner_multi-v2.1"
   threshold: 0.1
+  local_only: False
 
 graph:
   prompts: "extraction_template_eng"
@@ -32,9 +31,23 @@ rag:
   top_p: 0.9
   max_length: 1500
 
+
+llm_local:
+  models: "Qwen/Qwen2.5-1.5B"
+
 ollama:
+  model: "llama3.2:latest"
   url: "http://localhost:11434"
   timeout: 60
   temperature: 0.5
   top_p: 0.9
   max_length: 1500
+
+external_service:
+  model: "openai/gpt-4o"
+  url: "https://openrouter.ai/api/v1"
+  api_key: ""
+
+giga:
+  url: "https://ngw.devices.sberbank.ru:9443/api/v2/oauth"
+  api_key: ""

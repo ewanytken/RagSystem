@@ -18,12 +18,14 @@ class RegexEntity(AbstractEntity):
         self.regex_entities: Optional[List[Dict]] = []
 
     def set_text_extraction(self, document: str):
+        self.document = ""
         self.document = document
 
     def get_extract_entities(self):
         return self.regex_entities
 
     def extractor_entity(self):
+        self.regex_entities.clear()
         time_patterns = [
             r'\b\d{1,2}[:.]\d{2}\b', # Output: ['9:30', '17.45', '12:15']
             r'\b(утреннее|дневное|вечернее|ночное)\s+время\b',

@@ -7,24 +7,27 @@ logger = LoggerWrapper()
 
 class ExternalModel(AbstractModelExternal):
 
-    def __init__(self, model_name: str = None, api_key: str = None, base_url: str = None) -> None:
+    def __init__(self) -> None:
 
-        super().__init__(model_name, api_key, base_url)
-        self.model_name = model_name
-        self.client = OpenAI(base_url=base_url, api_key=api_key)
+        self.set_model_ticker(self.config["external_service"]["model"])
+        self.set_base_url(self.config["external_service"]["url"])
+        self.set_api_key(self.config["external_service"]["api_key"])
+
+        self.client = OpenAI(base_url=self.base_url, api_key=self.api_key)
+        super().__init__()
 
     def generate(self, prompt, **kwargs) -> str:
         time.sleep(3)
         try:
             response = self.client.chat.completions.create(
-                model=self.model_name,
+                model=self.model_ticker,
                 messages = prompt,
                 max_tokens=1555
             )
             return response.choices[0].message.content
 
         except Exception as e:
-            logger(f"Bad connection OtherService 51: {e}")
+            logger(f"Bad connection OtherService [[51]]: {e}")
 
 
 

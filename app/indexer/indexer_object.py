@@ -34,7 +34,7 @@ class Indexer:
     def documents_indexing(self, handled_documents: List[str]):
         try:
             self.embeddings.index([(i, text, None) for i, text in enumerate(handled_documents)])
-            logger(f"Indexing text block from documents (List[str]): {len(handled_documents)}")
+            logger(f"Indexing text's block from documents (List[str]): {len(handled_documents)}")
 
         except Exception as e:
             logger(f"Documents Indexing Error 61: {e}")

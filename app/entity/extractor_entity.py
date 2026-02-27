@@ -3,6 +3,7 @@ from typing import List, Optional, Set
 
 from app.entity.abstract_entity import AbstractEntity
 from app.graph.graph_entity import GraphEntity
+from app.graph.triplet_extractor import TripletExtractor
 from app.logger import LoggerWrapper
 
 logger = LoggerWrapper()
@@ -22,13 +23,16 @@ class EntityExtractor:
         self.documents: Optional[List[str]] = []
 
         self.entities: Optional[set] = set()
+        self.query_entities: Optional[set] = set()
+
         self.graph: Optional[GraphEntity] = None
+        self.triplet: Optional[TripletExtractor] = None
 
         logger(f"Number of Entity Extractor downloaded: {len(self.extractors)} ")
 
     def document_extractor(self) -> None:
         if not self.documents:
-            logger(f"Entities from documents extracting...")
+            logger(f"Document's Entities extracting...")
             for document in self.documents:
                 for extractor in self.extractors:
                     extractor.set_text_extraction(document)
@@ -39,13 +43,35 @@ class EntityExtractor:
                         self.graph.set_entities(extractor.get_extract_entities())
                         self.graph.add_to_knowledge_graph(document)
 
+            if self.triplet is not None:
+                self.triplet.set_documents(self.documents)
+                self.triplet.set_relation_to_graph(self.triplet.extract_triplets())
+                # TODO memory leaked
+
         logger(f"Graph-entity status: {self.graph.get_knowledge_graph_stats()}")
+
+    def query_extractor(self, query: str) -> None:
+        logger(f"Query extracting...")
+        for extractor in self.extractors:
+            extractor.set_text_extraction([query])
+            extractor.extractor_entity()
+            self.query_entities.add(*extractor.get_extract_entities())
+
+            if self.graph is not None:
+                graph_entity = self.graph.find_related_entities(query)
+
+            if self.triplet is not None:
+                self.triplet.search_relation_by_entity(query)
+                extracted_relation = self.triplet.get_extracted_relation()
 
     def set_documents(self, documents: List[str]) -> None:
         self.documents = documents
 
     def set_graph(self, graph: GraphEntity) -> None:
         self.graph = graph
+
+    def set_triple_graph(self, triplet: TripletExtractor) -> None:
+        self.triplet = triplet
 
     def get_entity(self) -> Set:
         return self.entities

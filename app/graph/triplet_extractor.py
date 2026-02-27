@@ -4,7 +4,7 @@ import re
 import networkx as nx
 
 from app.logger import LoggerWrapper
-from app.respondent.interface_respondent import Respondent
+from app.respondent.abstract_respondent import Respondent
 from app.utils import Utils
 
 logger = LoggerWrapper()
@@ -15,17 +15,17 @@ Output: Relation pattern - ["subject": "Мария Кюри", "predicate": "от
         Method used use - complex_query(subject_pattern="Marie.*", relation_pattern="dis.*")
 """
 
-class TripleExtractor:
+class TripletExtractor:
     def __init__(self):
         self.llm_model: Optional[Respondent] = None
+        self.config: Optional[Dict] = None
+
         self.graph = nx.MultiDiGraph()
 
-        self.config: Optional[Dict] = None
-        self.extracted_relation: Optional[List] = None
-        self.entities: Optional[List] = None
         self.documents: Optional[List[str]] = None
+        self.extracted_relation: Optional[List] = []
 
-    def get_relation_from_documents(self) -> List:
+    def extract_triplets(self) -> List:
         relation: Optional[List] = []
         if self.llm_model is not None and self.config is not None and self.documents is not None:
             for document in self.documents:
@@ -52,6 +52,7 @@ class TripleExtractor:
         for relation in extracted_relation:
             subj, obj, pred = self.extract_triple(relation)
             self.graph.add_edge(subj, obj, label=pred)
+            #TODO Need I add document to subj, obj, pred?
 
     def extract_triple(self, relation):
         subj = relation.get('subject', "None subject")
@@ -92,7 +93,7 @@ class TripleExtractor:
     def search_relation_by_entity(self, subject: str) -> None:
         for u, v, data in self.graph.edges(data=True):
             if subject.lower() in str(u).lower():
-                self.entities.append({
+                self.extracted_relation.append({
                     'subject': u,
                     'predicate': data.get('label', ''),
                     'object': v,
@@ -111,5 +112,5 @@ class TripleExtractor:
     def set_config(self, config: Dict) -> None:
         self.config = config
 
-    def get_extracted_relation(self):
+    def get_extracted_relation(self) -> List:
         return self.extracted_relation
