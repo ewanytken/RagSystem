@@ -35,18 +35,10 @@ class IndexerProcessor:
 class PromptProcessor:
     def __init__(self, entities: List[Dict], query: str, context: str, template: str) -> None:
         self.prompt_object = PromptObject()
-        self.builder = PromptObjectBuilder()
         config = Utils.get_config_file()
 
-        # entities = [{'label': 111, 'entity': 222, 'score': 333}]
-        prompt_object = (self.builder
-                         .set_query(query)
-                         .set_context(context)
-                         .set_entities(entities)
-                         .set_path_to_template(config).build())
-        prompt_object.set_prompt()
-
-        prompt = prompt_object.get_prompt()
+        self.prompt_object.set_config(config)
+        prompt = self.prompt_object.get_final_prompt()
 
 class ExtractorProcessor:
     def __init__(self, documents: List[str], find_entity_from_graph: str) -> None:
