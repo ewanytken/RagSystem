@@ -7,6 +7,7 @@ from app.graph.graph_entity import GraphEntity
 from app.indexer.indexer_object import Indexer
 from app.prompt.prompt_object import PromptObject, PromptObjectBuilder
 from app.respondent.external_model.respondent_ollama import OllamaModel
+from app.respondent.external_model.respondent_other_service import ExternalModel
 from app.respondent.local_model.transformer_wrapper import TransformerWrapper
 from app.utils import Utils
 
@@ -61,16 +62,17 @@ class ExtractorProcessor:
 
         entities_extractors = [self.regex, self.gliner]
 
-        extractor = EntityExtractor(entities_extractors)
+        extractor = EntityExtractor()
+        extractor.set_extractors(entities_extractors)
 
         graph_entity = GraphEntity()
         extractor.set_graph(graph_entity)
 
         extractor.set_documents(documents)
-        extractor.document_extractor()
+        extractor.entities_and_graphs_extractor()
 
         related = graph_entity.find_related_entities(find_entity_from_graph)
-        entity = extractor.get_entity()
+        entity = extractor.get_entities()
 
 class LocalModelProcessor:
     def __init__(self, prompt: str):
@@ -81,10 +83,18 @@ class LocalModelProcessor:
         output = model.generate(prompt)
 
 
-class ExternalModelProcessor:
+class OllamaModelProcessor:
     def __init__(self, prompt: str):
         config = Utils.get_config_file()
         model = OllamaModel()
+        model.set_config(config)
+
+        output = model.generate(prompt)
+
+class ExternalModelProcessor:
+    def __init__(self, prompt: str):
+        config = Utils.get_config_file()
+        model = ExternalModel()
         model.set_config(config)
 
         output = model.generate(prompt)

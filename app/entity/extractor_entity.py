@@ -17,9 +17,9 @@ Output: set of extracted entities Optional[set]
 
 class EntityExtractor:
 
-    def __init__(self, extractors: List[AbstractEntity]):
+    def __init__(self):
 
-        self.extractors: Optional[List[AbstractEntity]] = extractors
+        self.extractors: Optional[List[AbstractEntity]] = []
         self.documents: Optional[List[str]] = []
 
         self.entities: Optional[set] = set()
@@ -30,8 +30,8 @@ class EntityExtractor:
 
         logger(f"Number of Entity Extractor downloaded: {len(self.extractors)} ")
 
-    def document_extractor(self) -> None:
-        if not self.documents:
+    def entities_and_graphs_extractor(self) -> None:
+        if not self.documents and not self.extractors:
             logger(f"Document's Entities extracting...")
             for document in self.documents:
                 for extractor in self.extractors:
@@ -45,8 +45,7 @@ class EntityExtractor:
 
             if self.triplet is not None:
                 self.triplet.set_documents(self.documents)
-                self.triplet.set_relation_to_graph(self.triplet.extract_triplets())
-                # TODO memory leaked
+                self.triplet.extract_triplets()
 
         logger(f"Graph-entity status: {self.graph.get_knowledge_graph_stats()}")
 
@@ -57,13 +56,6 @@ class EntityExtractor:
             extractor.extractor_entity()
             self.query_entities.add(*extractor.get_extract_entities())
 
-            if self.graph is not None:
-                graph_entity = self.graph.find_related_entities(query)
-
-            if self.triplet is not None:
-                self.triplet.search_relation_by_entity(query)
-                extracted_relation = self.triplet.get_extracted_relation()
-
     def set_documents(self, documents: List[str]) -> None:
         self.documents = documents
 
@@ -73,5 +65,8 @@ class EntityExtractor:
     def set_triple_graph(self, triplet: TripletExtractor) -> None:
         self.triplet = triplet
 
-    def get_entity(self) -> Set:
+    def get_entities(self) -> Set:
         return self.entities
+
+    def set_extractors(self, extractors: List[AbstractEntity]) -> None:
+        self.extractors = extractors

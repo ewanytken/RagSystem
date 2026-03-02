@@ -25,12 +25,13 @@ class TripletExtractor:
         self.documents: Optional[List[str]] = None
         self.extracted_relation: Optional[List] = []
 
-    def extract_triplets(self) -> List:
-        relation: Optional[List] = []
+        self.extracted_query: Optional[List] = []
+
+    def extract_triplets(self, query: str = None) -> None:
         if self.llm_model is not None and self.config is not None and self.documents is not None:
             for document in self.documents:
                 prompt_template = Utils.load_template(self.config["graph"]["prompts"])
-                prompt = prompt_template.format(document=document)
+                prompt = prompt_template.format(document)
 
                 extracted_relation = self.llm_model.generate(prompt)
                 logger(f"Extracted relation: {extracted_relation}")
@@ -44,26 +45,32 @@ class TripletExtractor:
                     extracted_relation = extracted_relation[start+len(start_symbol)-1 : end-1]
 
                 logger(f"Clear substring from extracted relation: {extracted_relation}")
-                relation.append(json.loads(extracted_relation))
 
-        return relation
+                if query is None:
+                    self.set_relation_to_graph(json.loads(extracted_relation), document)
+                else:
+                    self.set_relation_from_query(json.loads(extracted_relation))
 
-    def set_relation_to_graph(self, extracted_relation: List) -> None:
+    def set_relation_to_graph(self, extracted_relation: List, document: str) -> None:
         for relation in extracted_relation:
-            subj, obj, pred = self.extract_triple(relation)
-            self.graph.add_edge(subj, obj, label=pred)
-            #TODO Need I add document to subj, obj, pred?
+            subj = relation.get("subject", "None subject")
+            obj = relation.get("object", "None object")
+            pred = relation.get("predicate", "None predicate")
+            self.graph.add_edge(subj, obj, label=pred, document=document)
 
-    def extract_triple(self, relation):
-        subj = relation.get('subject', "None subject")
-        obj = relation.get('object', "None object")
-        pred = relation.get('predicate', "None predicate")
-        return subj, obj, pred
+    def set_relation_from_query(self, extracted_relation: List):
+        self.extracted_query = []
+        for relation in extracted_relation:
+            subj = relation.get("subject", "None subject")
+            obj = relation.get("object", "None object")
+            pred = relation.get("predicate", "None predicate")
+            self.extracted_query.append([subj, obj, pred])
 
     def search_relation_from_graph(self,
                       subject_pattern: Optional[str] = None,
                       relation_pattern: Optional[str] = None,
                       object_pattern: Optional[str] = None) -> None:
+        self.extracted_relation = []
         try:
             for u, v, data in self.graph.edges(data=True):
                 if subject_pattern and not re.search(subject_pattern, str(u), re.IGNORECASE):
@@ -80,7 +87,7 @@ class TripletExtractor:
                     'subject': u,
                     'predicate': pred,
                     'object': v,
-                    'attributes': data
+                    'document': data.get('document', {})
                 })
 
             if self.config["graph"]["limit"]:
@@ -90,18 +97,16 @@ class TripletExtractor:
         except Exception as e:
             logger(f"Search triple Error 90: {e}")
 
-    def search_relation_by_entity(self, subject: str) -> None:
+    def search_relation_by_subject(self, subject: str) -> None:
+        self.extracted_relation = []
         for u, v, data in self.graph.edges(data=True):
             if subject.lower() in str(u).lower():
                 self.extracted_relation.append({
                     'subject': u,
                     'predicate': data.get('label', ''),
                     'object': v,
-                    'attributes': data
+                    'document': data.get('document', {})
                 })
-
-    def set_graph(self, graph) -> None:
-        self.graph = graph
 
     def set_documents(self, documents: List[str]) -> None:
         self.documents = documents
@@ -109,8 +114,14 @@ class TripletExtractor:
     def set_llm_model(self, llm_model: Respondent) -> None:
         self.llm_model = llm_model
 
+    def set_graph(self, graph) -> None:
+        self.graph = graph
+
     def set_config(self, config: Dict) -> None:
         self.config = config
 
     def get_extracted_relation(self) -> List:
         return self.extracted_relation
+
+    def get_extracted_query(self) -> List:
+        return self.extracted_query

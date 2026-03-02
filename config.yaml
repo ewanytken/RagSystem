@@ -7,7 +7,6 @@ paths:
   models_dir: "models"
 
 templates:
-  extraction_template: "extraction_template_eng"
   prompt_template: "prompt_template"
 
 embedding:
@@ -30,7 +29,6 @@ rag:
   temperature: 0.5
   top_p: 0.9
   max_length: 1500
-
 
 llm_local:
   models: "Qwen/Qwen2.5-1.5B"

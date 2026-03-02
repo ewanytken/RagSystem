@@ -36,6 +36,14 @@
         "Description": "txtai method retriever don't work correctly. Input List[str]"
     },
     {
+        "Error 63": "Indexer query failed",
+        "Description": ""
+    },
+    {
+        "Error 64": "Documents indexing failed",
+        "Description": ""
+    },
+    {
         "Error 70": "File didn't handle in WordHandler",
         "Description": "Input word files in docs or doc format. Output List[str]"
     },
