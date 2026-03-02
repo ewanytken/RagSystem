@@ -16,18 +16,18 @@ logger = LoggerWrapper()
 
 class InstallerSystem:
 
-    regex: Optional[RegexEntity] = None
-    gliner: Optional[GlinerEntity] = None
-    word_handler: Optional[WordHandler] = None
-    prompt_object: Optional[PromptObject] = None
-    indexer: Optional[Indexer] = None
-    graph_entity: Optional[GraphEntity] = None
-    llm_responder: Optional[Respondent] = None
-    triplet_graph: Optional[TripletExtractor] = None
-
     def __init__(self):
         self.config = Utils.get_config_file()
         self.extractor = EntityExtractor()
+
+        self.regex: Optional[RegexEntity] = None
+        self.gliner: Optional[GlinerEntity] = None
+        self.word_handler: Optional[WordHandler] = None
+        self.prompt_object: Optional[PromptObject] = None
+        self.indexer: Optional[Indexer] = None
+        self.graph_entity: Optional[GraphEntity] = None
+        self.llm_responder: Optional[Respondent] = None
+        self.triplet_graph: Optional[TripletExtractor] = None
 
     def documents_processor(self, *args, **kwargs) -> tuple[list[str], list[str]]:
         self.word_handler.set_config(self.config)
@@ -49,7 +49,7 @@ class InstallerSystem:
         except Exception as e:
             logger(f"Indexer query failed [[64]]: {e}")
 
-    def prompt_processor(self, query: str, context: str, entities: List, triplet: List, *args, **kwargs) -> str:
+    def prompt_processor(self, query: str, context: str, entities: List, triplet: List = None, *args, **kwargs) -> str:
         self.prompt_object.set_config(self.config)
         self.prompt_object.set_entities(entities)
         self.prompt_object.set_triplet(triplet)
@@ -132,6 +132,9 @@ class Builder:
     def set_word_handler(self, word_handler: WordHandler):
         self.installer.word_handler = word_handler
         return self
+
+    def set_prompt_object(self, prompt_object: PromptObject):
+        self.installer.prompt_object = prompt_object
 
     def build(self) -> InstallerSystem:
         return self.installer
