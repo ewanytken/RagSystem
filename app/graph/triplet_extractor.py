@@ -30,8 +30,8 @@ class TripletExtractor:
     def extract_triplets(self, query: str = None) -> None:
         if self.llm_model is not None and self.config is not None and self.documents is not None:
             for document in self.documents:
-                prompt_template = Utils.load_template(self.config["graph"]["prompts"])
-                prompt = prompt_template.format(document)
+                extraction_template = Utils.load_template(self.config["graph"]["prompts"])
+                prompt = extraction_template.format(document=document)
 
                 extracted_relation = self.llm_model.generate(prompt)
                 logger(f"Extracted relation: {extracted_relation}")

@@ -1,6 +1,5 @@
 .env
 documents
-tests
 modules/train_data2.jsonl
 modules
 modules/utilizer.py

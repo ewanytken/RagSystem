@@ -2,12 +2,15 @@ import time
 from openai import OpenAI
 from app.logger import LoggerWrapper
 from app.respondent.external_model.abstract_external_model import AbstractModelExternal
+from app.utils import Utils
 
 logger = LoggerWrapper()
 
 class ExternalModel(AbstractModelExternal):
 
     def __init__(self) -> None:
+
+        self.config = Utils.get_config_file()
 
         self.set_model_ticker(self.config["external_service"]["model"])
         self.set_base_url(self.config["external_service"]["url"])

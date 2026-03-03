@@ -10,14 +10,14 @@ class AbstractEntity(ABC):
         self.config = config
 
     @abstractmethod
-    def set_text_extraction(self, text_extraction: List[str]):
-        pass
+    def set_text_extraction(self, text_extraction: str):
+        raise NotImplementedError
 
     @abstractmethod
     def get_extract_entities(self) -> List[Dict]:
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def extractor_entity(self):
-        pass
+        raise NotImplementedError
 

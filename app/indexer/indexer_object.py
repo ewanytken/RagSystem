@@ -63,7 +63,7 @@ class Indexer:
             logger(f"Documents retrieved {len(self.retrieve_documents)}")
 
         except Exception as e:
-            logger(f"Documents retrieve Error 62: {e}")
+            logger(f"Documents retrieve Error [[62]]: {e}")
 
     def set_config(self, config: Dict):
         self.config = config

@@ -31,7 +31,7 @@ class PromptObject:
                 entities_context += f"{i}. {entity['label']}: {entity['entity']} (relation: {entity['score']:.2f})\n"
 
         if self.triplet is not None:
-            pass
+            logger(f"TRIPLET. How to look: {self.triplet}")
 
         self.template = Utils.load_template(self.config["templates"]["prompt_template"])
 

@@ -1,12 +1,13 @@
-from abc import abstractmethod
+from abc import abstractmethod, ABC
 from typing import Optional, Dict, Any
 
 
-class Respondent:
+class Respondent(ABC):
 
-    config: Optional[Dict[str, Any]] = None
+    def __init__(self):
+        self.config: Optional[Dict[str, Any]] = None
 
-    def set_config(self, config) -> None:
+    def set_config(self, config: Dict) -> None:
         self.config = config
 
     @abstractmethod

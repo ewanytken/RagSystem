@@ -4,12 +4,16 @@ import requests
 from app.logger import LoggerWrapper
 from app.respondent.external_model.abstract_external_model import AbstractModelExternal
 from app.respondent.abstract_respondent import Respondent
+from app.utils import Utils
 
 logger = LoggerWrapper()
 
 class OllamaModel(AbstractModelExternal, Respondent):
 
     def __init__(self) -> None:
+
+        self.config = Utils.get_config_file()
+
         self.set_model_ticker(self.config["ollama"]["model"])
         self.set_base_url(self.config["ollama"]["url"])
 

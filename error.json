@@ -37,11 +37,11 @@
     },
     {
         "Error 63": "Indexer query failed",
-        "Description": ""
+        "Description": "InstallerSystem raise error"
     },
     {
         "Error 64": "Documents indexing failed",
-        "Description": ""
+        "Description": "InstallerSystem raise error. Maybe need install Indexer"
     },
     {
         "Error 70": "File didn't handle in WordHandler",

@@ -7,7 +7,7 @@ paths:
   models_dir: "models"
 
 templates:
-  prompt_template: "prompt_template"
+  prompt_template: "prompt_template_eng"
 
 embedding:
   models: "intfloat/multilingual-e5-large"
@@ -31,7 +31,8 @@ rag:
   max_length: 1500
 
 llm_local:
-  models: "Qwen/Qwen2.5-1.5B"
+  model: "Qwen/Qwen3-4B-Instruct-2507"
+  max_new_tokens: 2000
 
 ollama:
   model: "llama3.2:latest"

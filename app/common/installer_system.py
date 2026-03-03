@@ -1,6 +1,7 @@
 from typing import List, Optional
 
-from app.documents_processor.word_handler import WordHandler
+from app.documents_processor.abstract_document_handler import DocumentHandler
+from app.entity.abstract_entity import AbstractEntity
 from app.entity.extractor_entity import EntityExtractor
 from app.entity.gliner_entity import GlinerEntity
 from app.entity.regex_entity import RegexEntity
@@ -17,24 +18,24 @@ logger = LoggerWrapper()
 class InstallerSystem:
 
     def __init__(self):
-        self.config = Utils.get_config_file()
-        self.extractor = EntityExtractor()
 
-        self.regex: Optional[RegexEntity] = None
-        self.gliner: Optional[GlinerEntity] = None
-        self.word_handler: Optional[WordHandler] = None
+        self.extractors: Optional[List[AbstractEntity]] = []
+        self.word_handler: Optional[DocumentHandler] = None
         self.prompt_object: Optional[PromptObject] = None
         self.indexer: Optional[Indexer] = None
         self.graph_entity: Optional[GraphEntity] = None
         self.llm_responder: Optional[Respondent] = None
         self.triplet_graph: Optional[TripletExtractor] = None
 
-    def documents_processor(self, *args, **kwargs) -> tuple[list[str], list[str]]:
+        self.config = Utils.get_config_file()
+        self.extractor = EntityExtractor()
+
+    def documents_processor(self) -> tuple[list[str], list[str]]:
         self.word_handler.set_config(self.config)
         self.word_handler.handle_documents()
         return self.word_handler.get_chunked_documents(), self.word_handler.get_handled_documents()
 
-    def indexer_installer_processor(self, documents, *args, **kwargs) -> None:
+    def indexer_installer_processor(self, documents) -> None:
         try:
             self.indexer.set_config(self.config)
             self.indexer.set_embedding_model()
@@ -42,17 +43,17 @@ class InstallerSystem:
         except Exception as e:
             logger(f"Documents indexing failed [[63]]: {e}")
 
-    def indexer_query(self, query, *args, **kwargs) -> list[str]:
+    def indexer_query(self, query) -> list[str]:
         try:
             self.indexer.documents_retriever(query)
             return self.indexer.get_retrieval_documents()
         except Exception as e:
             logger(f"Indexer query failed [[64]]: {e}")
 
-    def prompt_processor(self, query: str, context: str, entities: List, triplet: List = None, *args, **kwargs) -> str:
+    def prompt_processor(self, query: str, context: str, entities: List, triplets: List = None) -> str:
         self.prompt_object.set_config(self.config)
         self.prompt_object.set_entities(entities)
-        self.prompt_object.set_triplet(triplet)
+        self.prompt_object.set_triplet(triplets)
         self.prompt_object.set_context(context)
         self.prompt_object.set_query(query)
         self.prompt_object.make_final_prompt()
@@ -61,13 +62,13 @@ class InstallerSystem:
     def extractor_processor(self, documents: List[str]) -> set:
         label_for_gliner = list(set(Utils.load_dictionary().values()))
 
-        self.gliner.set_config(self.config)
-        self.gliner.set_gliner_model()
-        self.gliner.set_gliner_label(label_for_gliner)
+        for ext in self.extractors:
+            if isinstance(ext, GlinerEntity):
+                ext.set_config(self.config)
+                ext.set_gliner_model()
+                ext.set_gliner_label(label_for_gliner)
 
-        entities_extractors = [self.regex, self.gliner]
-
-        self.extractor.set_extractors(entities_extractors)
+        self.extractor.set_extractors(self.extractors)
         self.extractor.set_documents(documents)
 
         if self.graph_entity is not None:
@@ -102,15 +103,12 @@ class InstallerSystem:
         return self.llm_responder.generate(prompt)
 
 class Builder:
+
     def __init__(self):
         self.installer = InstallerSystem()
 
-    def set_regex(self, regex: RegexEntity):
-        self.installer.regex = regex
-        return self
-
-    def set_gliner(self, gliner: GlinerEntity):
-        self.installer.gliner = gliner
+    def set_entities_extractors(self, extractor: AbstractEntity):
+        self.installer.extractors.append(extractor)
         return self
 
     def set_indexer(self, indexer: Indexer):
@@ -129,12 +127,13 @@ class Builder:
         self.installer.llm_responder = llm_responder
         return self
 
-    def set_word_handler(self, word_handler: WordHandler):
+    def set_document_handler(self, word_handler: DocumentHandler):
         self.installer.word_handler = word_handler
         return self
 
     def set_prompt_object(self, prompt_object: PromptObject):
         self.installer.prompt_object = prompt_object
+        return self
 
     def build(self) -> InstallerSystem:
         return self.installer

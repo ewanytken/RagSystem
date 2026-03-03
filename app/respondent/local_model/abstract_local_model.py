@@ -13,21 +13,18 @@ from app.respondent.abstract_respondent import Respondent
 
 logger = LoggerWrapper()
 
-class AbstractLocalRespondent(ABC, Respondent):
-
-    model: Union[Any, None] = None
-    tokenizer: Union[Any, None] = None
+class AbstractLocalRespondent(Respondent):
 
     def __init__(self, model, tokenizer, use_cpu_only: bool) -> None:
 
         self.model = model
+        self.tokenizer = tokenizer
         self.use_cpu_only: Optional[bool] = use_cpu_only
-
         self.device: Optional[str] = None
 
         self.set_gpu_distribution()
 
-        self.tokenizer = tokenizer
+        super().__init__()
 
         assert model is not None, "Exception: NO MODEL"
         assert tokenizer is not None, "Exception: NO TOKENIZER"

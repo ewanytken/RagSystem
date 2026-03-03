@@ -3,10 +3,10 @@ from typing import Optional, Dict, Any
 
 from app.respondent.abstract_respondent import Respondent
 
-class AbstractModelExternal(ABC, Respondent):
+class AbstractModelExternal(Respondent):
 
     def __init__(self) -> None:
-
+        super().__init__()
         self.model_ticker = ""
         self.api_key = ""
         self.base_url = ""

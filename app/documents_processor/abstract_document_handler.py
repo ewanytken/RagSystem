@@ -9,12 +9,16 @@ class DocumentHandler(ABC):
 
     @abstractmethod
     def set_config(self, config: Dict):
-        pass
+        raise NotImplemented
 
     @abstractmethod
     def handle_documents(self):
-        pass
+        raise NotImplemented
 
     @abstractmethod
     def get_handled_documents(self) -> List[str]:
-        pass
+        raise NotImplemented
+
+    @abstractmethod
+    def get_chunked_documents(self) -> List[str]:
+        raise NotImplemented
