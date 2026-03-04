@@ -8,7 +8,7 @@ STEP 5: Ensure object is complete but concise
 
 Let's work through this step by step.
 
-TEXT: {text}
+TEXT: {document}
 
 Step 1 - Entities found:
 [Think about all entities mentioned]
@@ -20,6 +20,6 @@ Step 3-5 - Normalized triplets:
 [Convert facts to normalized triplets]
 
 FINAL JSON OUTPUT:
-[{"subject": "", "predicate": "", "object": ""}]
+[{{"subject": "", "predicate": "", "object": ""}}]
 
 Return only the JSON array:"""

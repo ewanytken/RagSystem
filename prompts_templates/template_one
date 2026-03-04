@@ -16,12 +16,12 @@ You are an expert in information extraction. Your task is to extract all factual
 - Use underscores for multi-word predicates
 
 ## TEXT TO ANALYZE:
-{text}
+{document}
 
 ## OUTPUT FORMAT (JSON):
 [
-    {"subject": "entity1", "predicate": "relationship", "object": "entity2"},
-    {"subject": "entity2", "predicate": "attribute", "object": "value"}
+    {{"subject": "entity1", "predicate": "relationship", "object": "entity2"}},
+    {{"subject": "entity2", "predicate": "attribute", "object": "value"}}
 ]
 
 Extract all triplets from the text and return them as a JSON array:

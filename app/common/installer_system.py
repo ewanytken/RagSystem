@@ -1,8 +1,9 @@
-from typing import List, Optional
+from typing import List, Optional, Dict
 
 from app.documents_processor.abstract_document_handler import DocumentHandler
 from app.entity.abstract_entity import AbstractEntity
 from app.entity.extractor_entity import EntityExtractor
+from app.entity.gliner2_entity import GlinerTwoEntity
 from app.entity.gliner_entity import GlinerEntity
 from app.entity.regex_entity import RegexEntity
 from app.graph.graph_entity import GraphEntity
@@ -43,18 +44,18 @@ class InstallerSystem:
         except Exception as e:
             logger(f"Documents indexing failed [[63]]: {e}")
 
-    def indexer_query(self, query) -> list[str]:
+    def indexer_query(self, query) -> List[Dict]:
         try:
             self.indexer.documents_retriever(query)
             return self.indexer.get_retrieval_documents()
         except Exception as e:
             logger(f"Indexer query failed [[64]]: {e}")
 
-    def prompt_processor(self, query: str, context: str, entities: List, triplets: List = None) -> str:
+    def prompt_processor(self, query: str, chunk: List, entities: List, triplets: List = None) -> str:
         self.prompt_object.set_config(self.config)
         self.prompt_object.set_entities(entities)
         self.prompt_object.set_triplet(triplets)
-        self.prompt_object.set_context(context)
+        self.prompt_object.set_context(chunk)
         self.prompt_object.set_query(query)
         self.prompt_object.make_final_prompt()
         return self.prompt_object.get_final_prompt()
@@ -63,7 +64,7 @@ class InstallerSystem:
         label_for_gliner = Utils.load_label_description()
 
         for ext in self.extractors:
-            if isinstance(ext, GlinerEntity):
+            if isinstance(ext, GlinerEntity) or isinstance(ext, GlinerTwoEntity):
                 ext.set_config(self.config)
                 ext.set_gliner_model()
                 ext.set_gliner_label(label_for_gliner)
@@ -99,7 +100,6 @@ class InstallerSystem:
         return self.triplet_graph.get_extracted_relation()
 
     def llm_model_processor(self, prompt: str) -> str:
-        self.llm_responder.set_config(self.config)
         return self.llm_responder.generate(prompt)
 
 class Builder:

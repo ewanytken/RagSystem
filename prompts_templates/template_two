@@ -1,4 +1,5 @@
-"""Extract all subject-predicate-object triplets from the given text. Follow the examples exactly.
+"""
+Extract all subject-predicate-object triplets from the given text. Follow the examples exactly.
 
 ## EXAMPLES:
 
@@ -6,32 +7,33 @@ Example 1:
 Text: "Apple Inc. was founded by Steve Jobs in Cupertino. The company manufactures iPhones."
 Output:
 [
-    {"subject": "Apple Inc.", "predicate": "founded_by", "object": "Steve Jobs"},
-    {"subject": "Apple Inc.", "predicate": "headquartered_in", "object": "Cupertino"},
-    {"subject": "Apple Inc.", "predicate": "manufactures", "object": "iPhone"}
+    {{"subject": "Apple Inc.", "predicate": "founded_by", "object": "Steve Jobs"}},
+    {{"subject": "Apple Inc.", "predicate": "headquartered_in", "object": "Cupertino"}},
+    {{"subject": "Apple Inc.", "predicate": "manufactures", "object": "iPhone"}}
 ]
 
 Example 2:
 Text: "Marie Curie discovered radium and polonium. She won two Nobel Prizes in physics and chemistry."
 Output:
 [
-    {"subject": "Marie Curie", "predicate": "discovered", "object": "radium"},
-    {"subject": "Marie Curie", "predicate": "discovered", "object": "polonium"},
-    {"subject": "Marie Curie", "predicate": "won", "object": "Nobel Prize in Physics"},
-    {"subject": "Marie Curie", "predicate": "won", "object": "Nobel Prize in Chemistry"}
+    {{"subject": "Marie Curie", "predicate": "discovered", "object": "radium"}},
+    {{"subject": "Marie Curie", "predicate": "discovered", "object": "polonium"}},
+    {{"subject": "Marie Curie", "predicate": "won", "object": "Nobel Prize in Physics"}},
+    {{"subject": "Marie Curie", "predicate": "won", "object": "Nobel Prize in Chemistry"}}
 ]
 
 Example 3:
 Text: "The Eiffel Tower is 330 meters tall and located in Paris, France. It was built in 1889."
 Output:
 [
-    {"subject": "Eiffel Tower", "predicate": "height", "object": "330 meters"},
-    {"subject": "Eiffel Tower", "predicate": "located_in", "object": "Paris"},
-    {"subject": "Eiffel Tower", "predicate": "located_in", "object": "France"},
-    {"subject": "Eiffel Tower", "predicate": "built_year", "object": "1889"}
+    {{"subject": "Eiffel Tower", "predicate": "height", "object": "330 meters"}},
+    {{"subject": "Eiffel Tower", "predicate": "located_in", "object": "Paris"}},
+    {{"subject": "Eiffel Tower", "predicate": "located_in", "object": "France"}},
+    {{"subject": "Eiffel Tower", "predicate": "built_year", "object": "1889"}}
 ]
 
 ## TEXT TO PROCESS:
-{text}
+{document}
 
-## OUTPUT (JSON array only):"""
+## OUTPUT (JSON array only):
+"""

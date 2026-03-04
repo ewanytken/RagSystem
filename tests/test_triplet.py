@@ -19,16 +19,17 @@ class TestRAGSystem(unittest.TestCase):
 
         self.word_handler.set_config(config)
         self.word_handler.handle_documents()
-        documents = self.word_handler.get_handled_documents()
-        logger(documents)
-        logger(len(documents))
+        chunk = self.word_handler.get_chunked_documents()[:2]
 
         self.triplet.set_config(config)
-        self.triplet.set_documents(documents)
+        self.triplet.set_documents(chunk)
         model = TransformerWrapper()
         self.triplet.set_llm_model(model)
         self.triplet.extract_triplets()
-        self.triplet.get_extracted_relation()
+        self.triplet.search_relation_by_subject("models")
+        logger(self.triplet.get_extracted_relation())
+        self.triplet.search_relation_from_graph("models",  "are included", "as elements in analysis and management systems")
+        logger(self.triplet.get_extracted_relation())
 
 if __name__ == '__main__':
     unittest.main()

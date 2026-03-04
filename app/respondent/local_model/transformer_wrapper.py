@@ -7,10 +7,8 @@ from transformers import (
 from app.respondent.local_model.abstract_local_model import AbstractLocalRespondent
 from app.utils import Utils
 
-
 class TransformerWrapper(AbstractLocalRespondent):
     def __init__(self, model_name: str = None, use_cpu_only: bool = False, **kwargs) -> None:
-
         self.config = Utils.get_config_file()
 
         if model_name is None and self.config is not None:
@@ -21,7 +19,6 @@ class TransformerWrapper(AbstractLocalRespondent):
         tokenizer = AutoTokenizer.from_pretrained(model_name, use_fast=True)
 
         super().__init__(model, tokenizer, use_cpu_only)
-
 
     def generate(self, prompt: str, **kwargs) -> str:
         template = {"role": "user", "content": prompt}

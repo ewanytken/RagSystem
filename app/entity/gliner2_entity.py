@@ -43,16 +43,19 @@ class GlinerTwoEntity(AbstractEntity):
         return self.gliner_entities
 
     def extractor_entity(self):
-        self.gliner_entities.clear()
-        if self.gliner is not None and not self.gliner_label and not self.document:
-            gliner_entities = self.gliner.extract_entities(self.document, self.gliner_label, threshold=self.config['gliner2']['threshold'])
+        try:
+            self.gliner_entities.clear()
+            if self.gliner is not None and not self.gliner_label and not self.document:
+                gliner_entities = self.gliner.extract_entities(self.document, self.gliner_label, threshold=self.config['gliner2']['threshold'])
 
-            for key, value in gliner_entities['entities'].items():
-                value_str = ', '.join(value)
-                self.gliner_entities.append({
-                    'entity': value_str,
-                    'label': key,
-                })
+                for key, value in gliner_entities['entities'].items():
+                    value_str = ', '.join(value)
+                    self.gliner_entities.append({
+                        'entity': value_str,
+                        'label': key,
+                    })
 
-        self.gliner_entities.sort(key=lambda x: x['label'], reverse=True)
-        logger(f"Entities extracted: {len(self.gliner_entities)} by GLiNER 2 model")
+            self.gliner_entities.sort(key=lambda x: x['label'], reverse=True)
+            logger(f"Entities extracted: {len(self.gliner_entities)} by GLiNER 2 model")
+        except Exception as e:
+            logger(f"GlinerTwo extract entities failed: {e}")

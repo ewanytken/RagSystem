@@ -36,12 +36,10 @@ class TripletExtractor:
                     prompt = extraction_template.format(document=document)
 
                     response_by_template = self.llm_model.generate(prompt)
-                    logger(f"Response by specify template: {response_by_template}")
-
                     triplets = self.parse_json_response(response_by_template)
                     extracted_relation = self.validate_triplets(triplets)
 
-                    logger(f"Clear substring from extracted relation: {extracted_relation}")
+                    logger(f"Extracted relation: {extracted_relation}")
 
                     if query is None:
                         self.set_relation_to_graph(extracted_relation, document)

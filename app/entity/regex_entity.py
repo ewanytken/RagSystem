@@ -67,3 +67,4 @@ class RegexEntity(AbstractEntity):
                     })
 
         logger(f"Entities extracted: {len(self.regex_entities)} by REGEX patterns")
+

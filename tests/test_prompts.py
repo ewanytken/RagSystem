@@ -1,7 +1,7 @@
 import unittest
 
+from app.documents_processor.word_handler import WordHandler
 from app.logger import LoggerWrapper
-from app.prompt.prompt_object import PromptObject, PromptObjectBuilder
 from app.utils import Utils
 
 logger = LoggerWrapper()
@@ -9,16 +9,19 @@ logger = LoggerWrapper()
 class TestRAGSystem(unittest.TestCase):
 
     def setUp(self):
-        self.builder = PromptObjectBuilder()
+        self.word_handler = WordHandler()
+        config = Utils.get_config_file()
+
+        self.word_handler.set_config(config)
+        self.word_handler.handle_documents()
 
     def test_document_processing(self):
+        temp = Utils.load_template("template_two")
+        chunk = self.word_handler.get_chunked_documents()
 
-        temp = Utils.load_template("extraction_template_eng")
-        # print(temp)
-        entities = [{'label': 111, 'entity': 222, 'score': 333}]
-        prompt_object = self.builder.set_query("SOME QUERY").set_context("SOME CONTEXT").set_entities(entities).set_path_to_template("prompt_template").build()
-        prompt_object.set_prompt()
-        logger(prompt_object.get_prompt())
+        prompt = temp.format(document=chunk)
+
+        print(prompt)
 
 
 

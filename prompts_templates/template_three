@@ -16,7 +16,7 @@ Temporal: founded_date, established, born_date, died_date
 5. Resolve pronouns to their antecedents
 
 ## TEXT:
-{document_text}
+{document}
 
 ## REQUIRED OUTPUT FORMAT:
 Return a JSON array where each element is:
