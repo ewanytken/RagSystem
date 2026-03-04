@@ -1,5 +1,5 @@
 import json
-from typing import Optional, Dict, List
+from typing import Optional, Dict, List, Any
 import re
 import networkx as nx
 
@@ -29,27 +29,27 @@ class TripletExtractor:
 
     def extract_triplets(self, query: str = None) -> None:
         if self.llm_model is not None and self.config is not None and self.documents is not None:
-            for document in self.documents:
-                extraction_template = Utils.load_template(self.config["graph"]["prompts"])
-                prompt = extraction_template.format(document=document)
+            try:
+                for document in self.documents:
+                    document = self.clean_text(document)
+                    extraction_template = Utils.load_template(self.config["graph"]["extractor_prompt"])
+                    prompt = extraction_template.format(document=document)
 
-                extracted_relation = self.llm_model.generate(prompt)
-                logger(f"Extracted relation: {extracted_relation}")
+                    response_by_template = self.llm_model.generate(prompt)
+                    logger(f"Response by specify template: {response_by_template}")
 
-                start_symbol = "["
-                end_symbol = "]"
-                start = extracted_relation.find(start_symbol)
-                end = extracted_relation.find(end_symbol, start + len(start_symbol))
+                    triplets = self.parse_json_response(response_by_template)
+                    extracted_relation = self.validate_triplets(triplets)
 
-                if start != -1 and end != -1:
-                    extracted_relation = extracted_relation[start+len(start_symbol)-1 : end-1]
+                    logger(f"Clear substring from extracted relation: {extracted_relation}")
 
-                logger(f"Clear substring from extracted relation: {extracted_relation}")
-
-                if query is None:
-                    self.set_relation_to_graph(json.loads(extracted_relation), document)
-                else:
-                    self.set_relation_from_query(json.loads(extracted_relation))
+                    if query is None:
+                        self.set_relation_to_graph(extracted_relation, document)
+                        self.set_relation_to_graph(self.create_inverse_relationships(extracted_relation), document)
+                    else:
+                        self.set_relation_from_query(extracted_relation)
+            except Exception as e:
+                logger(f"Triplet extraction Exception [[91]]: {e}")
 
     def set_relation_to_graph(self, extracted_relation: List, document: str) -> None:
         for relation in extracted_relation:
@@ -58,13 +58,16 @@ class TripletExtractor:
             pred = relation.get("predicate", "None predicate")
             self.graph.add_edge(subj, obj, label=pred, document=document)
 
-    def set_relation_from_query(self, extracted_relation: List):
+    def set_relation_from_query(self, extracted_relation: List) -> None:
         self.extracted_query = []
-        for relation in extracted_relation:
-            subj = relation.get("subject", "None subject")
-            obj = relation.get("object", "None object")
-            pred = relation.get("predicate", "None predicate")
-            self.extracted_query.append([subj, obj, pred])
+        try:
+            for relation in extracted_relation:
+                subj = relation.get("subject", "None subject")
+                obj = relation.get("object", "None object")
+                pred = relation.get("predicate", "None predicate")
+                self.extracted_query.append([subj, obj, pred])
+        except Exception as e:
+            logger(f"Cannot set extracted triplet from query [[94]]: {e}")
 
     def search_relation_from_graph(self,
                       subject_pattern: Optional[str] = None,
@@ -87,15 +90,17 @@ class TripletExtractor:
                     'subject': u,
                     'predicate': pred,
                     'object': v,
-                    'document': data.get('document', {})
+                    'document': data.get('document', "No document")
                 })
 
             if self.config["graph"]["limit"]:
                 self.extracted_relation = self.extracted_relation[:self.config["graph"]["limit"]]
             else:
-                self.extracted_relation = self.extracted_relation[:5]
+                self.extracted_relation = self.extracted_relation[:15]
         except Exception as e:
-            logger(f"Search triple Error 90: {e}")
+            logger(f"Search triple Error [[90]]: {e}")
+        logger(f"Extracted {len(self.extracted_relation)} triplets:")
+
 
     def search_relation_by_subject(self, subject: str) -> None:
         self.extracted_relation = []
@@ -105,8 +110,84 @@ class TripletExtractor:
                     'subject': u,
                     'predicate': data.get('label', ''),
                     'object': v,
-                    'document': data.get('document', {})
+                    'document': data.get('document', "No document")
                 })
+        logger(f"Extracted {len(self.extracted_relation)} triplets:")
+
+    def clean_text(self, text: str) -> str:
+        # Remove extra whitespace
+        text = re.sub(r'\s+', ' ', text)
+        # Remove special characters but keep punctuation
+        text = re.sub(r'[^\w\s\\.\\,\\;\\:\\(\\)-]', '', text)
+        return text.strip()
+
+    def parse_json_response(self, content: str) -> List[Dict]:
+        json_match = re.search(r'\\[.*\\]', content, re.DOTALL)
+        if json_match:
+            content = json_match.group()
+        try:
+            triplets = json.loads(content)
+            if isinstance(triplets, dict) and 'triplets' in triplets:
+                triplets = triplets['triplets']
+            return triplets if isinstance(triplets, list) else []
+        except json.JSONDecodeError:
+            content = content.replace("'", '"')
+            content = re.sub(r',\s*}', '}', content)
+            content = re.sub(r',\s*]', ']', content)
+            try:
+                return json.loads(content)
+            except Exception as e:
+                logger(f"Parse to json Exception [[93]]: {e}")
+            finally:
+                return []
+
+
+    def validate_triplets(self, triplets: List[Any]) -> List[Dict[str, str]]:
+        validated = []
+
+        try:
+            for t in triplets:
+                if not isinstance(t, dict):
+                    continue
+
+                # Ensure all required keys exist
+                triplet = {
+                    "subject": str(t.get("subject", "")).strip(),
+                    "predicate": str(t.get("predicate", "")).strip().lower().replace(" ", "_"),
+                    "object": str(t.get("object", "")).strip()
+                }
+
+                # Validate content
+                if all([triplet["subject"], triplet["predicate"], triplet["object"]]):
+                    # Clean predicate
+                    triplet["predicate"] = self.normalize_predicate(triplet["predicate"])
+                    validated.append(triplet)
+        except Exception as e:
+            logger(f"Validate triplets Error [[92]]: {e}")
+
+        return validated
+
+    def normalize_predicate(self, predicate: str) -> str:
+        # Convert to lowercase and replace spaces
+        predicate = predicate.lower().strip()
+        predicate = re.sub(r'\s+', '_', predicate)
+        # Common predicate mappings
+        # mappings = {
+        #     "is_located_in": "located_in",
+        #     "is_a": "is_type_of",
+        # }
+        # return mappings.get(predicate, predicate)
+        return predicate
+
+    def create_inverse_relationships(self, triplets: List[Dict]) -> List[Dict]:
+        reverse_triplet = []
+        for t in triplets:
+            reverse_triplet.append({
+                'subject': t['object'],
+                'predicate': t['predicate'],
+                'object': t['subject']
+            })
+        return reverse_triplet
 
     def set_documents(self, documents: List[str]) -> None:
         self.documents = documents

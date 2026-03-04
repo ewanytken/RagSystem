@@ -48,6 +48,7 @@ class EntityExtractor:
                 self.triplet.set_documents(self.documents)
                 self.triplet.extract_triplets()
 
+    # maybe its don't need
     def query_extractor(self, query: str) -> None:
         logger(f"Query extracting...")
         for extractor in self.extractors:

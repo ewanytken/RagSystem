@@ -27,7 +27,7 @@ class TestRAGSystem(unittest.TestCase):
         extractor.set_extractors([gliner, regex])
         extractor.set_graph(graph=graph)
 
-        dic = Utils.load_dictionary()
+        dic = Utils.load_label_description()
         dic.values()
 
         self.word_handler.set_config(config)

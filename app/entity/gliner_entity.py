@@ -32,31 +32,32 @@ class GlinerEntity(AbstractEntity):
             )
             logger(f"Loaded {model_ticker} Model")
         except Exception as e:
-            logger(f"GLiNER model install ERROR 80: {e}")
+            logger(f"GLiNER model install ERROR [[80]]: {e}")
             raise
 
-    def set_gliner_label(self, gliner_label: List[str]):
+    def extractor_entity(self) -> None:
+        try:
+            self.gliner_entities.clear()
+            if self.gliner is not None and not self.gliner_label and not self.document:
+                gliner_entities = self.gliner.predict_entities(self.document, self.gliner_label, threshold=self.config['gliner']['threshold'])
+
+                for entity in gliner_entities:
+                    self.gliner_entities.append({
+                        'entity': entity['text'],
+                        'label': entity['label'],
+                    })
+
+            self.gliner_entities.sort(key=lambda x: x['label'], reverse=True)
+            logger(f"Entities extracted: {len(self.gliner_entities)} by GLiNER model")
+        except Exception as e:
+            logger(f"Gliner extract entities failed: {e}")
+
+    def set_gliner_label(self, gliner_label: Dict[str: str]) -> None:
         self.gliner_label = gliner_label
 
-    def set_text_extraction(self, document: str):
+    def set_text_extraction(self, document: str) -> None:
         self.document = ""
         self.document = document
 
     def get_extract_entities(self) -> List[Dict]:
         return self.gliner_entities
-
-    def extractor_entity(self):
-        self.gliner_entities.clear()
-        if self.gliner is not None and not self.gliner_label and not self.document:
-            gliner_entities = self.gliner.predict_entities(self.document, self.gliner_label, threshold=self.config['gliner']['threshold'])
-
-            for entity in gliner_entities:
-                self.gliner_entities.append({
-                    'text': entity['text'],
-                    'label': entity['label'],
-                    'score': entity['score'],
-                    'method': 'gliner'
-                })
-
-        self.gliner_entities.sort(key=lambda x: x['score'], reverse=True)
-        logger(f"Entities extracted: {len(self.gliner_entities)} by GLiNER model")

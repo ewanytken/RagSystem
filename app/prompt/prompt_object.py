@@ -18,7 +18,7 @@ class PromptObject:
         self.context: Optional[str] = "Context don't specify"
         self.entities: Optional[List] = []
         self.template: Optional[str] = "Empty template"
-        self.triplet: Optional[List] = []
+        self.triplets: Optional[List] = []
 
         self.final_prompt: Optional[str] = "Empty prompt"
 
@@ -30,8 +30,9 @@ class PromptObject:
             for i, entity in enumerate(self.entities):
                 entities_context += f"{i}. {entity['label']}: {entity['entity']} (relation: {entity['score']:.2f})\n"
 
-        if self.triplet is not None:
-            logger(f"TRIPLET. How to look: {self.triplet}")
+        if self.triplets is not None:
+            for i, triplet in enumerate(self.triplets, 1):
+                logger(f"{i:2}. {triplet['subject']} --[{triplet['predicate']}]--> {triplet['object']}")
 
         self.template = Utils.load_template(self.config["templates"]["prompt_template"])
 
@@ -52,7 +53,7 @@ class PromptObject:
         self.context = context
 
     def set_triplet(self, triplet: List):
-        self.triplet = triplet
+        self.triplets = triplet
 
     def set_entities(self, entities: List):
         self.entities = entities

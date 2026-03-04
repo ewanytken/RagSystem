@@ -1,0 +1,25 @@
+"""Extract factual triplets from the text following the specified schema patterns.
+
+## PREDICATE SCHEMA:
+Location relationships: located_in, headquartered_in, born_in, died_in
+Employment/Organization: works_for, founded_by, ceo_of, employs
+Attributes: has_age, has_height, has_population, has_capital
+Creation/Discovery: created, invented, discovered, wrote
+Composition: contains, consists_of, has_part
+Temporal: founded_date, established, born_date, died_date
+
+## EXTRACTION RULES:
+1. Identify main entities (people, organizations, locations, concepts)
+2. Find relationships between entities
+3. Convert to normalized predicate forms
+4. Handle compound objects by splitting into multiple triplets
+5. Resolve pronouns to their antecedents
+
+## TEXT:
+{document_text}
+
+## REQUIRED OUTPUT FORMAT:
+Return a JSON array where each element is:
+{{"subject": "string", "predicate": "string", "object": "string"}}
+
+Extracted triplets:"""

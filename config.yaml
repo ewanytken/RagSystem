@@ -18,8 +18,12 @@ gliner:
   threshold: 0.1
   local_only: False
 
+gliner2:
+  ticket: "fastino/gliner2-base-v1"
+  threshold: 0.3
+
 graph:
-  prompts: "extraction_template_eng"
+  extractor_prompt: "template_two"
   limit: 10
 
 rag:

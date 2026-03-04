@@ -43,7 +43,7 @@ class PromptProcessor:
 class ExtractorProcessor:
     def __init__(self, documents: List[str], find_entity_from_graph: str) -> None:
         config = Utils.get_config_file()
-        label_for_gliner = list(set(Utils.load_dictionary().values()))
+        label_for_gliner = list(set(Utils.load_label_description().values()))
 
         self.regex = RegexEntity()
 

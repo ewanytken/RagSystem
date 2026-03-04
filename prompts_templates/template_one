@@ -1,0 +1,28 @@
+"""
+You are an expert in information extraction. Your task is to extract all factual relationships from the given text as subject-predicate-object triplets.
+
+## RULES:
+1. Extract ONLY explicit facts stated in the text
+2. Each triplet must have: subject, predicate, object
+3. Keep entities concise (2-5 words maximum)
+4. Use standardized predicate forms (e.g., "works_at" not "is working at")
+5. Include coreferent resolution (replace pronouns with actual entities)
+6. Output ONLY valid JSON array of triplets
+
+## PREDICATE GUIDELINES:
+- Use present tense: "works_for", "located_in", "founded_by"
+- Keep predicates simple and consistent
+- Avoid articles (a, an, the) in predicates
+- Use underscores for multi-word predicates
+
+## TEXT TO ANALYZE:
+{text}
+
+## OUTPUT FORMAT (JSON):
+[
+    {"subject": "entity1", "predicate": "relationship", "object": "entity2"},
+    {"subject": "entity2", "predicate": "attribute", "object": "value"}
+]
+
+Extract all triplets from the text and return them as a JSON array:
+"""

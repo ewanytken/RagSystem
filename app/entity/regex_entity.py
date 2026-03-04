@@ -62,10 +62,8 @@ class RegexEntity(AbstractEntity):
                         text = re.sub(r'\d+\s*', '', text.strip())
 
                     self.regex_entities.append({
-                        'text': text,
-                        'label': label,
-                        'score': 0.9,
-                        'method': 'regex'
+                        'entity': text,
+                        'label': label
                     })
 
         logger(f"Entities extracted: {len(self.regex_entities)} by REGEX patterns")

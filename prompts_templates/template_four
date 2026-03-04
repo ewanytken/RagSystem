@@ -1,0 +1,25 @@
+"""Extract subject-predicate-object triplets by following these steps:
+
+STEP 1: Identify all entities (people, places, organizations, concepts)
+STEP 2: For each entity, find related facts
+STEP 3: Convert each fact into a triplet
+STEP 4: Normalize the predicate
+STEP 5: Ensure object is complete but concise
+
+Let's work through this step by step.
+
+TEXT: {text}
+
+Step 1 - Entities found:
+[Think about all entities mentioned]
+
+Step 2 - Facts identified:
+[List all facts about each entity]
+
+Step 3-5 - Normalized triplets:
+[Convert facts to normalized triplets]
+
+FINAL JSON OUTPUT:
+[{"subject": "", "predicate": "", "object": ""}]
+
+Return only the JSON array:"""

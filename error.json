@@ -49,10 +49,30 @@
     },
     {
         "Error 80": "GLiNER model install ERROR",
-        "Description": "Gliner from HuggingFace don't load"
+        "Description": "Gliner from HuggingFace don't load. Check ticket"
+    },
+    {
+        "Error 81": "GLiNER 2 model install ERROR",
+        "Description": "Gliner 2 from HuggingFace don't load or other module's issues. Check ticket"
     },
     {
         "Error 90": "Search triple Error",
-        "Description": "Cannot find triple in graph. By default nx.MultiDiGraph"
+        "Description": "Cannot find triple in graph. By default nx.MultiDiGraph: def search_relation_from_graph"
+    },
+    {
+        "Error 91": "Triplet extraction Exception",
+        "Description": "Model cannot extract Triplets from documents: def validate_triplets"
+    },
+    {
+        "Error 92": "Validate triplets Error",
+        "Description": "Output triplet after preprocessing cannot validate available functions"
+    },
+    {
+        "Error 93": "Parse to json Exception",
+        "Description": "Can be exist many issues"
+    },
+    {
+        "Error 94": "Cannot set extracted triplet from query",
+        "Description": ""
     }
 ]

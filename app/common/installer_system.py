@@ -60,7 +60,7 @@ class InstallerSystem:
         return self.prompt_object.get_final_prompt()
 
     def extractor_processor(self, documents: List[str]) -> set:
-        label_for_gliner = list(set(Utils.load_dictionary().values()))
+        label_for_gliner = Utils.load_label_description()
 
         for ext in self.extractors:
             if isinstance(ext, GlinerEntity):

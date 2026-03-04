@@ -15,7 +15,7 @@ class TestRAGSystem(unittest.TestCase):
 
     def test_document_processing(self):
         config = Utils.get_config_file()
-        dic = Utils.load_dictionary()
+        dic = Utils.load_label_description()
         gliner_label = dic.keys()
         logger(list(set(gliner_label)))
 
