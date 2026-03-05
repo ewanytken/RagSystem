@@ -27,7 +27,7 @@ graph:
   limit: 10
 
 rag:
-  chunk_size: 1000
+  chunk_size: 2000
   chunk_overlap: 150
   retrieval_limit: 5
   temperature: 0.5

@@ -5,8 +5,6 @@ modules
 modules/utilizer.py
 .idea
 .venv
-dictionary
-dictionary/dictionary.json
 logs/app.log
 logs
 __pycache__/**

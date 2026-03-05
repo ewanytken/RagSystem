@@ -38,7 +38,7 @@ class GlinerEntity(AbstractEntity):
     def extractor_entity(self) -> None:
         try:
             self.gliner_entities.clear()
-            if self.gliner is not None and not self.gliner_label and not self.document:
+            if self.gliner and self.gliner_label and self.document:
                 gliner_entities = self.gliner.predict_entities(self.document, self.gliner_label, threshold=self.config['gliner']['threshold'])
 
                 for entity in gliner_entities:
@@ -52,7 +52,7 @@ class GlinerEntity(AbstractEntity):
         except Exception as e:
             logger(f"Gliner extract entities failed: {e}")
 
-    def set_gliner_label(self, gliner_label: Dict[str: str]) -> None:
+    def set_gliner_label(self, gliner_label: Dict) -> None:
         self.gliner_label = gliner_label
 
     def set_text_extraction(self, document: str) -> None:

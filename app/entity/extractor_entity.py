@@ -31,18 +31,20 @@ class EntityExtractor:
         logger(f"Number of Entity Extractor downloaded: {len(self.extractors)} ")
 
     def entities_and_graphs_extractor(self) -> None:
-        if not self.documents and not self.extractors:
+        if self.documents and self.extractors:
             logger(f"Document's Entities extracting...")
             for i, document in enumerate(self.documents):
                 for extractor in self.extractors:
                     extractor.set_text_extraction(document)
                     extractor.extractor_entity()
-                    self.entities.add(*extractor.get_extract_entities())
+                    self.entities.update(*extractor.get_extract_entities())
 
                     if self.graph is not None:
                         self.graph.set_entities(extractor.get_extract_entities())
                         self.graph.add_to_knowledge_graph(document)
-                        logger(f"Graph-entity status: {self.graph.get_knowledge_graph_stats()}")
+
+            if self.graph is not None:
+                logger(f"Graph-entity status: {self.graph.get_knowledge_graph_stats()}")
 
             if self.triplet is not None:
                 self.triplet.set_documents(self.documents)

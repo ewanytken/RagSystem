@@ -28,7 +28,7 @@ class TestRAGSystem(unittest.TestCase):
         self.gliner.set_config(config)
         self.gliner.set_gliner_model()
         self.gliner.set_text_extraction(documents[0])
-        self.gliner.set_gliner_label(list(set(gliner_label)))
+        self.gliner.set_gliner_label(dic)
         self.gliner.extractor_entity()
         logger(self.gliner.get_extract_entities())
 

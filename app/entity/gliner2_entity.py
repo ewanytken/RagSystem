@@ -16,7 +16,7 @@ class GlinerTwoEntity(AbstractEntity):
     def __init__(self):
 
         self.gliner: Optional[T] = None
-        self.gliner_label: Optional[List[str]] = []
+        self.gliner_label: Optional[List[Dict]] = []
         self.document: Optional[str] = ""
         self.gliner_entities: Optional[List[Dict]] = []
 
@@ -32,7 +32,7 @@ class GlinerTwoEntity(AbstractEntity):
             logger(f"GLiNER model install ERROR [[81]]: {e}")
             raise
 
-    def set_gliner_label(self, gliner_label: Dict[str: str]):
+    def set_gliner_label(self, gliner_label: Dict):
         self.gliner_label = gliner_label
 
     def set_text_extraction(self, document: str):
@@ -45,7 +45,7 @@ class GlinerTwoEntity(AbstractEntity):
     def extractor_entity(self):
         try:
             self.gliner_entities.clear()
-            if self.gliner is not None and not self.gliner_label and not self.document:
+            if self.gliner and self.gliner_label and self.document:
                 gliner_entities = self.gliner.extract_entities(self.document, self.gliner_label, threshold=self.config['gliner2']['threshold'])
 
                 for key, value in gliner_entities['entities'].items():

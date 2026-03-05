@@ -22,12 +22,12 @@ class GraphEntity:
             self.knowledge_graph.add_node(doc_node, type='document', text=document)
 
             for entity in self.entities:
-                entity_node = f"ent_{hash(entity['text']) % 1000000}"
+                entity_node = f"ent_{hash(entity['entity']) % 1000000}"
 
                 self.knowledge_graph.add_node(
                     entity_node,
                     type='entity',
-                    text=entity['text'], # field "text" from gliner extraction
+                    text=entity['entity'], # field "text" from gliner extraction
                     label=entity['label'],
                 )
                 self.knowledge_graph.add_edge(
@@ -52,7 +52,7 @@ class GraphEntity:
 
                         if node_data.get('type') == 'entity':
                             related.append({
-                                'entity': node_data['text'],
+                                'entity': node_data['entity'],
                                 'label': node_data['label'],
                             })
             except Exception as e:

@@ -1,12 +1,8 @@
 import unittest
 
 from app.documents_processor.word_handler import WordHandler
-from app.entity.extractor_entity import EntityExtractor
-from app.entity.gliner_entity import GlinerEntity
 from app.entity.regex_entity import RegexEntity
-from app.graph.graph_entity import GraphEntity
 from app.logger import LoggerWrapper
-from app.prompt.prompt_object import PromptObject, PromptObjectBuilder
 from app.utils import Utils
 
 logger = LoggerWrapper()

@@ -18,15 +18,10 @@ class TestRAGSystem(unittest.TestCase):
 
         self.word_handler.set_config(config)
         self.word_handler.handle_documents()
-        documents = self.word_handler.get_handled_documents()
         chunk = self.word_handler.get_chunked_documents()
-
-        logger(documents)
-        logger(len(documents))
 
         self.embedding.set_config(config)
         self.embedding.set_embedding_model()
-        # self.embedding.documents_indexing(documents)
         self.embedding.documents_indexing(chunk)
         self.embedding.documents_retriever("attack response rate")
         logger(self.embedding.get_retrieval_documents())

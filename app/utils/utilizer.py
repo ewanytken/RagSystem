@@ -29,7 +29,7 @@ class Utils:
             file.close()
 
     @staticmethod
-    def load_label_description(dictionary_path: str = "label_description") -> Dict[str, str]:
+    def load_label_description(dictionary_path: str = "label_description.jsonl") -> Dict[str, str]:
 
         abbreviations_dictionary = {}
         json_path = Path(__file__).parent.parent.parent/ "dictionary" / dictionary_path

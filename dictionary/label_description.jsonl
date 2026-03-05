@@ -1,0 +1,26 @@
+[
+    {
+        "entity" : "model_architecture",
+        "description" : "Neural network architectures like transformer, BERT, GPT, LLaMA, or specific model designs, CNN - convolutional neural network"
+    },
+    {
+        "entity": "parameter",
+        "description": "Model parameters, hyperparameters, configuration values like learning rate, batch size, hidden dimensions"
+    },
+    {
+        "entity": "dataset",
+        "description": "Training, validation, or test datasets mentioned by name (e.g., ImageNet, C4, The Pile)"
+    },
+    {
+        "entity": "metric",
+        "description": "Performance metrics and evaluation measures (accuracy, F1, perplexity, BLEU score), ASR - attack success rate, ROC - Receiver Operating Characteristic"
+    },
+    {
+        "entity": "technique",
+        "description": "ML methods, training techniques, or approaches (fine-tuning, RLHF, attention mechanism), CAM - class activated mapping"
+    },
+    {
+        "entity": "framework",
+        "description": "ML libraries, frameworks, or tools (PyTorch, TensorFlow, Hugging Face Transformers)"
+    }
+]

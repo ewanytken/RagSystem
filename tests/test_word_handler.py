@@ -20,8 +20,7 @@ class TestRAGSystem(unittest.TestCase):
         logger(config)
         logger(dic)
         logger(config['paths']['documents_dir'])
-        # os.makedirs(config['paths']['documents_dir'], exist_ok=True)
-        # print("OK")
+
         self.word_handler.set_config(config)
 
         self.word_handler.handle_documents()
