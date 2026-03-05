@@ -47,7 +47,20 @@ class GlinerTwoEntity(AbstractEntity):
             self.gliner_entities.clear()
             if self.gliner and self.gliner_label and self.document:
                 gliner_entities = self.gliner.extract_entities(self.document, self.gliner_label, threshold=self.config['gliner2']['threshold'])
-
+                # include_confidence = True,
+                # gliner_entities = []
+                #
+                # for key, value in entities['entities'].items():
+                #     for val in value:
+                #         gliner_entities.append({
+                #             'label': key,
+                #             'entity': val['text'],
+                #             'score': val['confidence'],
+                #         })
+                # # gliner_entities.sort(key=lambda x: x['label'], reverse=True)
+                #
+                # print(f"Entities extracted: {len(gliner_entities)} by GLiNER model")
+                # gliner_entities
                 for key, value in gliner_entities['entities'].items():
                     value_str = ', '.join(value)
                     self.gliner_entities.append({

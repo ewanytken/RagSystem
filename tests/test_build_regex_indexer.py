@@ -36,7 +36,7 @@ class Test(unittest.TestCase):
 
         query = "What's ASR?"
         retrieved_doc = self.installer_system.indexer_query(query)
-        final_prompt = self.installer_system.prompt_processor(query=query, context=retrieved_doc, entities=entities)
+        final_prompt = self.installer_system.prompt_processor(query=query, chunks=retrieved_doc, entities=entities)
         logger(self.installer_system.llm_model_processor(final_prompt))
 
 if __name__ == '__main__':

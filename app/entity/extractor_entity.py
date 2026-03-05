@@ -67,8 +67,11 @@ class EntityExtractor:
     def set_triple_graph(self, triplet: TripletExtractor) -> None:
         self.triplet = triplet
 
+    def set_extractors(self, extractors: List[AbstractEntity]) -> None:
+        self.extractors = extractors
+
     def get_entities(self) -> Set:
         return self.entities
 
-    def set_extractors(self, extractors: List[AbstractEntity]) -> None:
-        self.extractors = extractors
+    def get_query_entities(self) -> Set:
+        return self.query_entities

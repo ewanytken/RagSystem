@@ -1,6 +1,5 @@
 import unittest
 
-import torch
 from app.logger import LoggerWrapper
 from app.respondent.local_model.transformer_wrapper import TransformerWrapper
 

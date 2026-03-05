@@ -49,8 +49,12 @@ class WordHandler(DocumentHandler):
     def get_handled_documents(self) -> List[str]:
         return self.handled_documents
 
-    def text_chunking(self, document: str, chunk_size: int = 1000, overlap: int = 150) -> List[str]:
-        chunks:Optional[List] = []
+    def text_chunking(self, document: str) -> List[str]:
+
+        chunk_size = self.config['rag']['chunk_size']
+        overlap = self.config['rag']['chunk_overlap']
+
+        chunks: Optional[List] = []
 
         sentences = document.split('. ')
         current_chunk = ""

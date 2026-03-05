@@ -78,7 +78,7 @@ class PromptAssembler:
 
         if entities is not None:
             for i, entity in enumerate(entities, 1):
-                formatted += f"{i}. Entity: {entity['entity']} is label: {entity['label']} \n"
+                formatted += f"{i}. Entity -- {entity['entity']} is label -- {entity['label']} \n"
 
         formatted += "\nUse these classifications to understand the domain context of entities mentioned."
         return formatted

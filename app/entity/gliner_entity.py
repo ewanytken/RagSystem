@@ -45,6 +45,7 @@ class GlinerEntity(AbstractEntity):
                     self.gliner_entities.append({
                         'entity': entity['text'],
                         'label': entity['label'],
+                        'score': entity['score'],
                     })
 
             self.gliner_entities.sort(key=lambda x: x['label'], reverse=True)

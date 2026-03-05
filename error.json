@@ -69,10 +69,18 @@
     },
     {
         "Error 93": "Parse to json Exception",
-        "Description": "Can be exist many issues"
+        "Description": "LLM return not fitting format or some method don't work correctly"
     },
     {
         "Error 94": "Cannot set extracted triplet from query",
-        "Description": ""
+        "Description": "Key from dictionary maybe don't fit"
+    },
+    {
+        "Error 100": "Failed to add entity to knowledge graph",
+        "Description": "Can be not fit dictionary key [entity or text]"
+    },
+    {
+        "Error 101": "Find related entities error ",
+        "Description": "Can be not fit dictionary key [entity or text] or issue with hash"
     }
 ]

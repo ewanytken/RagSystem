@@ -24,7 +24,8 @@ class TestRAGSystem(unittest.TestCase):
         self.embedding.set_embedding_model()
         self.embedding.documents_indexing(chunk)
         self.embedding.documents_retriever("attack response rate")
-        logger(self.embedding.get_retrieval_documents())
+        self.embedding.get_retrieval_documents()
+        logger(self.embedding.get_retrieved_text_only())
 
 if __name__ == '__main__':
     unittest.main()

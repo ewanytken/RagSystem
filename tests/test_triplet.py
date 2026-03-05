@@ -28,7 +28,8 @@ class TestRAGSystem(unittest.TestCase):
         self.triplet.extract_triplets()
         self.triplet.search_relation_by_subject("models")
         logger(self.triplet.get_extracted_relation())
-        self.triplet.search_relation_from_graph("models",  "are included", "as elements in analysis and management systems")
+
+        self.triplet.search_relation_from_graph("models",  "included", "management")
         logger(self.triplet.get_extracted_relation())
 
 if __name__ == '__main__':

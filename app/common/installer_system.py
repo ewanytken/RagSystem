@@ -1,16 +1,15 @@
-from typing import List, Optional, Dict, Any
+from typing import List, Optional, Dict, Any, Tuple
 
 from app.documents_processor.abstract_document_handler import DocumentHandler
 from app.entity.abstract_entity import AbstractEntity
 from app.entity.extractor_entity import EntityExtractor
 from app.entity.gliner2_entity import GlinerTwoEntity
 from app.entity.gliner_entity import GlinerEntity
-from app.entity.regex_entity import RegexEntity
 from app.graph.graph_entity import GraphEntity
 from app.graph.triplet_extractor import TripletExtractor
 from app.indexer.indexer_object import Indexer
 from app.logger import LoggerWrapper
-from app.prompt.prompt_object import PromptObject
+from app.prompt.abstract_prompt import AbstractPrompt
 from app.respondent.abstract_respondent import Respondent
 from app.utils import Utils
 
@@ -22,7 +21,7 @@ class InstallerSystem:
 
         self.extractors: Optional[List[AbstractEntity]] = []
         self.word_handler: Optional[DocumentHandler] = None
-        self.prompt_object: Optional[Any] = None
+        self.prompt_object: Optional[AbstractPrompt] = None
         self.indexer: Optional[Indexer] = None
         self.graph_entity: Optional[GraphEntity] = None
         self.llm_responder: Optional[Respondent] = None
@@ -44,10 +43,10 @@ class InstallerSystem:
         except Exception as e:
             logger(f"Documents indexing failed [[63]]: {e}")
 
-    def indexer_query(self, query) -> List[Dict]:
+    def indexer_query(self, query) -> tuple[list[dict], list[str]]:
         try:
             self.indexer.documents_retriever(query)
-            return self.indexer.get_retrieval_documents()
+            return self.indexer.get_retrieval_documents(), self.indexer.get_retrieved_text_only()
         except Exception as e:
             logger(f"Indexer query failed [[64]]: {e}")
 
@@ -131,7 +130,7 @@ class Builder:
         self.installer.word_handler = word_handler
         return self
 
-    def set_prompt_object(self, prompt_object: Any):
+    def set_prompt_object(self, prompt_object: AbstractPrompt):
         self.installer.prompt_object = prompt_object
         return self
 
