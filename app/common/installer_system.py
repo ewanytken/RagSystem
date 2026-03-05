@@ -1,4 +1,4 @@
-from typing import List, Optional, Dict
+from typing import List, Optional, Dict, Any
 
 from app.documents_processor.abstract_document_handler import DocumentHandler
 from app.entity.abstract_entity import AbstractEntity
@@ -22,7 +22,7 @@ class InstallerSystem:
 
         self.extractors: Optional[List[AbstractEntity]] = []
         self.word_handler: Optional[DocumentHandler] = None
-        self.prompt_object: Optional[PromptObject] = None
+        self.prompt_object: Optional[Any] = None
         self.indexer: Optional[Indexer] = None
         self.graph_entity: Optional[GraphEntity] = None
         self.llm_responder: Optional[Respondent] = None
@@ -51,11 +51,11 @@ class InstallerSystem:
         except Exception as e:
             logger(f"Indexer query failed [[64]]: {e}")
 
-    def prompt_processor(self, query: str, chunk: List, entities: List, triplets: List = None) -> str:
+    def prompt_processor(self, query: str, chunks: List, entities: List, triplets: List = None) -> str:
         self.prompt_object.set_config(self.config)
         self.prompt_object.set_entities(entities)
         self.prompt_object.set_triplet(triplets)
-        self.prompt_object.set_context(chunk)
+        self.prompt_object.set_chunks(chunks)
         self.prompt_object.set_query(query)
         self.prompt_object.make_final_prompt()
         return self.prompt_object.get_final_prompt()
@@ -82,8 +82,8 @@ class InstallerSystem:
 
         return self.extractor.get_entities()
 
-    def find_entities_from_graph(self, query: str) -> list[dict]:
-        return self.graph_entity.find_related_entities(query)
+    def find_entities_from_graph(self, indexer_doc: str) -> list[dict]:
+        return self.graph_entity.find_related_entities(indexer_doc)
 
     def find_triplets(self, query: str) -> list[dict]:
         self.triplet_graph.extract_triplets(query)
@@ -131,7 +131,7 @@ class Builder:
         self.installer.word_handler = word_handler
         return self
 
-    def set_prompt_object(self, prompt_object: PromptObject):
+    def set_prompt_object(self, prompt_object: Any):
         self.installer.prompt_object = prompt_object
         return self
 

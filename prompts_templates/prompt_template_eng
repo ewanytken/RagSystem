@@ -1,12 +1,17 @@
 """You are an intelligent assistant with access to graphical knowledge.
 We answer questions based on the provided documents and entity entities.
 
-Document context:
+Documents with main information:
 {context}
 
+Entities:
 {entities_context}
 
-Question: {query}
+Question:
+{query}
+
+Triplets:
+{triplets}
 
 Instructions:
 1. Use information only from the provided context.

@@ -39,7 +39,7 @@ class Utils:
             with open(json_path, 'r', encoding='utf-8') as file:
                 data = json.load(file)
                 for item in data:
-                    abbreviations_dictionary[item["transcript"]] = item["entity"]
+                    abbreviations_dictionary[item["entity"]] = item["description"]
 
         except FileNotFoundError as e:
             logger(f"Dictionary file not found: [[42]] by path {json_path}. Stack trace: {e}")

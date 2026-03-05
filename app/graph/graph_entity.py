@@ -1,4 +1,4 @@
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Union
 import networkx as nx
 
 from app.logger import LoggerWrapper
@@ -19,7 +19,7 @@ class GraphEntity:
     def add_to_knowledge_graph(self, document: str) -> None:
         try:
             doc_node = f"doc_{hash(document) % 1000000}"
-            self.knowledge_graph.add_node(doc_node, type='document', text=document[:100])
+            self.knowledge_graph.add_node(doc_node, type='document', text=document)
 
             for entity in self.entities:
                 entity_node = f"ent_{hash(entity['text']) % 1000000}"
@@ -38,23 +38,26 @@ class GraphEntity:
         except Exception as e:
             logger(f"Failed to add entity to knowledge graph [[100]]: {e}")
 
-    def find_related_entities(self, entity_text: str, limit: int = 150) -> List[Dict]:
+    def find_related_entities(self, documents: Union[str, List], limit: int = 150) -> List[Dict]:
         related = []
-        entity_hash = f"ent_{hash(entity_text) % 1000000}"
-        try:
-            if entity_hash in self.knowledge_graph:
-                neighbors = list(self.knowledge_graph.neighbors(entity_hash))
+        if isinstance(documents, str): documents = [documents]
+        for doc in documents:
+            doc_node = f"ent_{hash(doc) % 1000000}"
+            try:
+                if doc_node in self.knowledge_graph:
+                    neighbors = list(self.knowledge_graph.neighbors(doc_node))
 
-                for neighbor in neighbors[:limit]:
-                    node_data = self.knowledge_graph.nodes[neighbor]
+                    for neighbor in neighbors[:limit]:
+                        node_data = self.knowledge_graph.nodes[neighbor]
 
-                    if node_data.get('type') == 'entity':
-                        related.append({
-                            'entity': node_data['text'],
-                            'label': node_data['label'],
-                        })
-        except Exception as e:
-            logger(f"Find related entities error [[101]]: {e}")
+                        if node_data.get('type') == 'entity':
+                            related.append({
+                                'entity': node_data['text'],
+                                'label': node_data['label'],
+                            })
+            except Exception as e:
+                logger(f"Find related entities error [[101]]: {e}")
+
         return related
 
     def get_knowledge_graph_stats(self) -> Dict:

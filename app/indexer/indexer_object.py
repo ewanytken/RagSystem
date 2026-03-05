@@ -31,15 +31,14 @@ class Indexer:
             logger(f"Embedding model install ERROR 60: {e}")
             raise
 
-    def documents_indexing(self, handled_documents: List[str]):
+    def documents_indexing(self, handled_documents: List[str]) -> None:
         try:
             self.embeddings.index([(i, text, None) for i, text in enumerate(handled_documents)])
             logger(f"Indexing text's block from documents (List[str]): {len(handled_documents)}")
-
         except Exception as e:
             logger(f"Documents Indexing Error 61: {e}")
 
-    def documents_retriever(self, user_query: str):
+    def documents_retriever(self, user_query: str) -> None:
         limit = self.config['rag']['retrieval_limit']
         try:
             results = self.embeddings.search(user_query, limit=limit * 2)
@@ -59,14 +58,13 @@ class Indexer:
                     })
                 if len(self.retrieve_documents) >= limit:
                     break
-
             logger(f"Documents retrieved {len(self.retrieve_documents)}")
 
         except Exception as e:
             logger(f"Documents retrieve Error [[62]]: {e}")
 
-    def set_config(self, config: Dict):
+    def set_config(self, config: Dict) -> None:
         self.config = config
 
-    def get_retrieval_documents(self):
+    def get_retrieval_documents(self) -> List[Dict]:
         return self.retrieve_documents

@@ -1,6 +1,9 @@
 from typing import List, Dict, Any, Optional
 from dataclasses import dataclass
 
+from app.prompt.abstract_prompt import AbstractPrompt
+
+
 @dataclass
 class FullContext:
     query: str
@@ -105,10 +108,10 @@ class AdaptivePromptAssembler(PromptAssembler):
         super().__init__()
 
         self.query_templates = {
-            "factual": self._factual_template,
-            "explanatory": self._explanatory_template,
-            "comparative": self._comparative_template,
-            "procedural": self._procedural_template
+            "factual": AdaptivePromptAssembler._factual_template(),
+            "explanatory": AdaptivePromptAssembler._explanatory_template(),
+            "comparative": AdaptivePromptAssembler._comparative_template(),
+            "procedural": AdaptivePromptAssembler._procedural_template()
         }
 
     def assemble_final_prompt(self, context: FullContext) -> str:
@@ -130,7 +133,8 @@ class AdaptivePromptAssembler(PromptAssembler):
         else:
             return "factual"
 
-    def _factual_template(self) -> str:
+    @staticmethod
+    def _factual_template() -> str:
         return """Additional Instructions for Factual Query:
                 - Extract specific facts from document chunks first
                 - Use triplets to verify relationships between entities
@@ -138,7 +142,8 @@ class AdaptivePromptAssembler(PromptAssembler):
                 - Include temporal information (dates, periods) if available
                 - Cite specific passage numbers for key facts"""
 
-    def _explanatory_template(self) -> str:
+    @staticmethod
+    def _explanatory_template() -> str:
         return """Additional Instructions for Explanatory Query:
                 - Synthesize information from multiple sources
                 - Use entity labels to understand domain context
@@ -146,7 +151,8 @@ class AdaptivePromptAssembler(PromptAssembler):
                 - Connect concepts across different document chunks
                 - Identify underlying principles or mechanisms"""
 
-    def _comparative_template(self) -> str:
+    @staticmethod
+    def _comparative_template() -> str:
         return """Additional Instructions for Comparative Query:
                 - Create structured comparison using available information
                 - Use triplets to highlight relationship differences
@@ -154,7 +160,8 @@ class AdaptivePromptAssembler(PromptAssembler):
                 - Identify shared attributes from entity labels
                 - Present comparisons in a clear format (tables if helpful)"""
 
-    def _procedural_template(self) -> str:
+    @staticmethod
+    def _procedural_template() -> str:
         return """Additional Instructions for Procedural Query:
                 - Sequence steps in logical order
                 - Note prerequisites from entity classifications
@@ -162,19 +169,21 @@ class AdaptivePromptAssembler(PromptAssembler):
                 - Use triplets to identify tools or materials needed
                 - Include warnings or important considerations"""
 
-class FinalAssembler:
+class FinalAssembler(AbstractPrompt):
     def __init__(self):
+        super().__init__()
         self.assembler = AdaptivePromptAssembler()
-        self.chunk: Optional[List[Dict]] = []
+        self.chunks: Optional[List[Dict]] = []
         self.triplets: Optional[List[Dict]] = []
         self.entities: Optional[List[Dict]] = []
-        self.final_prompt: Optional[str] = ""
+        self.final_prompt: Optional[str] = "Final prompt don't assemble"
         self.query: Optional[str] = ""
+        self.config: Optional[Dict] = None
 
-    def answer_query(self) -> None:
+    def make_final_prompt(self) -> None:
         context = FullContext(
             query=self.query,
-            chunks=self.chunk,
+            chunks=self.chunks,
             triplets=self.triplets,
             entities=self.entities,
         )
@@ -183,8 +192,8 @@ class FinalAssembler:
     def get_final_prompt(self) -> str:
         return self.final_prompt
 
-    def set_chunk(self, chunk: List) -> None:
-        self.chunk = chunk
+    def set_chunks(self, chunks: List) -> None:
+        self.chunks = chunks
 
     def set_triplet(self, triplet: List) -> None:
         self.triplets = triplet
@@ -194,3 +203,6 @@ class FinalAssembler:
 
     def set_query(self, query: str) -> None:
         self.query = query
+
+    def set_config(self, config: Dict):
+        self.config = config
