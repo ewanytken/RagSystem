@@ -13,15 +13,15 @@ class TestRAGSystem(unittest.TestCase):
         self.word_handler = WordHandler()
 
     def test_document_processing(self):
-        config = Utils.get_config_file()
+        # config = Utils.get_config_file()
         dic = Utils.load_label_description()
         temp = Utils.load_template("extraction_template_eng")
         logger(temp)
-        logger(config)
+        # logger(config)
         logger(dic)
-        logger(config['paths']['documents_dir'])
+        # logger(config['paths']['documents_dir'])
 
-        self.word_handler.set_config(config)
+        # self.word_handler.set_config(config)
 
         self.word_handler.handle_documents()
         logger(self.word_handler.get_chunked_documents())

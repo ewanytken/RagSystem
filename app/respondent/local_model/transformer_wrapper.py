@@ -9,14 +9,16 @@ from app.utils import Utils
 
 class TransformerWrapper(AbstractLocalRespondent):
     def __init__(self, model_name: str = None, use_cpu_only: bool = False, **kwargs) -> None:
+
         self.config = Utils.get_config_file()
+        self.model_name = model_name
 
-        if model_name is None and self.config is not None:
-            model_name = self.config['llm_local']['model']
+        if self.model_name is None and self.config is not None:
+            self.model_name = self.config['llm_local']['model']
 
-        model = AutoModelForCausalLM.from_pretrained(model_name, **kwargs)
+        model = AutoModelForCausalLM.from_pretrained(self.model_name, **kwargs)
         model = model.eval()
-        tokenizer = AutoTokenizer.from_pretrained(model_name, use_fast=True)
+        tokenizer = AutoTokenizer.from_pretrained(self.model_name, use_fast=True)
 
         super().__init__(model, tokenizer, use_cpu_only)
 
@@ -32,3 +34,6 @@ class TransformerWrapper(AbstractLocalRespondent):
             output = self.model.generate(**inputs, max_new_tokens=self.config['llm_local']['max_new_tokens'])
 
         return self.tokenizer.decode(output[0][inputs['input_ids'].size(1):], skip_special_tokens=True)
+
+    def set_model_name(self, model_name) -> None:
+        self.model_name = model_name

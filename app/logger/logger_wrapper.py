@@ -14,6 +14,9 @@ class LoggerWrapper:
             log_path.mkdir(exist_ok=True)
             log_file = log_path  / "app.log"
 
+            if log_file.exists():
+                log_file.unlink()
+
             self.handlerFile = logging.FileHandler(log_file, mode='a', encoding='utf-8')
             self.handlerConsole = logging.StreamHandler()
 

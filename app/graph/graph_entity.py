@@ -1,4 +1,4 @@
-from typing import List, Dict, Optional, Union
+from typing import List, Dict, Optional, Union, Set
 import networkx as nx
 from app.logger import LoggerWrapper
 import hashlib
@@ -7,19 +7,22 @@ logger = LoggerWrapper()
 
 """
 Input: entities - List[Dict]. Use simple nx.Graph  
-Output: list of dict: entity, label, score
+Output: list of dict for entity: entity, label, score. Set of text for document search
 """
 
 class GraphEntity:
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.graph = nx.Graph()
         self.entities: Optional[List[Dict]] = []
 
     def add_to_knowledge_graph(self, document: str) -> None:
         try:
             doc_node = GraphEntity.hash_maker(document)
-            self.graph.add_node(doc_node, type='document', text=document)
+
+            self.graph.add_node(doc_node,
+                                type='document',
+                                text=document)
 
             for entity in self.entities:
                 entity_node = GraphEntity.hash_maker(entity['entity'])
@@ -27,18 +30,20 @@ class GraphEntity:
                 self.graph.add_node(
                     entity_node,
                     type='entity',
-                    entity=entity['entity'], # field "text" from gliner extraction
+                    entity=entity['entity'],
                     label=entity['label'],
+                    score=entity['score']
                 )
                 self.graph.add_edge(
                     doc_node, entity_node,
                     relation='contains',
-                    weight = 1
+                    weight = entity['score'],
                 )
+
         except Exception as e:
             logger(f"Failed to add entity to knowledge graph [[100]]: {e}")
 
-    def find_related_entities(self, documents: Union[str, List], limit: int = 150) -> List[Dict]:
+    def find_related_entities_from_doc(self, documents: Union[str, List], limit: int = 150) -> List[Dict]:
         related = []
         if isinstance(documents, str): documents = [documents]
         for doc in documents:
@@ -54,11 +59,37 @@ class GraphEntity:
                             related.append({
                                 'entity': node_data['entity'],
                                 'label': node_data['label'],
+                                'score': node_data['score']
                             })
             except Exception as e:
                 logger(f"Find related entities error [[101]]: {e}")
 
         return related
+
+    def find_doc_by_entity(self, search_entity: str, attribute_name='entity') -> Set[Dict[str, Union[str, int]]]:
+        try:
+            nodes_with_entity = [n for n, attr in self.graph.nodes(data=True)
+                                            if attr.get(attribute_name) == search_entity]
+            results = set()
+
+            if not nodes_with_entity:
+                return results
+
+            for node in nodes_with_entity: # node is a hash
+                neighbors = list(self.graph.neighbors(node))
+                for neighbor in neighbors:
+                    edge_data = self.graph.get_edge_data(node, neighbor)
+                    if neighbor.get('type') == 'document':
+                        results.update({
+                            'document': neighbor['text'],
+                            'score': edge_data['weight']
+                        })
+            return results
+        except Exception as e:
+            logger(f"Don't find document by entity ERROR [[102]]: {e}")
+
+    def set_entities(self, entities) -> None:
+        self.entities = entities
 
     def get_knowledge_graph_stats(self) -> Dict:
         return {
@@ -67,60 +98,6 @@ class GraphEntity:
             'entity_nodes': len([n for n, d in self.graph.nodes(data=True) if d.get('type') == 'entity']),
             'document_nodes': len([n for n, d in self.graph.nodes(data=True) if d.get('type') == 'document'])
         }
-
-    def advanced_word_search(self, search_entity, attribute_name='entity') -> Dict[str, Dict]:
-        try:
-            nodes_with_entity = [n for n, attr in self.graph.nodes(data=True)
-                               if attr.get(attribute_name) == search_entity]
-
-            if not nodes_with_entity:
-                return {}
-
-            results = {}
-            for node in nodes_with_entity:
-                neighbors = list(self.graph.neighbors(node))
-
-                neighbor_details = []
-                for neighbor in neighbors:
-                    edge_data = self.graph.get_edge_data(node, neighbor)
-                    neighbor_details.append({
-                        'node': neighbor,
-                        'entity': self.graph.nodes[neighbor].get(attribute_name, 'Unknown'),
-                        'edge_attributes': edge_data,
-                        'neighbor_degree': self.graph.degree(neighbor)
-                    })
-
-                results[node] = {
-                    'entity': search_entity,
-                    'node_id': node,
-                    'neighbors': neighbor_details,
-                    'degree': self.graph.degree(node),
-                    'clustering': nx.clustering(self.graph, node),
-                    'node_attributes': self.graph.nodes[node]
-                }
-            # doc_node = GraphEntity.hash_maker(document)
-            # self.graph.add_node(doc_node, type='document', text=document)
-            #
-            # for entity in self.entities:
-            #     entity_node = GraphEntity.hash_maker(entity['entity'])
-            #
-            #     self.graph.add_node(
-            #         entity_node,
-            #         type='entity',
-            #         entity=entity['entity'], # field "text" from gliner extraction
-            #         label=entity['label'],
-            #     )
-            #     self.graph.add_edge(
-            #         doc_node, entity_node,
-            #         relation='contains',
-            #         weight = 1
-            #     )
-            return results
-        except Exception as e:
-            logger(f"Advanced word search error [[102]]: {e}")
-
-    def set_entities(self, entities) -> None:
-        self.entities = entities
 
     @staticmethod
     def hash_maker(text: str) -> str:

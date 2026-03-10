@@ -1,7 +1,5 @@
 import unittest
 
-from torch.nn.functional import embedding
-
 from app.documents_processor.word_handler import WordHandler
 from app.entity.extractor_entity import EntityExtractor
 from app.entity.gliner2_entity import GlinerTwoEntity
@@ -58,7 +56,7 @@ class TestRAGSystem(unittest.TestCase):
         self.embedding.documents_retriever("attack response rate")
         embedding_text_list = self.embedding.get_retrieved_text_only()
 
-        related_entities = self.graph.find_related_entities(embedding_text_list)
+        related_entities = self.graph.find_related_entities_from_doc(embedding_text_list)
         logger(f"Related entities: {related_entities}")
 
 if __name__ == '__main__':

@@ -1,4 +1,4 @@
-from typing import List, Optional, Dict, Any, Tuple
+from typing import List, Optional
 
 from app.documents_processor.abstract_document_handler import DocumentHandler
 from app.entity.abstract_entity import AbstractEntity
@@ -82,7 +82,10 @@ class InstallerSystem:
         return self.extractor.get_entities()
 
     def find_entities_from_graph(self, indexer_doc: str) -> list[dict]:
-        return self.graph_entity.find_related_entities(indexer_doc)
+        return self.graph_entity.find_related_entities_from_doc(indexer_doc)
+
+    def find_docs_from_graph(self, entity: str) -> set[dict[str, str | int]]:
+        return self.graph_entity.find_doc_by_entity(entity)
 
     def find_triplets(self, query: str) -> list[dict]:
         self.triplet_graph.extract_triplets(query)

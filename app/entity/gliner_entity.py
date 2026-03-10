@@ -39,9 +39,9 @@ class GlinerEntity(AbstractEntity):
         try:
             self.gliner_entities.clear()
             if self.gliner and self.gliner_label and self.document:
-                gliner_entities = self.gliner.predict_entities(self.document, self.gliner_label, threshold=self.config['gliner']['threshold'])
+                entities = self.gliner.predict_entities(self.document, self.gliner_label, threshold=self.config['gliner']['threshold'])
 
-                for entity in gliner_entities:
+                for entity in entities:
                     self.gliner_entities.append({
                         'entity': entity['text'],
                         'label': entity['label'],
@@ -51,7 +51,7 @@ class GlinerEntity(AbstractEntity):
             self.gliner_entities.sort(key=lambda x: x['label'], reverse=True)
             logger(f"Entities extracted: {len(self.gliner_entities)} by GLiNER model")
         except Exception as e:
-            logger(f"Gliner extract entities failed: {e}")
+            logger(f"Gliner extract entities failed [[82]]: {e}")
 
     def set_gliner_label(self, gliner_label: Dict) -> None:
         self.gliner_label = gliner_label

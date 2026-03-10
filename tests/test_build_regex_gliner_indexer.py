@@ -20,6 +20,7 @@ class Test(unittest.TestCase):
         prompt = PromptObject()
         indexer = Indexer()
         gliner = GlinerEntity()
+
         self.installer_system = (Builder()
                                  .set_indexer(indexer)
                                  .set_document_handler(word_handler)

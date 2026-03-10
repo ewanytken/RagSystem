@@ -63,7 +63,8 @@ class RegexEntity(AbstractEntity):
 
                     self.regex_entities.append({
                         'entity': text,
-                        'label': label
+                        'label': label,
+                        'score': 0.95
                     })
 
         logger(f"Entities extracted: {len(self.regex_entities)} by REGEX patterns")

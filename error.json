@@ -56,6 +56,10 @@
         "Description": "Gliner 2 from HuggingFace don't load or other module's issues. Check ticket"
     },
     {
+        "Error 82": "Gliner extract entities failed",
+        "Description": "Gliner cannot extract entities"
+    },
+    {
         "Error 90": "Search triple Error",
         "Description": "Cannot find triple in graph. By default nx.MultiDiGraph: def search_relation_from_graph"
     },

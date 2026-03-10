@@ -12,7 +12,7 @@ logger = LoggerWrapper()
 """
 Input: nx.MultiDiGraph() by default     
 Output: Relation pattern - ["subject": "Мария Кюри", "predicate": "открыла", "object": "радий"}]  
-        Method used use - complex_query(subject_pattern="Marie.*", relation_pattern="dis.*")
+        Method used use - search_relation_from_graph(subject_pattern="Marie.*", relation_pattern="dis.*")
 """
 
 class TripletExtractor:
@@ -54,7 +54,7 @@ class TripletExtractor:
             subj = relation.get("subject", "None subject")
             obj = relation.get("object", "None object")
             pred = relation.get("predicate", "None predicate")
-            self.graph.add_edge(subj, obj, label=pred, document=document)
+            self.graph.add_edge(subj, obj, label=pred, text=document)
 
     def set_relation_from_query(self, extracted_relation: List) -> None:
         self.extracted_query = []
@@ -88,7 +88,7 @@ class TripletExtractor:
                     'subject': u,
                     'predicate': pred,
                     'object': v,
-                    'document': data.get('document', "No document")
+                    'document': data.get('text', "No document")
                 })
 
             if self.config["graph"]["limit"]:
@@ -108,7 +108,7 @@ class TripletExtractor:
                     'subject': u,
                     'predicate': data.get('label', ''),
                     'object': v,
-                    'document': data.get('document', "No document")
+                    'document': data.get('text', "No document")
                 })
         logger(f"Extracted {len(self.extracted_relation)} triplets:")
 
