@@ -1,6 +1,7 @@
-import asyncio
 from typing import Optional, List, Dict
-from rich import Console
+
+from rich.console import Console
+
 from app.common.constructor_interface import Constructor
 from app.common.installer_system import InstallerSystem
 from app.logger import LoggerWrapper
@@ -38,12 +39,13 @@ class ApiCall(Constructor):
     def get_query(self) -> str:
         return self.query
 
-    async def run_interactive(self):
+    def run_interactive(self):
 
         response: Optional[str] = None
         console.print("\n[bold cyan] Building RAG System[/bold cyan]")
 
-        await self.configure_modules()
+        self.configure_modules()
+
         try:
             self.complete_installer = self.get_installer_system()
         except Exception as e:
@@ -72,7 +74,7 @@ class ApiCall(Constructor):
 
                 doc_dict_by_query, doc_str_only_by_query = self.complete_installer.indexer_query(self.query)
 
-                if doc_str_only_by_query and self.complete_installer.get_entities_graph():
+                if doc_str_only_by_query and self.complete_installer.get_extractors():
                     console.print("\n[bold cyan] Find entities by extracted documents in Entity Graph[/bold cyan]")
                     entities_by_document_search = self.complete_installer.find_entities_from_graph(doc_str_only_by_query)
 
@@ -88,9 +90,9 @@ class ApiCall(Constructor):
                         triplets = triplets_by_subject if triplets_by_subject else triplets_by_full_query
 
                 console.print("\n[bold cyan] Assembling final prompt from all available information[/bold cyan]")
-                assembled_prompt: Optional[str] = self.complete_installer.prompt_processor(self.query, chunk, entities_by_document_search, triplets)
+                assembled_prompt: Optional[str] = self.complete_installer.prompt_processor(self.query, doc_dict_by_query, entities_by_document_search, triplets)
 
-                console.print("\n[bold cyan] Completing request to LLM[/bold cyan]")
+                console.print("\n[bold cyan] Request to LLM Respondent[/bold cyan]")
                 response = self.complete_installer.llm_model_processor(assembled_prompt)
 
         except Exception as e:

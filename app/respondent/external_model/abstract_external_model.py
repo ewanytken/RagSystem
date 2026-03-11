@@ -1,6 +1,3 @@
-from abc import ABC, abstractmethod
-from typing import Optional, Dict, Any
-
 from app.respondent.abstract_respondent import Respondent
 
 class AbstractModelExternal(Respondent):

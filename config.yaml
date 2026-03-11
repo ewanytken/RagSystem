@@ -3,7 +3,7 @@ system:
   version: "0.1"
 
 paths:
-  documents_dir: "../documents"
+  documents_dir: "documents"
   models_dir: "models"
 
 templates:

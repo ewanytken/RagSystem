@@ -1,5 +1,4 @@
 from enum import Enum
-from enum import Enum
 from typing import Optional, Union
 
 import questionary
@@ -80,7 +79,7 @@ class Constructor:
 
         Constructor.show_banner()
 
-    def get_installer_system(self) -> Union[Builder, InstallerSystem]:
+    def get_installer_system(self) -> InstallerSystem:
         return self.installer_system_builder
 
     @staticmethod
@@ -93,7 +92,7 @@ class Constructor:
         """
         console.print(Panel(banner, style="bold cyan", border_style="bright_blue"))
 
-    async def configure_modules(self):
+    def configure_modules(self):
         console.print("\n[bold blue]📚 Modules Configurator[/bold blue]")
 
         console.print("\n[bold yellow]🎯 Regex Module[/bold yellow]")
@@ -132,28 +131,25 @@ class Constructor:
             default=False
         ).ask()
         if add_triplets:
-            llm_triplet_extractor = await self.model_chooser()
+            llm_triplet_extractor = self.model_chooser()
             self.triplets = TripletExtractor()
             self.triplets.set_llm_model(llm_triplet_extractor)
             self.installer_system_builder.set_triplet_graph(self.triplets)
 
 
         console.print("\n[bold yellow]🎯 Choose Prompt Assembler[/bold yellow]")
-        self.prompter = await self.prompt_chooser()
+        self.prompter = self.prompt_chooser()
         self.installer_system_builder.set_prompt_object(self.prompter)
 
 
         console.print("\n[bold yellow]🎯 Choose Model Respondent[/bold yellow]")
-        self.respondent = await self.model_chooser()
+        self.respondent = self.model_chooser()
         self.installer_system_builder.set_llm_responder(self.respondent)
 
-        await self.construction()
+        self.installer_system_builder = self.installer_system_builder.build()
         self.show_summary()
 
-    async def construction(self) -> None:
-        self.installer_system_builder.build()
-
-    async def prompt_chooser(self) -> AbstractPrompt:
+    def prompt_chooser(self) -> AbstractPrompt:
         prompter: Optional[AbstractPrompt] = None
         try:
             provider = questionary.select(
@@ -179,7 +175,7 @@ class Constructor:
 
         return prompter
 
-    async def model_chooser(self) -> Respondent:
+    def model_chooser(self) -> Respondent:
 
         respondent: Optional[Respondent] = None
         try:
@@ -191,7 +187,7 @@ class Constructor:
                 ]
             ).ask()
 
-            if provider == ModelProvider.REMOTE.value:
+            if provider == ModelProvider.REMOTE:
                 service_name = questionary.select(
                     "Select remote model:",
                     choices=[
@@ -201,16 +197,16 @@ class Constructor:
                     ]
                 ).ask()
 
-                if service_name == ModelRemote.OLLAMA.value:
+                if service_name == ModelRemote.OLLAMA:
                     respondent = OllamaModel()
-                elif service_name == ModelRemote.EXTERNAL.value:
+                elif service_name == ModelRemote.EXTERNAL:
                     respondent = ExternalModel()
-                elif service_name == ModelRemote.GIGA.value:
+                elif service_name == ModelRemote.GIGA:
                     respondent = TargetGiga()
                 else:
                     respondent = None
 
-            elif provider == ModelProvider.LOCAL.value:
+            elif provider == ModelProvider.LOCAL:
                 model_ticker = questionary.select(
                     "Select ticker for local model:",
                     choices=[
@@ -219,7 +215,7 @@ class Constructor:
                         Choice(title="default", value = ModelLocalTicker.DEFAULT),
                     ]
                 ).ask()
-                respondent = TransformerWrapper(model_ticker)
+                respondent = TransformerWrapper(model_ticker.value)
             else:
                 respondent = None
 

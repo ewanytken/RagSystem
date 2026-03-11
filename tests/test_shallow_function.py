@@ -1,32 +1,30 @@
+import os
 import unittest
+from pathlib import Path
+
+from docx import Document
 
 from app.logger import LoggerWrapper
-from app.respondent.local_model.transformer_wrapper import TransformerWrapper
+from app.utils import Utils
 
 logger = LoggerWrapper()
 
 class Test(unittest.TestCase):
 
     def setUp(self):
-        pass
+        self.config = Utils.get_config_file()
 
     def test_document_processing(self):
-        import hashlib
-
-        data = "Hello, world!"
-
-        # Encode the string to bytes before hashing
-        data_bytes = data.encode('utf-8')
-
-        # Create a SHA-256 hash object
-        hash_object = hashlib.sha256(data_bytes)
-
-        # Get the hash value in hexadecimal format
-        hex_digest = hash_object.hexdigest()
-
-        print(hash_object)
-        # Example Output: 315f5bdb78c9653a14589c7ad7255148565b20640c21e6490e56598c414963aa
-
+        path = Path(__file__).parent.parent / self.config['paths']['documents_dir']
+        logger(f"Path to document load {path}")
+        for filename in os.listdir(path):
+            if filename.endswith(".docx") or filename.endswith(".doc"):
+                file_path = path / filename
+                try:
+                    doc = Document(file_path)
+                    logger("\n".join([p.text for p in doc.paragraphs if p.text.strip()]))
+                except Exception as e:
+                    logger(f"File didn't handle 70 {file_path}: {e}")
 
 if __name__ == '__main__':
     unittest.main()

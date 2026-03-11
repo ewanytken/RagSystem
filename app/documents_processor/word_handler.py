@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 from typing import Dict, Optional, List
 
 from docx import Document
@@ -28,14 +29,14 @@ class WordHandler(DocumentHandler):
 
     def handle_documents(self) -> None:
 
-        logger(f"Path to document load {self.config['paths']['documents_dir']}")
+        path = Path(__file__).parent.parent.parent / self.config['paths']['documents_dir']
+        logger(f"Path to document load: {path}")
 
         full_text: Optional[str] = ""
 
-        for filename in os.listdir(self.config['paths']['documents_dir']):
+        for filename in os.listdir(path):
             if filename.endswith(".docx") or filename.endswith(".doc"):
-                file_path = os.path.join(self.config['paths']['documents_dir'], filename)
-
+                file_path = path / filename
                 try:
                     doc = Document(file_path)
                     full_text = "\n".join([p.text for p in doc.paragraphs if p.text.strip()])
