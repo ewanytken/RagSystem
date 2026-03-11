@@ -12,10 +12,10 @@ console = Console()
 
 def run_rag_system():
     cli = ApiCall()
-    console.print("\n[bold green]RAG System Ready! Enter your queries (type 'exit' to quit)[/bold green]")
+    console.print("\n[bold green] RAG System Ready! Enter your queries (type 'exit' to quit)[/bold green]")
 
     while True:
-        query = Prompt.ask("\n[bold cyan] query[/bold cyan]")
+        query = Prompt.ask("\n[bold cyan] Send query[/bold cyan]")
 
         if query.lower() in ['exit', 'quit']:
             break
@@ -24,6 +24,7 @@ def run_rag_system():
         with console.status("[bold green]Processing..."):
             response = asyncio.run(cli.run_interactive())
 
+        console.print("\n[bold green] Response from RAG System[/bold green]")
         console.print(Panel(response, title="Response", border_style="green"))
 
 def main():

@@ -40,7 +40,8 @@ class ApiCall(Constructor):
 
     async def run_interactive(self):
 
-        answer: Optional[str] = None
+        response: Optional[str] = None
+        console.print("\n[bold cyan] Building RAG System[/bold cyan]")
 
         await self.configure_modules()
         try:
@@ -48,10 +49,14 @@ class ApiCall(Constructor):
         except Exception as e:
             logger(f"Cannot get installer system or installer not complete [[122]] {e}")
 
+        console.print("\n[bold cyan] Load Documents and chinking them[/bold cyan]")
         doc, chunk = self.complete_installer.documents_processor()
+
+        console.print("\n[bold cyan] Indexing documents with embedding model[/bold cyan]")
         self.complete_installer.indexer_installer_processor(chunk)
 
         if self.complete_installer.get_extractors():
+            console.print("\n[bold cyan] Extracting Entities and make Graphs[/bold cyan]")
             self.complete_installer.extractor_processor(chunk)
 
         doc_dict_by_query: Optional[List[Dict]] = None
@@ -62,11 +67,18 @@ class ApiCall(Constructor):
         triplets: Optional[List[Dict]] = None
         try:
             if self.get_query():
+                console.print("\n[bold cyan] Query obtain[/bold cyan]")
+                console.print("\n[bold cyan] Retrieving documents from Indexer[/bold cyan]")
+
                 doc_dict_by_query, doc_str_only_by_query = self.complete_installer.indexer_query(self.query)
+
                 if doc_str_only_by_query and self.complete_installer.get_entities_graph():
+                    console.print("\n[bold cyan] Find entities by extracted documents in Entity Graph[/bold cyan]")
                     entities_by_document_search = self.complete_installer.find_entities_from_graph(doc_str_only_by_query)
 
                 if self.complete_installer.get_triplet_graph():
+                    console.print("\n[bold cyan] Find triplets by Obtain Query in Triplets Graph[/bold cyan]")
+
                     triplets_by_full_query = self.complete_installer.find_triplets(self.query)
                     triplets_by_subject = self.complete_installer.find_triplets_by_subject(self.query)
 
@@ -75,13 +87,16 @@ class ApiCall(Constructor):
                     else:
                         triplets = triplets_by_subject if triplets_by_subject else triplets_by_full_query
 
+                console.print("\n[bold cyan] Assembling final prompt from all available information[/bold cyan]")
                 assembled_prompt: Optional[str] = self.complete_installer.prompt_processor(self.query, chunk, entities_by_document_search, triplets)
-                answer = self.complete_installer.llm_model_processor(assembled_prompt)
+
+                console.print("\n[bold cyan] Completing request to LLM[/bold cyan]")
+                response = self.complete_installer.llm_model_processor(assembled_prompt)
 
         except Exception as e:
             logger(f"Answer don't obtain. System don't work correctly [[123]] {e}")
 
-        if answer:
+        if response:
             raise Exception(f"Answer don't assign")
 
-        return answer
+        return response
