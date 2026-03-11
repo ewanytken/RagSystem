@@ -20,6 +20,9 @@ class WordHandler(DocumentHandler):
         self.handled_documents: Optional[List] = []
         self.chunked_documents: Optional[List[str]] = []
 
+    def __repr__(self):
+        return f"Word (docx) Handler Component"
+
     def set_config(self, config: Dict):
         self.config = config
 

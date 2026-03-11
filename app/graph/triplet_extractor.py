@@ -27,6 +27,9 @@ class TripletExtractor:
 
         self.extracted_query: Optional[List] = []
 
+    def __repr__(self):
+        return f"Graph Triplet Component"
+
     def extract_triplets(self, query: str = None) -> None:
         if self.llm_model is not None and self.config is not None and self.documents is not None:
             try:

@@ -17,6 +17,9 @@ class RegexEntity(AbstractEntity):
         self.document: Optional[str] = ""
         self.regex_entities: Optional[List[Dict]] = []
 
+    def __repr__(self):
+        return f"Regex Component"
+
     def set_text_extraction(self, document: str):
         self.document = ""
         self.document = document

@@ -17,6 +17,9 @@ class Indexer:
         self.config: Optional[Dict] = None
         self.retrieve_documents: Optional[List[Dict]] = []
 
+    def __repr__(self):
+        return f"Indexer Component"
+
     def set_embedding_model(self) -> None:
         try:
             model_ticker = self.config['embedding']['models']

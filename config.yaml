@@ -52,5 +52,5 @@ external_service:
   api_key: ""
 
 giga:
-  url: "https://ngw.devices.sberbank.ru:9443/api/v2/oauth"
-  api_key: ""
+  authorization: ""
+  uuid: ""

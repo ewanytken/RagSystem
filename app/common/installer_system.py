@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Union
 
 from app.documents_processor.abstract_document_handler import DocumentHandler
 from app.entity.abstract_entity import AbstractEntity
@@ -50,7 +50,7 @@ class InstallerSystem:
         except Exception as e:
             logger(f"Indexer query failed [[64]]: {e}")
 
-    def prompt_processor(self, query: str, chunks: List, entities: List, triplets: List = None) -> str:
+    def prompt_processor(self, query: str, chunks: List, entities: List, triplets: List) -> str:
         self.prompt_object.set_config(self.config)
         self.prompt_object.set_entities(entities)
         self.prompt_object.set_triplet(triplets)
@@ -81,7 +81,7 @@ class InstallerSystem:
 
         return self.extractor.get_entities()
 
-    def find_entities_from_graph(self, indexer_doc: str) -> list[dict]:
+    def find_entities_from_graph(self, indexer_doc: Union[str, List]) -> list[dict]:
         return self.graph_entity.find_related_entities_from_doc(indexer_doc)
 
     def find_docs_from_graph(self, entity: str) -> set[dict[str, str | int]]:
@@ -103,6 +103,15 @@ class InstallerSystem:
 
     def llm_model_processor(self, prompt: str) -> str:
         return self.llm_responder.generate(prompt)
+
+    def get_extractors(self) -> list[AbstractEntity]:
+        return self.extractors
+
+    def get_triplet_graph(self) -> TripletExtractor:
+        return self.triplet_graph
+
+    def get_entities_graph(self) -> GraphEntity:
+        return self.graph_entity
 
 class Builder:
 

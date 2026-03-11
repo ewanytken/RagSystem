@@ -11,6 +11,9 @@ class Respondent(ABC):
     # def set_config(self, config: Dict) -> None:
     #     self.config = config
 
+    def __repr__(self):
+        return f"Respondent Component"
+
     @abstractmethod
     def generate(self, prompt: str, *kwargs) -> str:
         raise NotImplemented

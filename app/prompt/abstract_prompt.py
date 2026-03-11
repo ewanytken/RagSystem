@@ -6,6 +6,9 @@ class AbstractPrompt(ABC):
     def __init__(self):
         pass
 
+    def __repr__(self):
+        return f"Prompter Component"
+
     @abstractmethod
     def make_final_prompt(self) -> None:
         raise NotImplementedError

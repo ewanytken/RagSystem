@@ -16,6 +16,9 @@ class GraphEntity:
         self.graph = nx.Graph()
         self.entities: Optional[List[Dict]] = []
 
+    def __repr__(self):
+        return f"Graph Entity Component"
+
     def add_to_knowledge_graph(self, document: str) -> None:
         try:
             doc_node = GraphEntity.hash_maker(document)

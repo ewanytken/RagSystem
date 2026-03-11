@@ -20,6 +20,9 @@ class GlinerTwoEntity(AbstractEntity):
         self.document: Optional[str] = ""
         self.gliner_entities: Optional[List[Dict]] = []
 
+    def __repr__(self):
+        return f"Gliner 2 Component"
+
     def set_gliner_model(self):
         try:
             model_ticker = self.config['gliner2']['ticket']

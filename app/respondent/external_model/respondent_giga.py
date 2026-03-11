@@ -2,13 +2,20 @@ import json
 import time
 import requests
 from app.respondent.external_model.abstract_external_model import AbstractModelExternal
+from app.utils import Utils
+
 
 class TargetGiga(AbstractModelExternal):
 
-    def __init__(self, authorization: str, uuid: str):
+    def __init__(self, authorization: str = None, uuid: str = None):
         super().__init__()
-        self.giga_rest = GigaRest(authorization, uuid)
 
+        self.config = Utils.get_config_file()
+        if authorization is None or uuid is None:
+            authorization = self.config['authorization']
+            uuid = self.config['uuid']
+
+        self.giga_rest = GigaRest(authorization, uuid)
 
     def generate(self, prompt: str, **kwargs) -> str:
         time.sleep(3)
