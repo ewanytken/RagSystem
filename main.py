@@ -11,20 +11,19 @@ console = Console()
 def run_rag_system() -> None:
     response: Optional[str] = None
     cli = ApiCall()
-    console.print("\n[bold green] RAG System Ready! Enter your queries (type 'exit' to quit)[/bold green]")
+    console.print("\n[bold blue] Enter your queries (type 'exit' to quit)[/bold blue]")
 
     while True:
-        query = Prompt.ask("\n[bold cyan] Send query[/bold cyan]")
+        query = Prompt.ask("\n\t[bold blue] Send query to RAG System[/bold blue]")
 
         if query.lower() in ['exit', 'quit']:
             break
 
         cli.set_query(query)
-        # with console.status("[bold green]Processing..."):
         response = cli.run_interactive()
 
-    console.print("\n[bold green] Response from RAG System[/bold green]")
-    console.print(Panel(response, title="Response", border_style="green"))
+        console.print("\n[bold green] Response from RAG System[/bold green]")
+        console.print(Panel(response, title="Response", border_style="green"))
 
 def main() -> None:
     import argparse
@@ -37,10 +36,8 @@ def main() -> None:
     if args.run:
         run_rag_system()
     else:
-        # Default: show help
         console.print("[bold]RAG System [/bold]")
         console.print("python main.py --run        # Run in current window")
-
 
 if __name__ == "__main__":
     main()

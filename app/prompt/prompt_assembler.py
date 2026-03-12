@@ -1,8 +1,10 @@
-from typing import List, Dict, Any, Optional
 from dataclasses import dataclass
+from typing import List, Dict, Any, Optional
 
+from app.logger import AuxiliaryLogger
 from app.prompt.abstract_prompt import AbstractPrompt
 
+logger = AuxiliaryLogger()
 
 @dataclass
 class FullContext:
@@ -55,6 +57,7 @@ class PromptAssembler:
             formatted += f"{chunk.get('text', '')}\n"
             formatted += "-" * 50
 
+        logger(f"Extracted chunk from Retriever: {formatted}")
         return formatted
 
     def _format_triplets(self, triplets: List[Dict[str, str]]) -> str:
@@ -70,6 +73,8 @@ class PromptAssembler:
             documents_extracted_from_triplet.add(triplet['document'])
         formatted = triplet_context + "\n".join(documents_extracted_from_triplet)
 
+        logger(f"Triplets from Graph: {formatted}")
+
         return formatted
 
     def _format_entity_labels(self, entities: List[Dict]) -> str:
@@ -81,6 +86,9 @@ class PromptAssembler:
                 formatted += f"{i}. Entity -- {entity['entity']} is label -- {entity['label']} \n"
 
         formatted += "\nUse these classifications to understand the domain context of entities mentioned."
+
+        logger(f"Extracted Entities from Graph: {formatted}")
+
         return formatted
 
     def _format_query(self, query: str) -> str:
@@ -90,6 +98,7 @@ class PromptAssembler:
                 please provide a comprehensive answer. If the answer requires combining information from multiple sources, 
                 explicitly show how you synthesized it.
                 """
+
     def _get_response_format(self) -> str:
         return """=== RESPONSE FORMAT ===
                 Please structure your response as follows:

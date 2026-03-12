@@ -1,12 +1,11 @@
 import unittest
 from enum import Enum
-from typing import Optional
+from typing import Optional, Dict, List
 
 from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
 
-from app.common.complete_interface import ApiCall
 from app.common.installer_system import Builder, InstallerSystem
 from app.documents_processor.word_handler import WordHandler
 from app.entity.abstract_entity import AbstractEntity
@@ -134,15 +133,92 @@ class Constructor:
 
         console.print(table)
 
+class ApiCall(Constructor):
+
+    def __init__(self):
+        super().__init__()
+        self.complete_installer: Optional[InstallerSystem] = None
+        self.query: Optional[str] = None
+
+    def set_query(self, query: str) -> None:
+        self.query = query
+
+    def get_query(self) -> str:
+        return self.query
+
+    def run_interactive(self):
+
+        response: Optional[str] = None
+        console.print("\n[bold cyan] Building RAG System[/bold cyan]")
+
+        self.configure_modules()
+
+        try:
+            self.complete_installer = self.get_installer_system()
+        except Exception as e:
+            logger(f"Cannot get installer system or installer not complete [[122]] {e}")
+
+        console.print("\n[bold cyan] Load Documents and chinking them[/bold cyan]")
+        doc, chunk = self.complete_installer.documents_processor()
+
+        console.print("\n[bold cyan] Indexing documents with embedding model[/bold cyan]")
+        self.complete_installer.indexer_installer_processor(chunk)
+
+        if self.complete_installer.get_extractors():
+            console.print("\n[bold cyan] Extracting Entities and make Graphs[/bold cyan]")
+            self.complete_installer.extractor_processor(chunk)
+
+        doc_dict_by_query: Optional[List[Dict]] = None
+        doc_str_only_by_query: Optional[List[str]] = None
+        entities_by_document_search: Optional[List[Dict]] = None
+        triplets_by_full_query: Optional[List[Dict]] = None
+        triplets_by_subject: Optional[List[Dict]] = None
+        triplets: Optional[List[Dict]] = None
+        try:
+            if self.get_query():
+                console.print("\n[bold cyan] Query obtain[/bold cyan]")
+                console.print("\n[bold cyan] Retrieving documents from Indexer[/bold cyan]")
+
+                doc_dict_by_query, doc_str_only_by_query = self.complete_installer.indexer_query(self.query)
+
+                if doc_str_only_by_query and self.complete_installer.get_extractors():
+                    console.print("\n[bold cyan] Find entities by extracted documents in Entity Graph[/bold cyan]")
+                    entities_by_document_search = self.complete_installer.find_entities_from_graph(doc_str_only_by_query)
+
+                if self.complete_installer.get_triplet_graph():
+                    console.print("\n[bold cyan] Find triplets by Obtain Query in Triplets Graph[/bold cyan]")
+
+                    triplets_by_full_query = self.complete_installer.find_triplets(self.query)
+                    triplets_by_subject = self.complete_installer.find_triplets_by_subject(self.query)
+
+                    if triplets_by_full_query and triplets_by_subject:
+                        triplets = triplets_by_full_query + triplets_by_subject
+                    else:
+                        triplets = triplets_by_subject if triplets_by_subject else triplets_by_full_query
+
+                console.print("\n[bold cyan] Assembling final prompt from all available information[/bold cyan]")
+                assembled_prompt: Optional[str] = self.complete_installer.prompt_processor(self.query, doc_dict_by_query, entities_by_document_search, triplets)
+
+                console.print("\n[bold cyan] Request to LLM Respondent[/bold cyan]")
+                response = self.complete_installer.llm_model_processor(assembled_prompt)
+
+        except Exception as e:
+            logger(f"Answer don't obtain. System don't work correctly [[123]] {e}")
+
+        if response:
+            raise Exception(f"Answer don't assign")
+
+        return response
 class Test(unittest.TestCase):
 
     def setUp(self):
-        self.api = Constructor()
+        self.api = ApiCall()
 
     def test_document_processing(self):
-        self.api.configure_modules()
-        installer = self.api.get_installer_system()
-        d, c = installer.documents_processor()
-        print(c)
+
+        self.api.set_query("What is ASR?")
+        response = self.api.run_interactive()
+        print(response)
+
 if __name__ == '__main__':
     unittest.main()

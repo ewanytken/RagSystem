@@ -100,7 +100,7 @@ class TripletExtractor:
                 self.extracted_relation = self.extracted_relation[:15]
         except Exception as e:
             logger(f"Search triple Error [[90]]: {e}")
-        logger(f"Extracted {len(self.extracted_relation)} triplets:")
+        logger(f"Extracted triplets: {len(self.extracted_relation)}")
 
 
     def search_relation_by_subject(self, subject: str) -> None:
@@ -113,7 +113,7 @@ class TripletExtractor:
                     'object': v,
                     'document': data.get('text', "No document")
                 })
-        logger(f"Extracted {len(self.extracted_relation)} triplets:")
+        logger(f"Extracted triplets: {len(self.extracted_relation)}")
 
     def clean_text(self, text: str) -> str:
         # Remove extra whitespace

@@ -29,15 +29,6 @@ from app.respondent.local_model.transformer_wrapper import TransformerWrapper
 console = Console()
 logger = LoggerWrapper()
 
-class GraphType(Enum):
-    TRIPLETS = "triplets"
-    GRAPH = "graph"
-
-class Entities(Enum):
-    REGEX = "regex"
-    GLINER = "gliner"
-    GLINER2 = "gliner2"
-
 class ModelProvider(Enum):
     LOCAL = "local"
     REMOTE = "remote"
@@ -47,7 +38,7 @@ class ModelRemote(Enum):
     GIGA = "giga"
     EXTERNAL = "external_service"
 
-class ModelLocalTicker:
+class ModelLocalTicker(Enum):
     QWEN3 = "Qwen/Qwen3-4B-Instruct-2507"
     FELLADRIN = "Felladrin/TinyMistral-248M-Chat-v3"
     DEFAULT = ""
@@ -131,6 +122,7 @@ class Constructor:
             default=False
         ).ask()
         if add_triplets:
+            console.print("\n[bold yellow]🎯 Model for triplets construction[/bold yellow]")
             llm_triplet_extractor = self.model_chooser()
             self.triplets = TripletExtractor()
             self.triplets.set_llm_model(llm_triplet_extractor)
@@ -208,7 +200,7 @@ class Constructor:
 
             elif provider == ModelProvider.LOCAL:
                 model_ticker = questionary.select(
-                    "Select ticker for local model:",
+                    "Select ticket for local model:",
                     choices=[
                         Choice(title="Qwen/Qwen3-4B-Instruct-2507", value = ModelLocalTicker.QWEN3),
                         Choice(title="Felladrin/TinyMistral-248M-Chat-v3", value = ModelLocalTicker.FELLADRIN),
@@ -217,7 +209,7 @@ class Constructor:
                 ).ask()
                 respondent = TransformerWrapper(model_ticker.value)
             else:
-                respondent = None
+                respondent = TransformerWrapper()
 
         except Exception as e:
             logger(f"Cannot assign model [[110]] {e}")
@@ -234,23 +226,20 @@ class Constructor:
         table.add_column("Component", style="green")
         table.add_column("Status", style="yellow")
 
-        components = [self.prompter, self.respondent, self.word_handler,
-                      self.regex, self.gliner, self.gliner_two,
-                      self.indexer,
-                      self.graph, self.triplets]
+        components = {"Prompter component": self.prompter, "Respondent component": self.respondent, "Word(docx) component": self.word_handler,
+                      "Regex component": self.regex, "Gliner component": self.gliner, "Gliner2 component": self.gliner_two,
+                      "Indexer component": self.indexer,
+                      "EntityGraph component": self.graph, "Triplets component": self.triplets}
 
-        for num, component in enumerate(components):
-            if component:
+        for key, value in components.items():
+            if value:
                 table.add_row(
-                    str(num),
-                    component.__repr__(),
+                    value.__repr__(),
                     "✅ Configured"
                 )
             else:
                 table.add_row(
-                    str(num),
-                    component.__repr__(),
+                    key,
                     "❌ Not configured",
                 )
-
         console.print(table)

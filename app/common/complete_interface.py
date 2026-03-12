@@ -33,6 +33,14 @@ class ApiCall(Constructor):
         self.complete_installer: Optional[InstallerSystem] = None
         self.query: Optional[str] = None
 
+        console.print("\n[bold cyan] Building RAG System[/bold cyan]")
+        self.configure_modules()
+
+        try:
+            self.complete_installer = self.get_installer_system()
+        except Exception as e:
+            logger(f"Cannot get installer system or installer not complete [[122]] {e}")
+
     def set_query(self, query: str) -> None:
         self.query = query
 
@@ -42,14 +50,6 @@ class ApiCall(Constructor):
     def run_interactive(self):
 
         response: Optional[str] = None
-        console.print("\n[bold cyan] Building RAG System[/bold cyan]")
-
-        self.configure_modules()
-
-        try:
-            self.complete_installer = self.get_installer_system()
-        except Exception as e:
-            logger(f"Cannot get installer system or installer not complete [[122]] {e}")
 
         console.print("\n[bold cyan] Load Documents and chinking them[/bold cyan]")
         doc, chunk = self.complete_installer.documents_processor()
@@ -69,8 +69,8 @@ class ApiCall(Constructor):
         triplets: Optional[List[Dict]] = None
         try:
             if self.get_query():
-                console.print("\n[bold cyan] Query obtain[/bold cyan]")
-                console.print("\n[bold cyan] Retrieving documents from Indexer[/bold cyan]")
+                console.print("\n[bold green] Query obtain[/bold green]")
+                console.print("\n[bold green] Retrieving documents from Indexer[/bold green]")
 
                 doc_dict_by_query, doc_str_only_by_query = self.complete_installer.indexer_query(self.query)
 
@@ -83,6 +83,8 @@ class ApiCall(Constructor):
 
                     triplets_by_full_query = self.complete_installer.find_triplets(self.query)
                     triplets_by_subject = self.complete_installer.find_triplets_by_subject(self.query)
+                    logger(f"Number of retrieved triplets by full query: {len(triplets_by_full_query)} \n"
+                           f"Number of retrieved triplets by subject: {len(triplets_by_subject)}")
 
                     if triplets_by_full_query and triplets_by_subject:
                         triplets = triplets_by_full_query + triplets_by_subject
@@ -93,12 +95,11 @@ class ApiCall(Constructor):
                 assembled_prompt: Optional[str] = self.complete_installer.prompt_processor(self.query, doc_dict_by_query, entities_by_document_search, triplets)
 
                 console.print("\n[bold cyan] Request to LLM Respondent[/bold cyan]")
+                logger(f"First 300 symbols from Assembled prompt: {assembled_prompt[:300]}")
+
                 response = self.complete_installer.llm_model_processor(assembled_prompt)
 
         except Exception as e:
             logger(f"Answer don't obtain. System don't work correctly [[123]] {e}")
-
-        if response:
-            raise Exception(f"Answer don't assign")
 
         return response

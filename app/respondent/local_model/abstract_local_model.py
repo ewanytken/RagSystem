@@ -134,11 +134,5 @@ class AbstractLocalRespondent(Respondent):
     def get_free_ram(self) -> float:
         return psutil.virtual_memory().available / 1024 ** 3
 
-    def get_eos(self):
-        return self.tokenizer.eos_token_id
-
-    def get_pad(self):
-        return self.tokenizer.pad_token_id
-
     def cleanup_memory(self):
         del self.model, self.tokenizer

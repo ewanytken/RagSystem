@@ -64,9 +64,10 @@ class GraphEntity:
                                 'label': node_data['label'],
                                 'score': node_data['score']
                             })
+
             except Exception as e:
                 logger(f"Find related entities error [[101]]: {e}")
-
+        logger(f"Extracted entities from Graph: {len(related)}")
         return related
 
     def find_doc_by_entity(self, search_entity: str, attribute_name='entity') -> Set[Dict[str, Union[str, int]]]:

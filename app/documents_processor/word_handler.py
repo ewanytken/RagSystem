@@ -46,6 +46,8 @@ class WordHandler(DocumentHandler):
                 if full_text is not None:
                     self.handled_documents.append(full_text)
                     self.chunked_documents.extend(self.text_chunking(full_text))
+        logger(f"Number of preprocessing documents: {len(self.handled_documents)} \n"
+               f"Number of preprocessing chunks: {len(self.chunked_documents)}")
 
     def get_chunked_documents(self) -> List[str]:
         return self.chunked_documents

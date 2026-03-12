@@ -37,6 +37,28 @@ rag:
 llm_local:
   model: "Qwen/Qwen3-4B-Instruct-2507"
   max_new_tokens: 2000
+  temperature: 0.7
+  top_p: 0.9
+  top_k: 50
+  do_sample: True
+  num_return_sequences: 1
+  repetition_penalty: 1.1
+  no_repeat_ngram_size: 3
+  early_stopping: True
+
+tokenizer_local:
+  add_special_tokens: True
+  padding: True
+  truncation: True
+  use_fast: True
+  padding_side: "left"
+  truncation_side: "left"
+  max_length: 2000
+
+quantization:
+  load_in_8bit: True
+  llm_int8_threshold: 6.0
+  llm_int8_has_fp16_weight: False
 
 ollama:
   model: "llama3.2:latest"
@@ -54,3 +76,8 @@ external_service:
 giga:
   authorization: ""
   uuid: ""
+
+tickets:
+  one_model: "Felladrin/TinyMistral-248M-Chat-v3"
+  two_model: "Qwen/Qwen3-4B-Instruct-2507"
+  default: "default"
