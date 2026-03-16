@@ -5,6 +5,9 @@ from rich.panel import Panel
 from rich.prompt import Prompt
 
 from app.common.complete_interface import ApiCall
+from app.logger import LoggerWrapper
+
+logger = LoggerWrapper()
 
 console = Console()
 
@@ -23,6 +26,7 @@ def run_rag_system() -> None:
         response = cli.run_interactive()
 
         console.print("\n[bold green] Response from RAG System[/bold green]")
+        # logger(response)
         console.print(Panel(response, title="Response", border_style="green"))
 
 def main() -> None:

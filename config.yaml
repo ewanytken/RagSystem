@@ -69,15 +69,10 @@ ollama:
   max_length: 1500
 
 external_service:
-  model: "openai/gpt-4o"
-  url: "https://openrouter.ai/api/v1"
+  model: ""
+  url: ""
   api_key: ""
 
 giga:
   authorization: ""
   uuid: ""
-
-tickets:
-  one_model: "Felladrin/TinyMistral-248M-Chat-v3"
-  two_model: "Qwen/Qwen3-4B-Instruct-2507"
-  default: "default"

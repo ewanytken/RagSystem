@@ -1,9 +1,12 @@
 import json
 import time
 import requests
+
+from app.logger import LoggerWrapper
 from app.respondent.external_model.abstract_external_model import AbstractModelExternal
 from app.utils import Utils
 
+logger = LoggerWrapper()
 
 class TargetGiga(AbstractModelExternal):
 
@@ -16,6 +19,9 @@ class TargetGiga(AbstractModelExternal):
             uuid = self.config['uuid']
 
         self.giga_rest = GigaRest(authorization, uuid)
+
+    def __repr__(self):
+        return f"Load GigaChat model"
 
     def generate(self, prompt: str, **kwargs) -> str:
         time.sleep(3)
@@ -42,7 +48,7 @@ class GigaRest:
                                   data="scope=GIGACHAT_API_PERS",
                                   headers=headers)
         except Exception as e:
-            print(e)
+            logger(f"Request to GigaChat server ERROR: {e}")
 
         return token.json()["access_token"]
 
@@ -86,7 +92,7 @@ class GigaRest:
                                      headers=headers)
 
         except Exception as e:
-            print(e)
+            logger(f"Message from GigaChat server ERROR: {e}")
 
         assert response is not None, "Empty response from GigaChat"
 

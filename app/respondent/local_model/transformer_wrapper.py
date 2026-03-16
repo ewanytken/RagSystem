@@ -70,6 +70,9 @@ class TransformerWrapper(Respondent):
 
         super().__init__()
 
+    def __repr__(self):
+        return f"Load Local Model with ticket: {self.model_name}"
+
     def _setup_special_tokens(self) -> None:
         if self.tokenizer.pad_token is None:
             if self.tokenizer.eos_token is not None:

@@ -1,10 +1,10 @@
 from dataclasses import dataclass
 from typing import List, Dict, Any, Optional
 
-from app.logger import AuxiliaryLogger
+from app.logger import LoggerAuxiliary
 from app.prompt.abstract_prompt import AbstractPrompt
 
-logger = AuxiliaryLogger()
+logger = LoggerAuxiliary()
 
 @dataclass
 class FullContext:

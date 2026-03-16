@@ -6,10 +6,6 @@ class Respondent(ABC):
 
     def __init__(self):
         pass
-    #     self.config: Optional[Dict[str, Any]] = None
-    #
-    # def set_config(self, config: Dict) -> None:
-    #     self.config = config
 
     def __repr__(self):
         return f"Respondent Component"

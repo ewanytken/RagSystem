@@ -19,6 +19,9 @@ class OllamaModel(AbstractModelExternal, Respondent):
 
         super().__init__()
 
+    def __repr__(self):
+        return f"Load model from Ollama service with ticket: {self.get_model_ticker()}"
+
     def generate(self, prompt: str, **kwargs) -> str:
         for attempt in range(3):
             try:

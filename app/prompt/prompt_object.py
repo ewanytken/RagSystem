@@ -1,10 +1,10 @@
 from typing import Optional, List, Dict
 
-from app.logger import LoggerWrapper
+from app.logger import LoggerAuxiliary
 from app.prompt.abstract_prompt import AbstractPrompt
 from app.utils import Utils
 
-logger = LoggerWrapper()
+logger = LoggerAuxiliary()
 
 """
 Input: str - user_query, str - context, str - entities, document in dir - template 
@@ -31,6 +31,8 @@ class PromptObject(AbstractPrompt):
             for i, entity in enumerate(self.entities):
                 entities_context += f"{i}. Entity: {entity['entity']} is label: {entity['label']} \n"
 
+        logger(f"Entities: {entities_context}")
+
         triplet_context = ""
         if self.triplets is not None:
             documents_extracted_from_triplet = set()
@@ -39,6 +41,8 @@ class PromptObject(AbstractPrompt):
                 triplet_context += f"{i}. {triplet['subject']} --> [{triplet['predicate']}]--> {triplet['object']} \n"
                 documents_extracted_from_triplet.add(triplet['document'])
             triplet_context = triplet_context + "\n".join(documents_extracted_from_triplet)
+
+        logger(f"Triplets: {triplet_context}")
 
         chunks_context = ""
         if self.chunks is not None:
@@ -51,7 +55,10 @@ class PromptObject(AbstractPrompt):
                 chunks_context += f"{chunk.get('text', '')}\n"
                 chunks_context += "-" * 50
 
+        logger(f"Chunks: {chunks_context}")
+
         self.template = Utils.load_template(self.config["templates"]["prompt_template"])
+        logger(f"Template: {self.template}")
 
         self.final_prompt = self.template.format(
             context=chunks_context,
@@ -59,7 +66,7 @@ class PromptObject(AbstractPrompt):
             query=self.user_query,
             triplets=triplet_context,
         )
-        logger(f"CONTENT OF FINAL PROMPT: {self.final_prompt}")
+        logger(f"FINAL PROMPT: {self.final_prompt}")
 
     def get_final_prompt(self) -> str:
         return self.final_prompt

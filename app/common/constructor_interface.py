@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Optional, Union
+from typing import Optional
 
 import questionary
 from questionary import Choice
@@ -41,11 +41,21 @@ class ModelRemote(Enum):
 class ModelLocalTicker(Enum):
     QWEN3 = "Qwen/Qwen3-4B-Instruct-2507"
     FELLADRIN = "Felladrin/TinyMistral-248M-Chat-v3"
-    DEFAULT = ""
+    DEFAULT = "default"
 
 class PromptProvider(Enum):
     ADVANCED = "advanced"
     SIMPLE = "simple"
+
+class RemoteFreeModel(Enum):
+    OPENAI = "openai/gpt-oss-120b"
+    LLAMA = "meta-llama/llama-3.3-70b-instruct"
+    QWEN = "qwen/qwen3-next-80b-a3b-instruct"
+    GEMMA = "google/gemma-3-27b-it"
+    STEPFUN = "stepfun/step-3.5-flash"
+    HUNTER = "openrouter/hunter-alpha"
+    DEFAULT = "default"
+
 
 class Constructor:
     def __init__(self):
@@ -181,18 +191,33 @@ class Constructor:
 
             if provider == ModelProvider.REMOTE:
                 service_name = questionary.select(
-                    "Select remote model:",
+                    "Select type of remote model:",
                     choices=[
+                        Choice(title="External model from service (Work for OpenAI Client)", value=ModelRemote.EXTERNAL),
                         Choice(title="Ollama local model", value = ModelRemote.OLLAMA),
-                        Choice(title="External model from service", value = ModelRemote.EXTERNAL),
-                        Choice(title="GigaChat", value = ModelRemote.GIGA),
+                        Choice(title="GigaChat (specify parameters in config file)", value = ModelRemote.GIGA),
                     ]
                 ).ask()
 
                 if service_name == ModelRemote.OLLAMA:
                     respondent = OllamaModel()
                 elif service_name == ModelRemote.EXTERNAL:
-                    respondent = ExternalModel()
+                    model_remote_ticket = questionary.select(
+                        "Select OpenRouter's model or default remote model:",
+                        choices=[
+                            Choice(title="Open AI 120B OSS", value=RemoteFreeModel.OPENAI),
+                            Choice(title="LLAMA 3.3 70B", value=RemoteFreeModel.LLAMA),
+                            Choice(title="QWEN 3 80B", value=RemoteFreeModel.QWEN),
+                            Choice(title="GEMMA 3 27B", value=RemoteFreeModel.GEMMA),
+                            Choice(title="STEPFUN 3.5", value=RemoteFreeModel.STEPFUN),
+                            Choice(title="OpRouter HUNTER", value=RemoteFreeModel.HUNTER),
+                            Choice(title="default (load ticket from config file)", value=RemoteFreeModel.DEFAULT)
+                        ]
+                    ).ask()
+                    if model_remote_ticket == RemoteFreeModel.DEFAULT:
+                        respondent = ExternalModel()
+                    else:
+                        respondent = ExternalModel(model_remote_ticket.value)
                 elif service_name == ModelRemote.GIGA:
                     respondent = TargetGiga()
                 else:
@@ -204,12 +229,15 @@ class Constructor:
                     choices=[
                         Choice(title="Qwen/Qwen3-4B-Instruct-2507", value = ModelLocalTicker.QWEN3),
                         Choice(title="Felladrin/TinyMistral-248M-Chat-v3", value = ModelLocalTicker.FELLADRIN),
-                        Choice(title="default", value = ModelLocalTicker.DEFAULT),
+                        Choice(title="default (load ticket from config file)", value = ModelLocalTicker.DEFAULT),
                     ]
                 ).ask()
-                respondent = TransformerWrapper(model_ticker.value)
+                if model_ticker == ModelLocalTicker.DEFAULT:
+                    respondent = TransformerWrapper()
+                else:
+                    respondent = TransformerWrapper(model_ticker.value)
             else:
-                respondent = TransformerWrapper()
+                respondent = None
 
         except Exception as e:
             logger(f"Cannot assign model [[110]] {e}")

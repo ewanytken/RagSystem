@@ -11,9 +11,10 @@ logger = LoggerWrapper()
 class Test(unittest.TestCase):
 
     def setUp(self):
-        pass
+        self.model = ExternalModel()
+
     def test_document_processing(self):
-        pass
+        print(self.model.generate("Hello World"))
 
 if __name__ == '__main__':
     unittest.main()

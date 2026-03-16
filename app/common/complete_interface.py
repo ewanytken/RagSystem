@@ -98,7 +98,7 @@ class ApiCall(Constructor):
                 logger(f"First 300 symbols from Assembled prompt: {assembled_prompt[:300]}")
 
                 response = self.complete_installer.llm_model_processor(assembled_prompt)
-
+                logger(f"Length of output symbols: {len(response)}")
         except Exception as e:
             logger(f"Answer don't obtain. System don't work correctly [[123]] {e}")
 

@@ -1,2 +1,2 @@
 from .logger_wrapper import LoggerWrapper
-from .logger_auxiliary import AuxiliaryLogger
+from .logger_auxiliary import LoggerAuxiliary
