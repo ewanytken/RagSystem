@@ -4,14 +4,14 @@ from pathlib import Path
 class LoggerMetrics:
 
     def __init__(self, level=logging.INFO):
-        self.logger = logging.getLogger(str(__package__))
+        self.logger = logging.getLogger("**Metrics** ")
 
         if not self.logger.handlers:
             self.logger.setLevel(level)
             self.level = level
             log_path = Path(__file__).parent.parent.parent / "logs"
             log_path.mkdir(exist_ok=True)
-            log_file = log_path  / "metrics_log.log"
+            log_file = log_path  / "metrics.log"
 
             if log_file.exists():
                 log_file.unlink()

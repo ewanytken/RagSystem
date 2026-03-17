@@ -50,11 +50,11 @@ class InstallerSystem:
         except Exception as e:
             logger(f"Indexer query failed [[64]]: {e}")
 
-    def prompt_processor(self, query: str, chunks: List, entities: List, triplets: List) -> str:
+    def prompt_processor(self, query: str, retrieved_docs: List, entities: List, triplets: List) -> str:
         self.prompt_object.set_config(self.config)
         self.prompt_object.set_entities(entities)
         self.prompt_object.set_triplet(triplets)
-        self.prompt_object.set_chunks(chunks)
+        self.prompt_object.set_chunks(retrieved_docs)
         self.prompt_object.set_query(query)
         self.prompt_object.make_final_prompt()
         return self.prompt_object.get_final_prompt()

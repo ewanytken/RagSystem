@@ -1,13 +1,32 @@
-from typing import Dict
+from typing import Dict, List, Optional
 
 from rich.table import Table
 from rich.console import Console
+from sentence_transformers import SentenceTransformer
+
+from app.utils import Utils
 
 console = Console()
 
 class Metrics:
+
     def __init__(self):
-        self.score = {}
+        self.score: Optional[Dict] = {}
+        self.candidates: List = []
+        self.relevant_docs: List = []
+        self.config: Optional[Dict] = Utils.get_config_file()
+        self.model = SentenceTransformer('all-MiniLM-L6-v2')
+
+    # TODO dataset processor
+    def dataset_and_config_processing(self) -> None:
+        if self.config["metrics"]["model_emb"]:
+            self.set_model(self.config["metrics"]["model_emb"])
+
+        datasets = self.config["metrics"]["datasets"]
+        #if and self.candidates:
+        self.candidates = self.config["metrics"]
+        #if and self.relevant_docs:
+        self.relevant_docs = self.config["metrics"]
 
     def show_scores(self) -> None:
         table = Table(title="RAG System Configuration Summary", border_style="cyan")
@@ -24,3 +43,18 @@ class Metrics:
 
     def get_score(self) -> Dict[str, float | Dict[str, float]]:
         return self.score
+
+    def set_candidates(self, candidates) -> None:
+        self.candidates = candidates
+
+    def set_relevant_docs(self, docs: List) -> None:
+        self.relevant_docs = docs
+
+    def get_relevant_docs(self) -> List[str]:
+        return self.relevant_docs
+
+    def get_candidates(self) -> List[str]:
+        return self.candidates
+
+    def set_model(self, model) -> None:
+        self.model = model

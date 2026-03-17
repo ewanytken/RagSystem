@@ -2,20 +2,20 @@ import logging
 from pathlib import Path
 
 """
-Auxiliary logger without Console output. Save to logs/auxiliary_log.log
+Auxiliary logger without Console output. Save to logs/auxiliary.log
 """
 
 class LoggerAuxiliary:
 
     def __init__(self, level=logging.INFO):
-        self.logger = logging.getLogger(str(__package__))
+        self.logger = logging.getLogger("**Auxiliary** ")
 
         if not self.logger.handlers:
             self.logger.setLevel(level)
             self.level = level
             log_path = Path(__file__).parent.parent.parent / "logs"
             log_path.mkdir(exist_ok=True)
-            log_file = log_path  / "auxiliary_log.log"
+            log_file = log_path  / "auxiliary.log"
 
             if log_file.exists():
                 log_file.unlink()

@@ -15,3 +15,5 @@ modules/trash
 modules/trash/vibe_coders_project
 config_test.yaml
 tests/test_remote.py
+ragas-eval-sys
+datasets

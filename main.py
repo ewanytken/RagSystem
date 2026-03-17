@@ -1,10 +1,9 @@
-from typing import Optional
-
+import questionary
 from rich.console import Console
 from rich.panel import Panel
 from rich.prompt import Prompt
 
-from app.common.complete_interface import ApiCall
+from app.common.api_call import ApiCall
 from app.logger import LoggerWrapper
 
 logger = LoggerWrapper()
@@ -12,8 +11,16 @@ logger = LoggerWrapper()
 console = Console()
 
 def run_rag_system() -> None:
-    response: Optional[str] = None
-    cli = ApiCall()
+    api = ApiCall()
+
+    is_init_metrics = questionary.confirm(
+        "Do you need Metrics Calculation? (False by default)",
+        default=False
+    ).ask()
+
+    if is_init_metrics:
+        api.init_metrics(is_init_metrics)
+
     console.print("\n[bold blue] Enter your queries (type 'exit' to quit)[/bold blue]")
 
     while True:
@@ -22,11 +29,10 @@ def run_rag_system() -> None:
         if query.lower() in ['exit', 'quit']:
             break
 
-        cli.set_query(query)
-        response = cli.run_interactive()
+        api.set_query(query)
+        response = api.run_interactive()
 
         console.print("\n[bold green] Response from RAG System[/bold green]")
-        # logger(response)
         console.print(Panel(response, title="Response", border_style="green"))
 
 def main() -> None:

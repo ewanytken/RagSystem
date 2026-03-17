@@ -4,43 +4,41 @@ import numpy as np
 from bert_score import score
 from nltk.translate.bleu_score import sentence_bleu
 from nltk.translate.meteor_score import meteor_score
-from ragas import evaluate
-from sentence_transformers import SentenceTransformer
 
 from app.logger.logger_metrics import LoggerMetrics
 from metrics.metrics import Metrics
 
-logger = LoggerMetrics()
+logger_metrics = LoggerMetrics()
 
 class GenerationMetrics(Metrics):
     def __init__(self):
         super().__init__()
-        self.queries: Optional[str] = ""
-        self.answers: Optional[str] = ""
+        self.queries: Optional[List[str]] = []
+        self.answers: Optional[List[str]] = []
         self.contexts: Optional[List[str]] = []
 
         self.lang: Optional[str] = "en"
 
-        self.model = SentenceTransformer('all-MiniLM-L6-v2')
-
     def generation_calculation(self) -> None:
-        logger(f"Setup Queries: {True if self.queries else False}")
-        logger(f"Setup Answer: {True if self.answers else False}")
+        logger_metrics(f"Setup Queries: {True if self.answers else False}")
+        logger_metrics(f"Setup Answer: {True if self.candidates else False}")
+        if self.answers or self.candidates:
+            try:
+                self.score["BLEU"] = sentence_bleu(self.answers, self.candidates)
+                self.score["METEOR"] =  meteor_score(self.answers, self.candidates)
 
-        try:
-            self.score["BLEU"] = sentence_bleu(self.queries, self.answers)
-            self.score["METEOR"] =  meteor_score(self.queries, self.answers)
-
-            P, R, F1 = score(self.answers, self.queries, lang=self.lang)
-            self.score["BEST_SCORE"] =  F1.mean().item()
-        except Exception as e:
-            logger(f"Generation metrics ERROR [[]]{e}")
+                P, R, F1 = score(self.candidates, self.answers, lang=self.lang)
+                self.score["BEST_SCORE"] =  F1.mean().item()
+            except Exception as e:
+                logger_metrics(f"Generation metrics ERROR [[]]{e}")
+        else:
+            raise Exception
 
     def calculation_metrics(self) -> None:
 
-        logger(f"Setup Queries: {True if self.queries else False}")
-        logger(f"Setup Answer: {True if self.answers else False}")
-        logger(f"Setup Context: {True if self.contexts else False}")
+        logger_metrics(f"Setup Queries: {True if self.queries else False}")
+        logger_metrics(f"Setup Answer: {True if self.answers else False}")
+        logger_metrics(f"Setup Context: {True if self.contexts else False}")
 
         try:
             scores = []
@@ -96,7 +94,7 @@ class GenerationMetrics(Metrics):
             self.score["Groundedness"] =  np.mean(scores)
 
         except Exception as e:
-            logger(f"Relevance and RAGAS metrics ERROR {e}")
+            logger_metrics(f"Relevance and RAGAS metrics ERROR {e}")
 
     def set_queries(self, queries) -> None:
         self.queries = queries
@@ -109,7 +107,3 @@ class GenerationMetrics(Metrics):
 
     def set_lang(self, lang) -> None:
         self.lang = lang
-
-    def set_model(self, model) -> None:
-        self.model = model
-

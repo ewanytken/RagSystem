@@ -5,14 +5,14 @@ from pathlib import Path
 class LoggerWrapper:
 
     def __init__(self, level=logging.INFO):
-        self.logger = logging.getLogger(str(__package__))
+        self.logger = logging.getLogger("**App Logger** ")
 
         if not self.logger.handlers:
             self.logger.setLevel(level)
             self.level = level
             log_path = Path(__file__).parent.parent.parent / "logs"
             log_path.mkdir(exist_ok=True)
-            log_file = log_path  / "main_log.log"
+            log_file = log_path  / "app.log"
 
             if log_file.exists():
                 log_file.unlink()

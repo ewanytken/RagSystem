@@ -76,3 +76,8 @@ external_service:
 giga:
   authorization: ""
   uuid: ""
+
+metrics:
+  model_emb: "all-MiniLM-L6-v2"
+  model_eval: "Qwen/Qwen3-4B-Instruct-2507"
+  datasets: "datasets"

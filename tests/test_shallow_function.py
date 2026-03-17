@@ -12,6 +12,7 @@ class Test(unittest.TestCase):
 
     def setUp(self):
         pass
+
     def test_document_processing(self):
         pass
 
