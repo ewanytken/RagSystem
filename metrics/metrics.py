@@ -1,9 +1,10 @@
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Any
 
 from rich.table import Table
 from rich.console import Console
 from sentence_transformers import SentenceTransformer
 
+from app.respondent.abstract_respondent import Respondent
 from app.utils import Utils
 
 console = Console()
@@ -15,27 +16,30 @@ class Metrics:
         self.candidates: List = []
         self.relevant_docs: List = []
         self.config: Optional[Dict] = Utils.get_config_file()
-        self.model = SentenceTransformer('all-MiniLM-L6-v2')
+        self.model_sim: Optional[Any] = None
+        self.model_judge: Optional[Respondent] = None
+        self.lang: Optional[str] = "en"
 
-    # TODO dataset processor
-    def dataset_and_config_processing(self) -> None:
-        if self.config["metrics"]["model_emb"]:
-            self.set_model(self.config["metrics"]["model_emb"])
+    def dataset_and_init_processing(self) -> None:
+        if self.config["metrics"]["model_sim"]:
+            ticket = self.config["metrics"]["model_sim"]
+            self.model_sim = SentenceTransformer(ticket)
 
+        # TODO dataset processor
         datasets = self.config["metrics"]["datasets"]
-        #if and self.candidates:
         self.candidates = self.config["metrics"]
-        #if and self.relevant_docs:
         self.relevant_docs = self.config["metrics"]
 
     def show_scores(self) -> None:
         table = Table(title="RAG System Configuration Summary", border_style="cyan")
+        table.add_column("Number", style="yellow")
         table.add_column("Metrics", style="blue")
         table.add_column("Scores", style="green")
 
-        for key, value in self.score.items():
+        for i, (key, value) in enumerate(self.score.items(), 1):
             if value:
                 table.add_row(
+                    str(i),
                     key,
                     str(value)
                 )
@@ -56,5 +60,5 @@ class Metrics:
     def get_candidates(self) -> List[str]:
         return self.candidates
 
-    def set_model(self, model) -> None:
-        self.model = model
+    def set_model_sim(self, model) -> None:
+        self.model_sim = model

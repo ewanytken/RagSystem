@@ -6,8 +6,7 @@ from app.common.constructor_interface import Constructor
 from app.common.installer_system import InstallerSystem
 from app.logger import LoggerWrapper
 from app.logger.logger_metrics import LoggerMetrics
-from metrics.generation_metrics import GenerationMetrics
-from metrics.retrieved_metrics import RetrievedMetrics
+from metrics.metrics_executor import MetricsExecutor
 
 console = Console()
 logger = LoggerWrapper()
@@ -43,13 +42,14 @@ class ApiCall(Constructor):
         self.triplets: Optional[List[Dict]] = None
         self.response: Optional[str] = None
 
-        self.is_metrics: Optional[bool] = False
+        self.metrics_config: Optional[Dict] = None
 
         console.print("\n[bold cyan] Building RAG System[/bold cyan]")
         self.configure_modules()
 
         try:
             self.complete_installer = self.get_installer_system()
+            self.metrics_config = self.get_metrics_config()
         except Exception as e:
             logger(f"Cannot get installer system or installer not complete [[122]] {e}")
 
@@ -102,38 +102,37 @@ class ApiCall(Constructor):
         except Exception as e:
             logger(f"Answer don't obtain. System don't work correctly [[123]] {e}")
 
-            try:
-                if self.is_metrics:
-                    console.print("\n[bold cyan] Calculation Metrics in process ... [/bold cyan]")
-                    self.metrics_evaluator()
-            except Exception as e:
-                logger_metrics(f"Cannot llm model processor error: {e}")
-
+        self.metric_processor()
         return self.response
 
-    def metrics_evaluator(self) -> None:
-        console.print("\n[bold cyan] Load Metrics[/bold cyan]")
-        generate_metric = GenerationMetrics()
-        generate_metric.dataset_and_config_processing()
+    def metric_processor(self):
+        try:
+            if self.metrics_config["init_metrics"]:
+                console.print("\n[bold cyan] Simple Metrics Calculation in processing ... [/bold cyan]")
+                response_by_word = self.get_response().split()
+                query_by_word = self.get_query().split()
+                overall_context = self.get_context()
+                retrieved_docs = self.doc_text_retrieved
 
-        if generate_metric.get_candidates():
-            response_by_word = self.get_response().split(" ")
-            query_by_word = self.get_query().split(" ")
+                config = {"response": response_by_word,
+                          "query": query_by_word,
+                          "context": overall_context,
+                          "retrieved_docs": retrieved_docs,
+                          "judge_model": self.metrics_config.get("judge_model", "empty_model")}
 
-            generate_metric.set_answers(response_by_word)
-            generate_metric.set_queries(query_by_word)
+                metrics_executor = MetricsExecutor(config)
+                metrics_executor.generation_evaluator()
+                metrics_executor.retriever_evaluator()
 
-            generate_metric.set_contexts(self.get_context())
+                if self.metrics_config["judge_metrics"]:
+                    console.print("\n[bold cyan] Metrics LLM Judge in processing ... [/bold cyan]")
+                    metrics_executor.judge_evaluator()
 
-            generate_metric.generation_calculation()
-            generate_metric.calculation_metrics()
-            generate_metric.show_scores()
-
-        retrieve_metric = RetrievedMetrics()
-        if retrieve_metric.get_relevant_docs():
-            retrieve_metric.set_retrieved_docs(self.get_doc_text_retrieved())
-            retrieve_metric.retriever_calculation()
-            retrieve_metric.show_scores()
+                metrics_executor.get_overall_scores()
+            else:
+                logger(f"Pass metrics evaluation")
+        except Exception as e:
+            logger_metrics(f"Metrics processing ERROR: {e}")
 
     def get_context(self) -> List[str]:
         entities_context = ""
@@ -176,9 +175,3 @@ class ApiCall(Constructor):
 
     def get_query(self) -> str:
         return self.query
-
-    def is_init_metrics(self) -> bool:
-        return self.is_metrics
-
-    def init_metrics(self, metrics: bool) -> None:
-        self.is_metrics = metrics

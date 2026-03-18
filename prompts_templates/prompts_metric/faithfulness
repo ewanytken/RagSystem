@@ -1,0 +1,26 @@
+"""You are a strict fact-checker. Verify if the answer is completely grounded in the provided context.
+
+[CONTEXT]
+{context}
+
+[ANSWER]
+{answer}
+
+INSTRUCTIONS:
+1. Extract all factual claims from the answer
+2. Check if EACH claim is directly supported by the context
+3. Count unsupported claims
+
+OUTPUT JSON ONLY:
+{{
+    "total_claims": <number>,
+    "supported_claims": <number>,
+    "faithfulness_score": <supported_claims/total_claims>,
+    "unsupported_statements": ["list", "of", "unsupported", "phrases"]
+}}
+
+RULES:
+- Be extremely strict: claim must be VERBATIM or DIRECTLY inferable
+- Mark as unsupported if any detail is missing or different
+- If answer introduces external knowledge, mark as unsupported
+"""

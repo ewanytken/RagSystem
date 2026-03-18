@@ -1,10 +1,13 @@
 import questionary
+from questionary import Choice
 from rich.console import Console
 from rich.panel import Panel
 from rich.prompt import Prompt
 
 from app.common.api_call import ApiCall
 from app.logger import LoggerWrapper
+from app.respondent.external_model.respondent_other_service import ExternalModel
+from app.respondent.local_model.transformer_wrapper import TransformerWrapper
 
 logger = LoggerWrapper()
 
@@ -12,14 +15,6 @@ console = Console()
 
 def run_rag_system() -> None:
     api = ApiCall()
-
-    is_init_metrics = questionary.confirm(
-        "Do you need Metrics Calculation? (False by default)",
-        default=False
-    ).ask()
-
-    if is_init_metrics:
-        api.init_metrics(is_init_metrics)
 
     console.print("\n[bold blue] Enter your queries (type 'exit' to quit)[/bold blue]")
 

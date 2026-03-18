@@ -1,0 +1,26 @@
+"""Evaluate if the retrieved context is relevant to answering the query.
+
+[QUERY]
+{query}
+
+[RETRIEVED CONTEXT CHUNKS]
+{context}
+
+TASK: Score each chunk's relevance to the query.
+
+OUTPUT FORMAT (JSON):
+{{
+    "chunk_scores": [score1, score2, score3, ...],
+    "average_relevance": <0-10>,
+    "redundant_chunks": <count of chunks with score <3>,
+    "explanation": "Brief reason for scores"
+}}
+
+Scoring Guide:
+10-8: Directly answers the query
+7-5: Contains relevant information but not direct answer
+4-2: Tangentially related
+1-0: Irrelevant or off-topic
+
+EFFICIENCY RULE: Score each chunk independently in under 5 seconds.
+"""

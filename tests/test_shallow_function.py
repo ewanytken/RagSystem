@@ -1,10 +1,6 @@
 import unittest
 
-from transformers import AutoConfig
-
 from app.logger import LoggerWrapper
-from app.respondent.external_model.respondent_other_service import ExternalModel
-from app.utils import Utils
 
 logger = LoggerWrapper()
 
@@ -14,7 +10,10 @@ class Test(unittest.TestCase):
         pass
 
     def test_document_processing(self):
-        pass
-
+        string = "Simple Metrics Calculation in processing..."
+        j = string.split()
+        print(j)
+        s = " ".join(j)
+        print(s)
 if __name__ == '__main__':
     unittest.main()

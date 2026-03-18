@@ -17,12 +17,10 @@ class GenerationMetrics(Metrics):
         self.answers: Optional[List[str]] = []
         self.contexts: Optional[List[str]] = []
 
-        self.lang: Optional[str] = "en"
-
     def generation_calculation(self) -> None:
         logger_metrics(f"Setup Queries: {True if self.answers else False}")
         logger_metrics(f"Setup Answer: {True if self.candidates else False}")
-        if self.answers or self.candidates:
+        if self.candidates:
             try:
                 self.score["BLEU"] = sentence_bleu(self.answers, self.candidates)
                 self.score["METEOR"] =  meteor_score(self.answers, self.candidates)
@@ -32,9 +30,9 @@ class GenerationMetrics(Metrics):
             except Exception as e:
                 logger_metrics(f"Generation metrics ERROR [[]]{e}")
         else:
-            raise Exception
+            logger_metrics(f"Candidates doesn't initialize {len(self.candidates)}")
 
-    def calculation_metrics(self) -> None:
+    def bert_calculation(self) -> None:
 
         logger_metrics(f"Setup Queries: {True if self.queries else False}")
         logger_metrics(f"Setup Answer: {True if self.answers else False}")
@@ -43,8 +41,8 @@ class GenerationMetrics(Metrics):
         try:
             scores = []
             for query, answer in zip(self.queries, self.answers):
-                q_emb = self.model.encode(query)
-                a_emb = self.model.encode(answer)
+                q_emb = self.model_sim.encode(query)
+                a_emb = self.model_sim.encode(answer)
 
                 q_emb = q_emb / np.linalg.norm(q_emb)
                 a_emb = a_emb / np.linalg.norm(a_emb)
@@ -56,11 +54,11 @@ class GenerationMetrics(Metrics):
 
             scores = []
             for query, context_list in zip(self.queries, self.contexts):
-                q_emb = self.model.encode(query)
+                q_emb = self.model_sim.encode(query)
 
                 context_scores = []
                 for context in context_list:
-                    c_emb = self.model.encode(context)
+                    c_emb = self.model_sim.encode(context)
                     c_emb = c_emb / np.linalg.norm(c_emb)
                     context_scores.append(np.dot(q_emb, c_emb))
 

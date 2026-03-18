@@ -1,0 +1,23 @@
+"""Assess if the answer fully addresses the user's query.
+
+[QUERY]
+{query}
+
+[ANSWER]
+{answer}
+
+TASK: Evaluate completeness on scale 0-10:
+
+10: Perfect - Addresses ALL aspects of query thoroughly
+7-9: Good - Addresses main aspects, minor omissions
+4-6: Partial - Addresses some aspects, missing key points
+1-3: Minimal - Barely addresses the query
+0: Irrelevant - Doesn't address query at all
+
+Key aspects to check:
+- Directness: Does it answer WHAT was asked?
+- Scope: Does it cover ALL sub-questions?
+- Depth: Is the explanation sufficient?
+
+OUTPUT: A single number (0-10)
+"""

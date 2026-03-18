@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Optional
+from typing import Optional, Dict
 
 import questionary
 from questionary import Choice
@@ -78,10 +78,15 @@ class Constructor:
 
         self.prompter: Optional[AbstractPrompt] = None
 
+        self.metrics_config: Optional[Dict] = {"init_metrics": False}
+
         Constructor.show_banner()
 
     def get_installer_system(self) -> InstallerSystem:
         return self.installer_system_builder
+
+    def get_metrics_config(self) -> Dict:
+        return self.metrics_config
 
     @staticmethod
     def show_banner():
@@ -150,6 +155,9 @@ class Constructor:
 
         self.installer_system_builder = self.installer_system_builder.build()
         self.show_summary()
+
+        if self.metrics_initializer():
+            self.metrics_config = self.metrics_initializer()
 
     def prompt_chooser(self) -> AbstractPrompt:
         prompter: Optional[AbstractPrompt] = None
@@ -247,6 +255,49 @@ class Constructor:
 
         return respondent
 
+    def metrics_initializer(self) -> Dict:
+
+        metrics_config: Optional[Dict] = {}
+        is_init_metrics = questionary.confirm(
+            "Do you need Metrics Calculation? (False by default)",
+            default=False
+        ).ask()
+
+        if is_init_metrics:
+            metrics_config = {"init_metrics": is_init_metrics}
+            judge_metrics = questionary.confirm(
+                "Do you need add Judge LLM Metrics? (False by default)",
+                default=False
+            ).ask()
+
+            if judge_metrics:
+                metrics_config.update({"judge_metrics": judge_metrics})
+                try:
+                    provider = questionary.select(
+                        "Select LOCAL or REMOTE model:",
+                        choices=[
+                            Choice(title="Local metric model (default from config.yaml)", value=ModelProvider.LOCAL),
+                            Choice(title="Remote metric model (default from config.yaml)", value=ModelProvider.REMOTE),
+                        ]
+                    ).ask()
+
+                    if provider == ModelProvider.LOCAL:
+                        model = TransformerWrapper()
+                    elif provider == ModelProvider.REMOTE:
+                        model = ExternalModel()
+                    else:
+                        model = None
+
+                    if model is None:
+                        raise Exception(f"Model for Metrics don't initialise")
+
+                    metrics_config.update({"judge_model": model})
+
+                except Exception as e:
+                    logger(f"Model for Metrics don't install: {e}")
+
+        return metrics_config
+
     def show_summary(self):
 
         table = Table(title="RAG System Configuration Summary", border_style="cyan")
@@ -259,14 +310,16 @@ class Constructor:
                       "Indexer component": self.indexer,
                       "EntityGraph component": self.graph, "Triplets component": self.triplets}
 
-        for key, value in components.items():
+        for i, (key, value) in enumerate(components.items(), 1):
             if value:
                 table.add_row(
+                    str(i),
                     value.__repr__(),
                     "✅ Configured"
                 )
             else:
                 table.add_row(
+                    str(i),
                     key,
                     "❌ Not configured",
                 )
