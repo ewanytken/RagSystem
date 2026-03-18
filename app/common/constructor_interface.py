@@ -25,6 +25,7 @@ from app.respondent.external_model.respondent_giga import TargetGiga
 from app.respondent.external_model.respondent_ollama import OllamaModel
 from app.respondent.external_model.respondent_other_service import ExternalModel
 from app.respondent.local_model.transformer_wrapper import TransformerWrapper
+from app.utils import Utils
 
 console = Console()
 logger = LoggerWrapper()
@@ -84,9 +85,6 @@ class Constructor:
 
     def get_installer_system(self) -> InstallerSystem:
         return self.installer_system_builder
-
-    def get_metrics_config(self) -> Dict:
-        return self.metrics_config
 
     @staticmethod
     def show_banner():
@@ -156,8 +154,7 @@ class Constructor:
         self.installer_system_builder = self.installer_system_builder.build()
         self.show_summary()
 
-        if self.metrics_initializer():
-            self.metrics_config = self.metrics_initializer()
+        self.metrics_config = self.metrics_initializer()
 
     def prompt_chooser(self) -> AbstractPrompt:
         prompter: Optional[AbstractPrompt] = None
@@ -201,7 +198,7 @@ class Constructor:
                 service_name = questionary.select(
                     "Select type of remote model:",
                     choices=[
-                        Choice(title="External model from service (Work for OpenAI Client)", value=ModelRemote.EXTERNAL),
+                        Choice(title="External model from service (Work with OpenAI Client)", value=ModelRemote.EXTERNAL),
                         Choice(title="Ollama local model", value = ModelRemote.OLLAMA),
                         Choice(title="GigaChat (specify parameters in config file)", value = ModelRemote.GIGA),
                     ]
@@ -281,10 +278,11 @@ class Constructor:
                         ]
                     ).ask()
 
+                    config = Utils.get_config_file()
                     if provider == ModelProvider.LOCAL:
-                        model = TransformerWrapper()
+                        model = TransformerWrapper(config.get('metrics', {}).get("model_judge_local"))
                     elif provider == ModelProvider.REMOTE:
-                        model = ExternalModel()
+                        model = ExternalModel(config.get('metrics', {}).get("model_judge_remote"))
                     else:
                         model = None
 

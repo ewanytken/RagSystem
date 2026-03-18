@@ -39,41 +39,39 @@ class ApiCall(Constructor):
         self.doc_dict_retrieved: Optional[List[Dict]] = None
         self.doc_text_retrieved: Optional[List[str]] = None
         self.entities_by_document_search: Optional[List[Dict]] = None
-        self.triplets: Optional[List[Dict]] = None
+        self.extracted_triplets: Optional[List[Dict]] = None
         self.response: Optional[str] = None
-
-        self.metrics_config: Optional[Dict] = None
+        self.all_metrics_scores: Optional[Dict] = None
 
         console.print("\n[bold cyan] Building RAG System[/bold cyan]")
         self.configure_modules()
 
         try:
             self.complete_installer = self.get_installer_system()
-            self.metrics_config = self.get_metrics_config()
         except Exception as e:
             logger(f"Cannot get installer system or installer not complete [[122]] {e}")
 
     def run_interactive(self):
 
         console.print("\n[bold cyan] Load Documents and chinking them[/bold cyan]")
-        doc, chunk = self.complete_installer.documents_processor()
+        chunk, doc  = self.complete_installer.documents_processor()
 
-        console.print("\n[bold cyan] Indexing documents with embedding model[/bold cyan]")
+        console.print("\n[bold yellow] Indexing documents with embedding model[/bold yellow]")
         self.complete_installer.indexer_installer_processor(chunk)
 
         if self.complete_installer.get_extractors():
-            console.print("\n[bold cyan] Extracting Entities and make Graphs[/bold cyan]")
+            console.print("\n[bold yellow] Extracting Entities and make Graphs[/bold yellow]")
             self.complete_installer.extractor_processor(chunk)
 
         try:
             if self.get_query():
-                console.print("\n[bold green] Query obtain[/bold green]")
-                console.print("\n[bold green] Retrieving documents from Indexer[/bold green]")
+                console.print("\n[bold red] Query obtain[/bold red]")
+                console.print("\n[bold yellow] Retrieving documents from Indexer[/bold yellow]")
 
                 self.doc_dict_retrieved, self.doc_text_retrieved = self.complete_installer.indexer_query(self.query)
 
                 if self.doc_text_retrieved and self.complete_installer.get_extractors():
-                    console.print("\n[bold cyan] Find entities by extracted documents in Entity Graph[/bold cyan]")
+                    console.print("\n[bold green] Find entities by extracted documents in Entity Graph[/bold green]")
                     self.entities_by_document_search = self.complete_installer.find_entities_from_graph(self.doc_text_retrieved)
 
                 if self.complete_installer.get_triplet_graph():
@@ -81,20 +79,20 @@ class ApiCall(Constructor):
 
                     triplets_by_full_query = self.complete_installer.find_triplets(self.query)
                     triplets_by_subject = self.complete_installer.find_triplets_by_subject(self.query)
-                    logger(f"Number of retrieved triplets by full query: {len(triplets_by_full_query)} \n"
-                           f"Number of retrieved triplets by subject: {len(triplets_by_subject)}")
+                    logger(f"\nNumber of retrieved triplets by full query: {len(triplets_by_full_query)}"
+                           f"\nNumber of retrieved triplets by subject: {len(triplets_by_subject)}")
 
                     if triplets_by_full_query or triplets_by_subject:
                         all_triplets = triplets_by_full_query + triplets_by_subject
-                        self.triplets = [dict(t) for t in set(frozenset(d.items()) for d in all_triplets)]
+                        self.extracted_triplets = [dict(t) for t in set(frozenset(d.items()) for d in all_triplets)]
 
-                console.print("\n[bold cyan] Assembling final prompt from all available information[/bold cyan]")
+                console.print("\n[bold red] Assembling final prompt from all available information[/bold red]")
                 assembled_prompt: Optional[str] = self.complete_installer.prompt_processor(self.query,
                                                                                            self.doc_dict_retrieved,
                                                                                            self.entities_by_document_search,
-                                                                                           self.triplets)
+                                                                                           self.extracted_triplets)
 
-                console.print("\n[bold cyan] Request to LLM Respondent[/bold cyan]")
+                console.print("\n[bold red] Request to LLM Respondent[/bold red]")
                 logger(f"First 300 symbols from Assembled prompt: {assembled_prompt[:300]}")
 
                 self.response = self.complete_installer.llm_model_processor(assembled_prompt)
@@ -108,7 +106,7 @@ class ApiCall(Constructor):
     def metric_processor(self):
         try:
             if self.metrics_config["init_metrics"]:
-                console.print("\n[bold cyan] Simple Metrics Calculation in processing ... [/bold cyan]")
+                console.print("\n[bold blue] Simple Metrics Calculation in processing ... [/bold blue]")
                 response_by_word = self.get_response().split()
                 query_by_word = self.get_query().split()
                 overall_context = self.get_context()
@@ -125,10 +123,10 @@ class ApiCall(Constructor):
                 metrics_executor.retriever_evaluator()
 
                 if self.metrics_config["judge_metrics"]:
-                    console.print("\n[bold cyan] Metrics LLM Judge in processing ... [/bold cyan]")
+                    console.print("\n[brown cyan] Metrics LLM Judge in processing ... [/bold brown]")
                     metrics_executor.judge_evaluator()
 
-                metrics_executor.get_overall_scores()
+                self.all_metrics_scores = metrics_executor.get_overall_scores()
             else:
                 logger(f"Pass metrics evaluation")
         except Exception as e:
@@ -142,10 +140,10 @@ class ApiCall(Constructor):
                 entities_context += f"{i}. Entity: {entity['entity']} is label: {entity['label']} \n"
 
         triplet_context = ""
-        if self.triplets is not None:
+        if self.extracted_triplets:
             documents_extracted_from_triplet = set()
             triplet_context = "Triplet extracted from documents:\n"
-            for i, triplet in enumerate(self.triplets):
+            for i, triplet in enumerate(self.extracted_triplets):
                 triplet_context += f"{i}. {triplet['subject']} --> [{triplet['predicate']}]--> {triplet['object']} \n"
                 documents_extracted_from_triplet.add(triplet['document'])
             triplet_context = triplet_context + "\n".join(documents_extracted_from_triplet)

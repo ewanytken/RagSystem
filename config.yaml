@@ -23,7 +23,7 @@ gliner2:
   threshold: 0.3
 
 graph:
-  extractor_prompt: "template_two"
+  extractor_prompt: "prompts_extractors/template_two"
   limit: 10
 
 rag:
@@ -69,8 +69,8 @@ ollama:
   max_length: 1500
 
 external_service:
-  model: ""
-  url: ""
+  model: "openai/gpt-oss-120b"
+  url: "https://openrouter.ai/api/v1"
   api_key: ""
 
 giga:
@@ -78,6 +78,12 @@ giga:
   uuid: ""
 
 metrics:
-  model_emb: "all-MiniLM-L6-v2"
-  model_eval: "Qwen/Qwen3-4B-Instruct-2507"
+  model_sim: "all-MiniLM-L6-v2"
+  model_judge_local: "Qwen/Qwen3-4B-Instruct-2507"
+  model_judge_remote: "openai/gpt-oss-120b"
   datasets: "datasets"
+  prompts:
+    completeness: "prompts_metric/completeness"
+    correctness: "prompts_metric/correctness"
+    faithfulness: "prompts_metric/faithfulness"
+    relevance: "prompts_metric/relevance"

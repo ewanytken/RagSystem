@@ -48,7 +48,6 @@ class PromptAssembler:
 
     def _format_document_chunks(self, chunks: List[Dict[str, Any]]) -> str:
         formatted = "=== RETRIEVED DOCUMENT PASSAGES ===\n"
-
         for i, chunk in enumerate(chunks, 1):
             relevance = chunk.get('score', 'N/A')
             if isinstance(relevance, float):
@@ -61,20 +60,21 @@ class PromptAssembler:
         return formatted
 
     def _format_triplets(self, triplets: List[Dict[str, str]]) -> str:
-        if not triplets:
+        if triplets:
+            formatted = "=== KNOWLEDGE GRAPH RELATIONSHIPS ===\n"
+            formatted += "Structured facts extracted from documents:\n"
+            try:
+                documents_extracted_from_triplet = set()
+                triplet_context = "Triplet extracted from documents:\n"
+                for i, triplet in enumerate(triplets, 1):
+                    triplet_context += f"{i}. {triplet['subject']} --> [{triplet['predicate']}]--> {triplet['object']} \n"
+                    documents_extracted_from_triplet.add(triplet['document'])
+                formatted = triplet_context + "\n".join(documents_extracted_from_triplet)
+            except Exception as e:
+                logger(f"Triplet is ERROR while add to final prompt {e}")
+            logger(f"Triplets from Graph: {formatted}")
+        else:
             return ""
-        formatted = "=== KNOWLEDGE GRAPH RELATIONSHIPS ===\n"
-        formatted += "Structured facts extracted from documents:\n"
-
-        documents_extracted_from_triplet = set()
-        triplet_context = "Triplet extracted from documents:\n"
-        for i, triplet in enumerate(triplets, 1):
-            triplet_context += f"{i}. {triplet['subject']} --> [{triplet['predicate']}]--> {triplet['object']} \n"
-            documents_extracted_from_triplet.add(triplet['document'])
-        formatted = triplet_context + "\n".join(documents_extracted_from_triplet)
-
-        logger(f"Triplets from Graph: {formatted}")
-
         return formatted
 
     def _format_entity_labels(self, entities: List[Dict]) -> str:
