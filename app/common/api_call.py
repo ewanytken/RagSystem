@@ -107,15 +107,11 @@ class ApiCall(Constructor):
         try:
             if self.metrics_config["init_metrics"]:
                 console.print("\n[bold blue] Simple Metrics Calculation in processing ... [/bold blue]")
-                response_by_word = self.get_response().split()
-                query_by_word = self.get_query().split()
-                overall_context = self.get_context()
-                retrieved_docs = self.doc_text_retrieved
 
-                config = {"response": response_by_word,
-                          "query": query_by_word,
-                          "context": overall_context,
-                          "retrieved_docs": retrieved_docs,
+                config = {"response": self.get_response(), #str
+                          "query": self.get_query(), #str
+                          "context": self.get_doc_text_retrieved, #List[str]
+                          "retrieved_docs": self.get_doc_text_retrieved(), #List[str]
                           "judge_model": self.metrics_config.get("judge_model", "empty_model")}
 
                 metrics_executor = MetricsExecutor(config)
@@ -127,40 +123,11 @@ class ApiCall(Constructor):
                     metrics_executor.judge_evaluator()
 
                 self.all_metrics_scores = metrics_executor.get_overall_scores()
+                logger_metrics(f"All obtained metrics: {self.all_metrics_scores}")
             else:
                 logger(f"Pass metrics evaluation")
         except Exception as e:
-            logger_metrics(f"Metrics processing ERROR: {e}")
-
-    def get_context(self) -> List[str]:
-        entities_context = ""
-        if self.entities_by_document_search is not None:
-            entities_context = "\nRelated entities from documents. Use it for more deeper answer to query:\n"
-            for i, entity in enumerate(self.entities_by_document_search):
-                entities_context += f"{i}. Entity: {entity['entity']} is label: {entity['label']} \n"
-
-        triplet_context = ""
-        if self.extracted_triplets:
-            documents_extracted_from_triplet = set()
-            triplet_context = "Triplet extracted from documents:\n"
-            for i, triplet in enumerate(self.extracted_triplets):
-                triplet_context += f"{i}. {triplet['subject']} --> [{triplet['predicate']}]--> {triplet['object']} \n"
-                documents_extracted_from_triplet.add(triplet['document'])
-            triplet_context = triplet_context + "\n".join(documents_extracted_from_triplet)
-
-        chunks_context = ""
-        if self.doc_dict_retrieved is not None:
-            chunks_context = "=== RETRIEVED DOCUMENT PASSAGES ===\n"
-            for i, chunk in enumerate(self.doc_dict_retrieved, 1):
-                relevance = chunk.get('score', 'N/A')
-                if isinstance(relevance, float):
-                    relevance = f"{relevance:.2f}"
-                chunks_context += f"\n[Passage {i}] (Relevance: {relevance})\n"
-                chunks_context += f"{chunk.get('text', '')}\n"
-
-        overall_context = chunks_context + entities_context + triplet_context
-        logger_metrics(f"Overall context for generate_metrics method: {overall_context}\n")
-        return overall_context
+            logger(f"Metrics processing ERROR: {e}")
 
     def get_response(self) -> str:
         return self.response

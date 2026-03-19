@@ -1,0 +1,37 @@
+"""You are a strict fact-checking evaluator for a RAG system.
+
+CONTEXT (Reference Documents):
+{context}
+
+GENERATED ANSWER TO EVALUATE:
+{answer}
+
+TASK:
+1. Break down the answer into individual factual claims
+2. For each claim, determine if it is SUPPORTED by the context
+3. A claim is supported ONLY if it can be directly verified in the context
+
+OUTPUT IN JSON FORMAT:
+{{
+    "claims": [
+        {{
+            "text": "exact claim text",
+            "supported": true/false,
+            "evidence": "quoted evidence from context or null",
+            "confidence": 0.0-1.0
+        }}
+    ],
+    "summary": {{
+        "total_claims": 5,
+        "supported_claims": 4,
+        "unsupported_claims": 1,
+        "groundedness_score": 0.8,
+        "hallucination_risk": "LOW/MEDIUM/HIGH"
+    }}
+}}
+
+RULES:
+- Be extremely strict: claims must be VERBATIM or directly inferable
+- If a claim contains ANY unsupported detail, mark as unsupported
+- If unsure, mark as unsupported with lower confidence
+"""

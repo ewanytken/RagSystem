@@ -27,6 +27,7 @@ class MetricsExecutor:
                 self.generate_metric.generation_calculation()
                 self.generate_metric.bert_calculation()
                 self.generate_metric.show_scores()
+
                 self.overall_scores.update({"GENERATION_EVAL": self.generate_metric.get_score()})
             except Exception as e:
                 logger_metrics(f"Generation metrics ERROR {e}")
