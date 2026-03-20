@@ -2,9 +2,9 @@ import time
 from typing import Optional
 
 from openai import OpenAI
+
 from app.logger import LoggerWrapper
 from app.respondent.abstract_respondent import Respondent
-from app.respondent.external_model.abstract_external_model import AbstractModelExternal
 from app.utils import Utils
 
 logger = LoggerWrapper()
@@ -22,14 +22,17 @@ class ExternalModel(Respondent):
             self.set_model_ticker(model_ticker)
             self.set_base_url(base_url)
             self.set_api_key(api_key)
-        elif model_ticker:
+
+        elif model_ticker: # condition for remote service
             self.set_model_ticker(model_ticker)
             self.set_base_url(self.config["external_service"]["url"])
             self.set_api_key(self.config["external_service"]["api_key"])
+
         else:
             self.set_model_ticker(self.config["external_service"]["model"])
             self.set_base_url(self.config["external_service"]["url"])
             self.set_api_key(self.config["external_service"]["api_key"])
+
         super().__init__()
 
         logger(f"Model: {self.get_model_ticker()}, Url: {self.get_base_url()}, APIKey: {True if self.get_api_key() else False}")
@@ -39,7 +42,7 @@ class ExternalModel(Respondent):
         time.sleep(3)
         try:
             response = self.client.chat.completions.create(
-                model=self.get_model_ticker(),
+                model=self.get_model_ticker() if self.get_model_ticker() is not "*" else "", # TODO remove for domestic test
                 messages = [{"role": "user", "content": prompt}],
             )
             answer = response.choices[0].message.content.strip()
@@ -47,7 +50,7 @@ class ExternalModel(Respondent):
             return answer
 
         except Exception as e:
-            logger(f"Bad connection ot other Model Service [[51]]: {e}")
+            logger(f"Bad connection to Model Service [[51]]: {e}")
 
     def set_base_url(self, base_url: str) -> None:
         self.base_url = base_url

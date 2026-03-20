@@ -21,3 +21,7 @@ System start with command: python main.py --run
 Response and Metrics displayed in cli menu.
 
 Database don't realize, RAG system work in memory.
+
+
+
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/ewanytken/RagSystem)

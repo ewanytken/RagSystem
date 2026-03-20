@@ -42,7 +42,7 @@ class ModelRemote(Enum):
 class ModelLocalTicker(Enum):
     QWEN3 = "Qwen/Qwen3-4B-Instruct-2507"
     FELLADRIN = "Felladrin/TinyMistral-248M-Chat-v3"
-    DEFAULT = "default"
+    DEFAULT = "anticipate"
 
 class PromptProvider(Enum):
     ADVANCED = "advanced"
@@ -55,7 +55,7 @@ class RemoteFreeModel(Enum):
     GEMMA = "google/gemma-3-27b-it"
     STEPFUN = "stepfun/step-3.5-flash"
     HUNTER = "openrouter/hunter-alpha"
-    DEFAULT = "default"
+    DEFAULT = "default: load from config.yaml"
 
 
 class Constructor:
@@ -216,11 +216,11 @@ class Constructor:
                             Choice(title="GEMMA 3 27B", value=RemoteFreeModel.GEMMA),
                             Choice(title="STEPFUN 3.5", value=RemoteFreeModel.STEPFUN),
                             Choice(title="OpRouter HUNTER", value=RemoteFreeModel.HUNTER),
-                            Choice(title="default (load ticket from config file)", value=RemoteFreeModel.DEFAULT)
+                            Choice(title="default load from config.yaml", value=RemoteFreeModel.DEFAULT)
                         ]
                     ).ask()
                     if model_remote_ticket == RemoteFreeModel.DEFAULT:
-                        respondent = ExternalModel()
+                        respondent = ExternalModel("*") #TODO remove, need for domestic tests
                     else:
                         respondent = ExternalModel(model_remote_ticket.value)
                 elif service_name == ModelRemote.GIGA:
@@ -254,14 +254,13 @@ class Constructor:
 
     def metrics_initializer(self) -> Dict:
 
-        metrics_config: Optional[Dict] = {}
         is_init_metrics = questionary.confirm(
             "Do you need Metrics Calculation? (False by default)",
             default=False
         ).ask()
 
+        metrics_config = {"init_metrics": is_init_metrics}
         if is_init_metrics:
-            metrics_config = {"init_metrics": is_init_metrics}
             judge_metrics = questionary.confirm(
                 "Do you need add Judge LLM Metrics? (False by default)",
                 default=False

@@ -101,7 +101,7 @@ class Constructor:
 
     def model_chooser(self) -> Respondent:
 
-        respondent: Optional[Respondent] = TransformerWrapper("Felladrin/TinyMistral-248M-Chat-v3")
+        respondent: Optional[Respondent] = TransformerWrapper()
 
         return respondent
 

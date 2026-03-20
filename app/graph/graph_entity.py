@@ -46,10 +46,10 @@ class GraphEntity:
         except Exception as e:
             logger(f"Failed to add entity to knowledge graph [[100]]: {e}")
 
-    def find_related_entities_from_doc(self, documents: Union[str, List], limit: int = 150) -> List[Dict]:
+    def find_related_entities_from_doc(self, documents: List, limit: int = 150) -> List[Dict]:
         related = []
-        if isinstance(documents, str): documents = [documents]
         for doc in documents:
+            if isinstance(doc, dict): doc = doc['text']
             doc_node = GraphEntity.hash_maker(doc)
             try:
                 if doc_node in self.graph:

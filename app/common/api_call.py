@@ -119,13 +119,13 @@ class ApiCall(Constructor):
                 metrics_executor.retriever_evaluator()
 
                 if self.metrics_config["judge_metrics"]:
-                    console.print("\n[brown cyan] Metrics LLM Judge in processing ... [/bold brown]")
+                    console.print("\n[/bold cyan] Metrics LLM Judge in processing ... [/bold cyan]")
                     metrics_executor.judge_evaluator()
 
                 self.all_metrics_scores = metrics_executor.get_overall_scores()
                 logger_metrics(f"All obtained metrics: {self.all_metrics_scores}")
             else:
-                logger(f"Pass metrics evaluation")
+                logger(f"Metrics doesn't calculate")
         except Exception as e:
             logger(f"Metrics processing ERROR: {e}")
 

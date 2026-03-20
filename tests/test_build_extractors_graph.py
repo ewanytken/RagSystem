@@ -42,11 +42,11 @@ class Test(unittest.TestCase):
         self.installer_system.extractor_processor(chunk)
 
         query = "What's ASR?"
-        retrieved_doc = self.installer_system.indexer_query(query)
+        retrieved_doc, txt = self.installer_system.indexer_query(query)
         logger(f"RETRIEVED DOC: {retrieved_doc}")
         entities_from_graph = self.installer_system.find_entities_from_graph(retrieved_doc)
         logger(f"ENTITIES FROM GRAPH: {entities_from_graph}")
-        final_prompt = self.installer_system.prompt_processor(query=query, chunks=retrieved_doc, entities=entities_from_graph)
+        final_prompt = self.installer_system.prompt_processor(query=query, retrieved_docs=retrieved_doc, entities=entities_from_graph)
         logger(f"FINAL PROMPT: {final_prompt}")
         logger(f"OUTPUT FROM LLM: {self.installer_system.llm_model_processor(final_prompt)}")
 
