@@ -32,7 +32,7 @@ class MetricsExecutor:
             except Exception as e:
                 logger_metrics(f"Generation metrics ERROR {e}")
         else:
-            logger_metrics(f"Generation metrics pass")
+            logger_metrics(f"Generation metrics pass, don't specify candidates")
 
     def retriever_evaluator(self) -> None:
 
@@ -45,7 +45,7 @@ class MetricsExecutor:
             except Exception as e:
                 logger_metrics(f"Retrieval metrics ERROR {e}")
         else:
-            logger_metrics(f"Retrieval metrics pass")
+            logger_metrics(f"Retrieval metrics pass, don't specify relevant docs")
 
     def judge_evaluator(self) -> None:
         try:

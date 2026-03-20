@@ -1,5 +1,3 @@
-from sympy.polys.polyconfig import query
-
 from app.logger.logger_metrics import LoggerMetrics
 from app.utils import Utils
 from metrics.generation_metrics import GenerationMetrics

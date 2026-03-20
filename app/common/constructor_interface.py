@@ -293,6 +293,8 @@ class Constructor:
 
                 except Exception as e:
                     logger(f"Model for Metrics don't install: {e}")
+            else:
+                metrics_config.update({"judge_metrics": False})
 
         return metrics_config
 

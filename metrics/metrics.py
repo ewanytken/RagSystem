@@ -27,7 +27,7 @@ class Metrics:
 
         # TODO dataset processor
         # datasets = self.config["metrics"]["datasets"]
-        # self.candidates = self.config["metrics"]
+        self.candidate = "Mock for test"
         # self.relevant_docs = self.config["metrics"]
 
     def show_scores(self) -> None:

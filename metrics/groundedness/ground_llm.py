@@ -4,11 +4,11 @@ from typing import List, Dict, Optional
 
 import numpy as np
 
+from app.logger.logger_metrics import LoggerMetrics
 from app.respondent.abstract_respondent import Respondent
-from app.utils import Utils
 from metrics.groundedness.ground_base import GroundednessResult, GroundednessScore
-from test_metrics import logger_metrics
 
+logger_metrics = LoggerMetrics()
 
 class LLMGroundedness:
 
