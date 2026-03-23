@@ -1,14 +1,14 @@
 import math
-from abc import ABC
-from abc import abstractmethod
-from typing import Union, Any, Dict, Optional
+from typing import Dict, Optional
+
 import psutil
 import pynvml
 import torch
+from accelerate import infer_auto_device_map, init_empty_weights, load_checkpoint_and_dispatch
 from huggingface_hub import snapshot_download
 from torch import nn
+
 from app.logger import LoggerWrapper
-from accelerate import infer_auto_device_map, init_empty_weights, load_checkpoint_and_dispatch
 from app.respondent.abstract_respondent import Respondent
 
 logger = LoggerWrapper()

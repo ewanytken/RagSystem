@@ -1,8 +1,9 @@
 import json
-import os
 from pathlib import Path
-from typing import List, Any, Dict
+from typing import Any, Dict
+
 import yaml
+
 from app.logger import LoggerWrapper
 
 logger = LoggerWrapper()

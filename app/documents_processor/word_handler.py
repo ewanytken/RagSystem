@@ -1,7 +1,6 @@
 import os
-from math import lgamma
 from pathlib import Path
-from typing import Dict, Optional, List
+from typing import Optional
 
 import pdfplumber
 from docx import Document
