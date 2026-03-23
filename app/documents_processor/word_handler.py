@@ -1,7 +1,9 @@
 import os
+from math import lgamma
 from pathlib import Path
 from typing import Dict, Optional, List
 
+import pdfplumber
 from docx import Document
 
 from app.documents_processor.abstract_document_handler import DocumentHandler
@@ -15,19 +17,16 @@ Output: List[document - str]
 """
 
 class WordHandler(DocumentHandler):
+
     def __init__(self):
         super().__init__()
-        self.config: Optional[Dict] = None
-        self.handled_documents: Optional[List] = []
-        self.chunked_documents: Optional[List[str]] = []
 
     def __repr__(self):
         return f"Word (docx) Handler Component"
 
-    def set_config(self, config: Dict):
-        self.config = config
-
     def handle_documents(self) -> None:
+
+        preserve_layout: bool = True
 
         path = Path(__file__).parent.parent.parent / self.config['paths']['documents_dir']
         logger(f"Path to document load: {path}")
@@ -41,48 +40,26 @@ class WordHandler(DocumentHandler):
                     doc = Document(file_path)
                     full_text = "\n".join([p.text for p in doc.paragraphs if p.text.strip()])
                 except Exception as e:
-                    logger(f"File didn't handle 70 {file_path}: {e}")
+                    logger(f"File in doc (docx) didn't handle [[70]] {file_path}: {e}")
 
                 if full_text is not None:
                     self.handled_documents.append(full_text)
                     self.chunked_documents.extend(self.text_chunking(full_text))
+
+            if filename.endswith(".pdf"):
+                file_path = path / filename
+                try:
+                    with pdfplumber.open(file_path) as pdf:
+                        if preserve_layout:
+                            full_text = "\n".join([self.clean_text(page.extract_text(layout=True)) for page in pdf.pages])
+                        else:
+                            full_text = "\n".join([page.extract_text().strip() for page in pdf.pages])
+                except Exception as e:
+                    logger(f"File in pdf didn't handle [[71]] {file_path}: {e}")
+
+                if full_text is not None:
+                    self.handled_documents.append(full_text)
+                    self.chunked_documents.extend(self.text_chunking(full_text))
+
         logger(f"Number of preprocessing documents: {len(self.handled_documents)} \n"
                f"Number of preprocessing chunks: {len(self.chunked_documents)}")
-
-    def get_chunked_documents(self) -> List[str]:
-        return self.chunked_documents
-
-    def get_handled_documents(self) -> List[str]:
-        return self.handled_documents
-
-    def text_chunking(self, document: str) -> List[str]:
-
-        chunk_size = self.config['rag']['chunk_size']
-        overlap = self.config['rag']['chunk_overlap']
-
-        chunks: Optional[List] = []
-
-        sentences = document.split('. ')
-        current_chunk = ""
-
-        for sentence in sentences:
-            if len(current_chunk) + len(sentence) < chunk_size:
-                current_chunk += sentence + '. '
-            else:
-                if current_chunk:
-                    chunks.append(current_chunk.strip())
-                current_chunk = sentence + '. '
-
-        if current_chunk:
-            chunks.append(current_chunk.strip())
-
-        if len(chunks) > 1 and overlap > 0:
-            overlapped_chunks = []
-            for i in range(len(chunks) - 1):
-                chunk = chunks[i]
-                next_chunk_start = chunks[i + 1][:overlap]
-                overlapped_chunks.append(chunk + ' ' + next_chunk_start)
-            overlapped_chunks.append(chunks[-1])
-            chunks = overlapped_chunks
-
-        return chunks

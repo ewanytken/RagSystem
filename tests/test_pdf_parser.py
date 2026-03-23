@@ -1,74 +1,53 @@
-import json
 import re
 import unittest
-from typing import Dict, List
+from pathlib import Path
+from typing import List, Optional
+
+import pdfplumber
 
 from app.logger import LoggerWrapper
 
 logger = LoggerWrapper()
-import pdfplumber
-from typing import Optional, List, Dict
-import os
 
 
-class PDFParserPlumber:
+def text_chunking(document: str) -> List[str]:
+    chunk_size = 1500
+    overlap = 150
 
-    def __init__(self):
-        self.pages = None
-        self.file_path = None
+    chunks: Optional[List] = []
 
-    def parse_pdf(self, file_path: str, pages: Optional[List[int]] = None,
-                  preserve_layout: bool = True) -> str:
-        """
-        Parse PDF with preservation of layout
+    sentences = document.split('. ')
+    current_chunk = ""
 
-        Args:
-            file_path: Path to PDF file
-            pages: List of page numbers to extract (None for all pages)
-            preserve_layout: Whether to preserve text layout
+    for sentence in sentences:
+        if len(current_chunk) + len(sentence) < chunk_size:
+            current_chunk += sentence + '. '
+        else:
+            if current_chunk:
+                chunks.append(current_chunk.strip())
+            current_chunk = sentence + '. '
 
-        Returns:
-            Extracted text as string
-        """
-        if not os.path.exists(file_path):
-            raise FileNotFoundError(f"PDF file not found: {file_path}")
+    if current_chunk:
+        chunks.append(current_chunk.strip())
 
-        try:
-            self.file_path = file_path
-            text_parts = []
+    if len(chunks) > 1 and overlap > 0:
+        overlapped_chunks = []
+        for i in range(len(chunks) - 1):
+            chunk = chunks[i]
+            next_chunk_start = chunks[i + 1][:overlap]
+            overlapped_chunks.append(chunk + ' ' + next_chunk_start)
+        overlapped_chunks.append(chunks[-1])
+        chunks = overlapped_chunks
 
-            with pdfplumber.open(file_path) as pdf:
-                page_range = pages if pages else range(len(pdf.pages))
+    return chunks
 
-                for page_num in page_range:
-                    page = pdf.pages[page_num]
+def clean_text(text: str) -> str:
+    # Remove extra whitespace
+    text = re.sub(r'\s+', ' ', text)
+    # Remove special characters but keep punctuation
+    text = re.sub(r'[^\w\s\.\,\;\:\(\)-]', '', text)
+    return text.strip()
 
-                    if preserve_layout:
-                        # Preserve original layout
-                        text = page.extract_text(layout=True)
-                    else:
-                        # Simple text extraction
-                        text = page.extract_text()
-
-                    if text and text.strip():
-                        text_parts.append(text)
-
-            return "\n\n".join(text_parts)
-
-        except Exception as e:
-            raise Exception(f"Failed to parse PDF: {e}")
-
-    def extract_tables(self, file_path: str, page_num: int = 0) -> List[List[List[str]]]:
-        """
-        Extract tables from PDF
-        """
-        with pdfplumber.open(file_path) as pdf:
-            page = pdf.pages[page_num]
-            tables = page.extract_tables()
-            return tables
-
-
-# Usage
 
 class Test(unittest.TestCase):
 
@@ -76,9 +55,25 @@ class Test(unittest.TestCase):
         pass
 
     def test_document_processing(self):
-        parser = PDFParserPlumber()
-        text = parser.parse_pdf("document.pdf", preserve_layout=True)
-        print(text)
+        preserve_layout = True
+        path = Path(__file__).parent.parent / "documents"
+        filename = "icebreaker_eng.pdf"
+
+        if filename.endswith(".pdf"):
+            file_path = path / filename
+            try:
+                logger(file_path)
+                with pdfplumber.open(file_path) as pdf:
+                    if preserve_layout:
+                        full_text = "".join([clean_text(page.extract_text(layout=True)) for page in pdf.pages])
+                    else:
+                        full_text = "\n".join([page.extract_text().strip() for page in pdf.pages])
+                        # full_text = full_text.join([page.extract_tables() for page in pdf.pages])
+            except Exception as e:
+                logger(f"File in pdf didn't handle [[71]] {file_path}: {e}")
+
+        logger(f"{full_text}")
+        logger(f"CHUNKS: {text_chunking(full_text)}")
 
     if __name__ == '__main__':
         unittest.main()
