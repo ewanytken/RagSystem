@@ -22,3 +22,4 @@ class DocumentHandler(ABC):
     @abstractmethod
     def get_chunked_documents(self) -> List[str]:
         raise NotImplemented
+

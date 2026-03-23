@@ -42,7 +42,7 @@ class ExternalModel(Respondent):
         time.sleep(3)
         try:
             response = self.client.chat.completions.create(
-                model=self.get_model_ticker() if self.get_model_ticker() is not "*" else "", # TODO remove for domestic test
+                model=self.get_model_ticker(),
                 messages = [{"role": "user", "content": prompt}],
             )
             answer = response.choices[0].message.content.strip()

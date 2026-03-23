@@ -220,7 +220,7 @@ class Constructor:
                         ]
                     ).ask()
                     if model_remote_ticket == RemoteFreeModel.DEFAULT:
-                        respondent = ExternalModel("*") #TODO remove, need for domestic tests
+                        respondent = ExternalModel()
                     else:
                         respondent = ExternalModel(model_remote_ticket.value)
                 elif service_name == ModelRemote.GIGA:

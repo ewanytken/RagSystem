@@ -51,7 +51,7 @@ class Metrics:
     def set_candidates(self, candidate) -> None:
         self.candidate = candidate
 
-    def set_relevant_docs(self, docs: List) -> None:
+    def set_relevant_docs(self, docs: List | str) -> None:
         self.relevant_docs = docs
 
     def get_relevant_docs(self) -> List[str]:

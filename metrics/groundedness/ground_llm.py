@@ -24,7 +24,7 @@ class LLMGroundedness:
             for i, ctx in enumerate(contexts[:5])
         ])
 
-        template = self.config['prompts']['groundedness']
+        template = self.config['metrics']['prompts']['groundedness']
         prompt = template.format(answer=answer, context=context)
         return prompt
 
@@ -65,7 +65,9 @@ class LLMGroundedness:
                  return_details: bool = True) -> GroundednessResult:
 
         prompt = self.create_groundedness_prompt(response, context)
+
         response = self.model.generate(prompt)
+        response = self.parse_llm_response(response)
 
         summary = response.get("summary", {})
         claims_data = response.get("claims", [])

@@ -39,6 +39,7 @@ class TripletExtractor:
                     prompt = extraction_template.format(document=document)
 
                     response_by_template = self.llm_model.generate(prompt)
+                    logger(f"response after extracted: {response_by_template}")
                     triplets = self.parse_json_response(response_by_template)
                     extracted_relation = self.validate_triplets(triplets)
 
@@ -119,11 +120,11 @@ class TripletExtractor:
         # Remove extra whitespace
         text = re.sub(r'\s+', ' ', text)
         # Remove special characters but keep punctuation
-        text = re.sub(r'[^\w\s\\.\\,\\;\\:\\(\\)-]', '', text)
+        text = re.sub(r'[^\w\s\.\,\;\:\(\)-]', '', text)
         return text.strip()
 
     def parse_json_response(self, content: str) -> List[Dict]:
-        json_match = re.search(r'\\[.*\\]', content, re.DOTALL)
+        json_match = re.search(r'\[.*\]', content, re.DOTALL)
         if json_match:
             content = json_match.group()
         try:
@@ -133,14 +134,14 @@ class TripletExtractor:
             return triplets if isinstance(triplets, list) else []
         except json.JSONDecodeError:
             content = content.replace("'", '"')
+            content = content.replace("“", '"')
+            content = content.replace("”", '"')
             content = re.sub(r',\s*}', '}', content)
             content = re.sub(r',\s*]', ']', content)
             try:
                 return json.loads(content)
             except Exception as e:
-                logger(f"Parse to json Exception [[93]]: {e}")
-            finally:
-                return []
+                logger(f"Parse to json format ERROR [[93]]: {e}")
 
 
     def validate_triplets(self, triplets: List[Any]) -> List[Dict[str, str]]:
