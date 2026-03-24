@@ -50,7 +50,7 @@ class InstallerSystem:
         except Exception as e:
             logger(f"Indexer query failed [[64]]: {e}")
 
-    def prompt_processor(self, query: str, retrieved_docs: List, entities: List, triplets: List) -> str:
+    def prompt_processor(self, query: str, retrieved_docs: List, entities: List = None, triplets: List = None) -> str:
         self.prompt_object.set_config(self.config)
         self.prompt_object.set_entities(entities)
         self.prompt_object.set_triplet(triplets)
@@ -59,17 +59,20 @@ class InstallerSystem:
         self.prompt_object.make_final_prompt()
         return self.prompt_object.get_final_prompt()
 
-    def extractor_processor(self, documents: List[str]) -> set:
+    def extractor_processor(self, documents: List[str]) -> List:
         label_for_gliner = Utils.load_label_description()
 
-        for ext in self.extractors:
-            if isinstance(ext, GlinerEntity) or isinstance(ext, GlinerTwoEntity):
-                ext.set_config(self.config)
-                ext.set_gliner_model()
-                ext.set_gliner_label(label_for_gliner)
+        if self.extractors:
+            for ext in self.extractors:
+                if isinstance(ext, GlinerEntity) or isinstance(ext, GlinerTwoEntity):
+                    ext.set_config(self.config)
+                    ext.set_gliner_model()
+                    ext.set_gliner_label(label_for_gliner)
 
-        self.extractor.set_extractors(self.extractors)
-        self.extractor.set_documents(documents)
+            self.extractor.set_extractors(self.extractors)
+            self.extractor.set_documents(documents)
+        else:
+            raise Exception("Extractor don't install. Next methods cannot be call")
 
         if self.graph_entity is not None:
             self.extractor.set_graph(self.graph_entity)
@@ -82,27 +85,47 @@ class InstallerSystem:
         return self.extractor.get_entities()
 
     def find_entities_from_graph(self, indexer_doc: Union[str, List]) -> list[dict]:
-        return self.graph_entity.find_related_entities_from_doc(indexer_doc)
+        if self.graph_entity is not None:
+            return self.graph_entity.find_related_entities_from_doc(indexer_doc)
+        else:
+            logger(f"Graph entity don't install. Return empty list.")
+            return []
 
-    def find_docs_from_graph(self, entity: str) -> set[dict[str, str | int]]:
-        return self.graph_entity.find_doc_by_entity(entity)
+    def find_docs_from_graph(self, entity: str) -> set:
+        if self.graph_entity is not None:
+            return self.graph_entity.find_doc_by_entity(entity)
+        else:
+            logger(f"Graph entity don't install. Return empty set.")
+            return set()
 
     def find_triplets(self, query: str) -> list[dict]:
-        self.triplet_graph.extract_triplets(query)
-        triplet = self.triplet_graph.get_extracted_query()
-        for t in triplet:
-            self.triplet_graph.search_relation_from_graph(t[0], t[1], t[2])
-        return self.triplet_graph.get_extracted_relation()
+        if self.triplet_graph is not None:
+            self.triplet_graph.extract_triplets(query)
+            triplet = self.triplet_graph.get_extracted_query()
+            for t in triplet:
+                self.triplet_graph.search_relation_from_graph(t[0], t[1], t[2])
+            return self.triplet_graph.get_extracted_relation()
+        else:
+            logger(f"Triplets Graph don't install. Return empty list.")
+            return []
 
     def find_triplets_by_subject(self, query: str) -> list[dict]:
-        self.triplet_graph.extract_triplets(query)
-        triplet = self.triplet_graph.get_extracted_query()
-        for t in triplet:
-            self.triplet_graph.search_relation_by_subject(t[0])
-        return self.triplet_graph.get_extracted_relation()
+        if self.triplet_graph is not None:
+            self.triplet_graph.extract_triplets(query)
+            triplet = self.triplet_graph.get_extracted_query()
+            for t in triplet:
+                self.triplet_graph.search_relation_by_subject(t[0])
+            return self.triplet_graph.get_extracted_relation()
+        else:
+            logger(f"Triplets Graph don't install. Return empty list.")
+            return []
 
     def llm_model_processor(self, prompt: str) -> str:
-        return self.llm_responder.generate(prompt)
+        if self.llm_responder is not None:
+            return self.llm_responder.generate(prompt)
+        else:
+            logger(f"LLM Model not installed. Return empty string.")
+            return ""
 
     def get_extractors(self) -> list[AbstractEntity]:
         return self.extractors

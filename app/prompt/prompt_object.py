@@ -28,7 +28,7 @@ class PromptObject(AbstractPrompt):
         entities_context = ""
         if self.entities is not None:
             entities_context = "\nRelated entities from documents. Use it for more deeper answer to query:\n"
-            for i, entity in enumerate(self.entities):
+            for i, entity in enumerate(self.entities, 1):
                 entities_context += f"{i}. Entity: {entity['entity']} is label: {entity['label']} \n"
 
         logger(f"Entities: {entities_context}")
@@ -37,7 +37,7 @@ class PromptObject(AbstractPrompt):
         if self.triplets is not None:
             documents_extracted_from_triplet = set()
             triplet_context = "Triplet extracted from documents:\n"
-            for i, triplet in enumerate(self.triplets):
+            for i, triplet in enumerate(self.triplets, 1):
                 triplet_context += f"{i}. {triplet['subject']} --> [{triplet['predicate']}]--> {triplet['object']} \n"
                 documents_extracted_from_triplet.add(triplet['document'])
             triplet_context = triplet_context + "\n".join(documents_extracted_from_triplet)

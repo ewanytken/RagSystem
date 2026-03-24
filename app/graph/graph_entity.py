@@ -70,7 +70,7 @@ class GraphEntity:
         logger(f"Extracted entities from Graph: {len(related)}")
         return related
 
-    def find_doc_by_entity(self, search_entity: str, attribute_name='entity') -> Set[Dict[str, Union[str, int]]]:
+    def find_doc_by_entity(self, search_entity: str, attribute_name='entity') -> set[str]:
         try:
             nodes_with_entity = [n for n, attr in self.graph.nodes(data=True)
                                             if attr.get(attribute_name) == search_entity]

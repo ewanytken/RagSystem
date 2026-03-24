@@ -22,7 +22,7 @@ class EntityExtractor:
         self.extractors: Optional[List[AbstractEntity]] = []
         self.documents: Optional[List[str]] = []
 
-        self.entities: Optional[set] = set()
+        self.entities: Optional[List] = []
         self.query_entities: Optional[set] = set()
 
         self.graph: Optional[GraphEntity] = None
@@ -33,14 +33,15 @@ class EntityExtractor:
     def entities_and_graphs_extractor(self) -> None:
         if self.documents and self.extractors:
             logger(f"Document's Entities extracting...")
-            for i, document in enumerate(self.documents):
+            for document in self.documents:
                 for extractor in self.extractors:
                     extractor.set_text_extraction(document)
                     extractor.extractor_entity()
-                    self.entities.update(*extractor.get_extract_entities())
+                    unique_extraction = self.unique_by_entity(extractor.get_extract_entities())
+                    self.entities.extend(unique_extraction)
 
                     if self.graph is not None:
-                        self.graph.set_entities(extractor.get_extract_entities())
+                        self.graph.set_entities(unique_extraction)
                         self.graph.add_to_knowledge_graph(document)
 
             if self.graph is not None:
@@ -50,13 +51,24 @@ class EntityExtractor:
                 self.triplet.set_documents(self.documents)
                 self.triplet.extract_triplets()
 
-    # maybe its don't need
+    # maybe it don't need
     def query_extractor(self, query: str) -> None:
         logger(f"Query extracting...")
         for extractor in self.extractors:
             extractor.set_text_extraction(query)
             extractor.extractor_entity()
             self.query_entities.add(*extractor.get_extract_entities())
+
+    def unique_by_entity(self, entities: Optional[List]):
+        seen_ids = set()
+        unique_data = []
+
+        for entity in entities:
+            if entity['entity'] not in seen_ids:
+                unique_data.append(entity)
+                seen_ids.add(entity['entity'])
+
+        return unique_data
 
     def set_documents(self, documents: List[str]) -> None:
         self.documents = documents
@@ -70,7 +82,7 @@ class EntityExtractor:
     def set_extractors(self, extractors: List[AbstractEntity]) -> None:
         self.extractors = extractors
 
-    def get_entities(self) -> Set:
+    def get_entities(self) -> List:
         return self.entities
 
     def get_query_entities(self) -> Set:
