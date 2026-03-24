@@ -33,18 +33,18 @@ class PromptAssembler:
 
     def _get_system_instruction(self) -> str:
         return """You are an advanced AI assistant with access to multiple knowledge sources. Your task is to provide accurate, comprehensive answers by synthesizing information from:
-                1. Retrieved document passages (primary source)
-                2. Knowledge graph triplets (structured relationships)
-                3. Domain-specific entity labels (contextual categorization)
-                
-                Follow these guidelines:
-                - Prioritize information from document chunks for factual accuracy
-                - Use triplets to understand relationships between entities
-                - Leverage entity labels for domain-specific context
-                - Cite sources when possible (document chunk IDs)
-                - If information conflicts, acknowledge the discrepancy
-                - If information is insufficient, clearly state what's missing
-                - Maintain scientific precision in responses"""
+1. Retrieved document passages (primary source)
+2. Knowledge graph triplets (structured relationships)
+3. Domain-specific entity labels (contextual categorization)
+
+Follow these guidelines:
+- Prioritize information from document chunks for factual accuracy
+- Use triplets to understand relationships between entities
+- Leverage entity labels for domain-specific context
+- Cite sources when possible (document chunk IDs)
+- If information conflicts, acknowledge the discrepancy
+- If information is insufficient, clearly state what's missing
+- Maintain scientific precision in responses"""
 
     def _format_document_chunks(self, chunks: List[Dict[str, Any]]) -> str:
         formatted = "=== RETRIEVED DOCUMENT PASSAGES ===\n"
@@ -62,14 +62,15 @@ class PromptAssembler:
     def _format_triplets(self, triplets: List[Dict[str, str]]) -> str:
         if triplets:
             formatted = "=== KNOWLEDGE GRAPH RELATIONSHIPS ===\n"
-            formatted += "Structured facts extracted from documents:\n"
+            formatted += "Triplet extracted from documents:\n"
+            formatted += "Format: [SUBJECT] --> [PREDICATE] --> [OBJECT]\n"
             try:
                 documents_extracted_from_triplet = set()
-                triplet_context = "Triplet extracted from documents:\n"
+                triplet_context = ""
                 for i, triplet in enumerate(triplets, 1):
                     triplet_context += f"{i}. {triplet['subject']} --> [{triplet['predicate']}]--> {triplet['object']} \n"
                     documents_extracted_from_triplet.add(triplet['document'])
-                formatted = triplet_context + "\n".join(documents_extracted_from_triplet)
+                formatted += triplet_context + "\n".join(documents_extracted_from_triplet)
             except Exception as e:
                 logger(f"Triplet is ERROR while add to final prompt {e}")
             logger(f"Triplets from Graph: {formatted}")
@@ -80,10 +81,11 @@ class PromptAssembler:
     def _format_entity_labels(self, entities: List[Dict]) -> str:
         formatted = "=== DOMAIN-SPECIFIC ENTITY CLASSIFICATIONS ===\n"
         formatted += "Entity types and categories for context:\n"
+        formatted += "Format: [ENTITY] --> [LABEL] --> [SCORE]\n"
 
         if entities is not None:
             for i, entity in enumerate(entities, 1):
-                formatted += f"{i}. Entity -- {entity['entity']} is label -- {entity['label']} \n"
+                formatted += f"{i}. Entity -- {entity['entity']} is label -- {entity['label']} --> Score: {entity['score']} \n"
 
         formatted += "\nUse these classifications to understand the domain context of entities mentioned."
 
@@ -94,20 +96,20 @@ class PromptAssembler:
     def _format_query(self, query: str) -> str:
         return f"""=== USER QUERY ===
                 {query}
-                Based on ALL the information provided above (document passages, knowledge graph relationships, and entity classifications), 
-                please provide a comprehensive answer. If the answer requires combining information from multiple sources, 
-                explicitly show how you synthesized it.
-                """
+Based on ALL the information provided above (document passages, knowledge graph relationships, and entity classifications), 
+please provide a comprehensive answer. If the answer requires combining information from multiple sources, 
+explicitly show how you synthesized it.
+"""
 
     def _get_response_format(self) -> str:
         return """=== RESPONSE FORMAT ===
-                Please structure your response as follows:
-                1. **Direct Answer**: Brief, direct response to the query
-                2. **Supporting Evidence**: Key facts from sources
-                3. **Synthesis**: How information from different sources connects
-                4. **Limitations**: Any gaps or uncertainties in the available information
-                
-                Begin your response now:"""
+Please structure your response as follows:
+1. **Direct Answer**: Brief, direct response to the query
+2. **Supporting Evidence**: Key facts from sources
+3. **Synthesis**: How information from different sources connects
+4. **Limitations**: Any gaps or uncertainties in the available information
+
+Begin your response now:"""
 
     def set_config(self, config: Dict):
         self.config = config
@@ -145,38 +147,38 @@ class AdaptivePromptAssembler(PromptAssembler):
     @staticmethod
     def _factual_template() -> str:
         return """Additional Instructions for Factual Query:
-                - Extract specific facts from document chunks first
-                - Use triplets to verify relationships between entities
-                - Provide exact quotes when relevant
-                - Include temporal information (dates, periods) if available
-                - Cite specific passage numbers for key facts"""
+- Extract specific facts from document chunks first
+- Use triplets to verify relationships between entities
+- Provide exact quotes when relevant
+- Include temporal information (dates, periods) if available
+- Cite specific passage numbers for key facts"""
 
     @staticmethod
     def _explanatory_template() -> str:
         return """Additional Instructions for Explanatory Query:
-                - Synthesize information from multiple sources
-                - Use entity labels to understand domain context
-                - Explain cause-effect relationships found in triplets
-                - Connect concepts across different document chunks
-                - Identify underlying principles or mechanisms"""
+- Synthesize information from multiple sources
+- Use entity labels to understand domain context
+- Explain cause-effect relationships found in triplets
+- Connect concepts across different document chunks
+- Identify underlying principles or mechanisms"""
 
     @staticmethod
     def _comparative_template() -> str:
         return """Additional Instructions for Comparative Query:
-                - Create structured comparison using available information
-                - Use triplets to highlight relationship differences
-                - Note when information for comparison is incomplete
-                - Identify shared attributes from entity labels
-                - Present comparisons in a clear format (tables if helpful)"""
+- Create structured comparison using available information
+- Use triplets to highlight relationship differences
+- Note when information for comparison is incomplete
+- Identify shared attributes from entity labels
+- Present comparisons in a clear format (tables if helpful)"""
 
     @staticmethod
     def _procedural_template() -> str:
         return """Additional Instructions for Procedural Query:
-                - Sequence steps in logical order
-                - Note prerequisites from entity classifications
-                - Highlight critical points from document chunks
-                - Use triplets to identify tools or materials needed
-                - Include warnings or important considerations"""
+- Sequence steps in logical order
+- Note prerequisites from entity classifications
+- Highlight critical points from document chunks
+- Use triplets to identify tools or materials needed
+- Include warnings or important considerations"""
 
 class FinalAssembler(AbstractPrompt):
     def __init__(self):

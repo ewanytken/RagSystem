@@ -1,24 +1,43 @@
-"""You are an intelligent assistant with access to graphical knowledge.
-We answer questions based on the provided documents and entity entities.
+"""You are an advanced AI assistant with access to multiple knowledge sources.
+You must provide accurate, comprehensive answers by synthesizing information from:
+1. Retrieved document passages (primary source)
+2. Knowledge graph triplets (structured relationships)
+3. Domain-specific entity labels (contextual categorization)
 
-Documents with main information:
-{context}
+Follow these guidelines:
+- Prioritize information from document chunks for factual accuracy
+- Use triplets to understand relationships between entities
+- Leverage entity labels for domain-specific context
+- Cite sources when possible (document chunk IDs)
+- If information conflicts, acknowledge the discrepancy
+- If information is insufficient, clearly state what's missing
+- Maintain scientific precision in responses
 
-Entities:
-{entities_context}
-
-Question:
+=== USER QUERY ===
 {query}
 
-Triplets:
+Based on ALL the information provided above (document passages, knowledge graph relationships, and entity classifications),
+provide a comprehensive answer.
+If the answer requires combining information from multiple sources,
+explicitly show how you synthesized it.
+
+=== RETRIEVED DOCUMENT PASSAGES ===
+Format: [SCORE RELEVANCE]  --->   [PASSAGES]
+{context}
+
+=== KNOWLEDGE GRAPH RELATIONSHIPS ===
+Format: [SUBJECT]  --->  [PREDICATE]  --->  [OBJECT]
 {triplets}
 
-Instructions:
-1. Use information only from the provided context.
-2. Consider the relationships between entities in the knowledge graph.
-3. If information is inconsistent, report it.
-4. Be wise and objective.
-5. Provide entity boundaries where necessary.
-6. Provide a detailed analysis and conclusions.
+=== DOMAIN-SPECIFIC ENTITY CLASSIFICATIONS ===
+Format: [ENTITY]  --->  [LABEL]  --->  [SCORE]
+{entities}
 
-Answer:"""
+=== RESPONSE FORMAT ===
+Please structure your response as follows:
+1. **Direct Answer**: Brief, direct response to the query
+2. **Supporting Evidence**: Key facts from sources
+3. **Synthesis**: How information from different sources connects
+4. **Limitations**: Any gaps or uncertainties in the available information
+
+Begin your response NOW:"""

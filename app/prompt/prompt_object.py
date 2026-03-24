@@ -16,42 +16,40 @@ class PromptObject(AbstractPrompt):
     def __init__(self):
         super().__init__()
         self.config: Optional[Dict] = None
-        self.user_query: Optional[str] = "Query don't specify"
         self.chunks: Optional[List] = []
-        self.entities: Optional[List] = []
+        self.triplets: Optional[List] = None
+        self.entities: Optional[List] = None
+        self.user_query: Optional[str] = "Query don't specify"
         self.template: Optional[str] = "Empty template"
-        self.triplets: Optional[List] = []
         self.final_prompt: Optional[str] = "Empty prompt"
 
     def make_final_prompt(self):
 
         entities_context = ""
         if self.entities is not None:
-            entities_context = "\nRelated entities from documents. Use it for more deeper answer to query:\n"
             for i, entity in enumerate(self.entities, 1):
-                entities_context += f"{i}. Entity: {entity['entity']} is label: {entity['label']} \n"
+                entities_context += f"{i}. {entity['entity']} --> {entity['label']} --> Score: {entity['score']} \n"
 
         logger(f"Entities: {entities_context}")
 
         triplet_context = ""
         if self.triplets is not None:
             documents_extracted_from_triplet = set()
-            triplet_context = "Triplet extracted from documents:\n"
             for i, triplet in enumerate(self.triplets, 1):
                 triplet_context += f"{i}. {triplet['subject']} --> [{triplet['predicate']}]--> {triplet['object']} \n"
                 documents_extracted_from_triplet.add(triplet['document'])
-            triplet_context = triplet_context + "\n".join(documents_extracted_from_triplet)
+            triplet_context = (triplet_context +
+                               "\nBase document:"+ "\n".join(documents_extracted_from_triplet))
 
         logger(f"Triplets: {triplet_context}")
 
         chunks_context = ""
         if self.chunks is not None:
-            chunks_context = "=== RETRIEVED DOCUMENT PASSAGES ===\n"
             for i, chunk in enumerate(self.chunks, 1):
                 relevance = chunk.get('score', 'N/A')
                 if isinstance(relevance, float):
                     relevance = f"{relevance:.2f}"
-                chunks_context += f"\n[Passage {i}] (Relevance: {relevance})\n"
+                chunks_context += f"\n{i} --> Score: {relevance}\n"
                 chunks_context += f"{chunk.get('text', '')}\n"
                 chunks_context += "-" * 50
 
@@ -62,7 +60,7 @@ class PromptObject(AbstractPrompt):
 
         self.final_prompt = self.template.format(
             context=chunks_context,
-            entities_context=entities_context,
+            entities=entities_context,
             query=self.user_query,
             triplets=triplet_context,
         )
@@ -77,8 +75,8 @@ class PromptObject(AbstractPrompt):
     def set_chunks(self, chunks: List):
         self.chunks = chunks
 
-    def set_triplet(self, triplet: List):
-        self.triplets = triplet
+    def set_triplet(self, triplets: List):
+        self.triplets = triplets
 
     def set_entities(self, entities: List):
         self.entities = entities

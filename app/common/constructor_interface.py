@@ -46,7 +46,7 @@ class ModelLocalTicker(Enum):
 
 class PromptProvider(Enum):
     ADVANCED = "advanced"
-    SIMPLE = "simple"
+    TEMPLATE = "templated"
 
 class RemoteFreeModel(Enum):
     OPENAI = "openai/gpt-oss-120b"
@@ -160,16 +160,16 @@ class Constructor:
         prompter: Optional[AbstractPrompt] = None
         try:
             provider = questionary.select(
-                "Select simple or advanced prompter:",
+                "Select templated or advanced prompter:",
                 choices=[
                     Choice(title="Advanced prompter", value=PromptProvider.ADVANCED),
-                    Choice(title="Simple prompter", value=PromptProvider.SIMPLE),
+                    Choice(title="Template prompter (for different language)", value=PromptProvider.TEMPLATE),
                 ]
             ).ask()
 
             if provider == PromptProvider.ADVANCED:
                 prompter = FinalAssembler()
-            elif provider == PromptProvider.SIMPLE:
+            elif provider == PromptProvider.TEMPLATE:
                 prompter = PromptObject()
             else:
                 prompter = None
@@ -216,7 +216,7 @@ class Constructor:
                             Choice(title="GEMMA 3 27B", value=RemoteFreeModel.GEMMA),
                             Choice(title="STEPFUN 3.5", value=RemoteFreeModel.STEPFUN),
                             Choice(title="OpRouter HUNTER", value=RemoteFreeModel.HUNTER),
-                            Choice(title="default load from config.yaml", value=RemoteFreeModel.DEFAULT)
+                            Choice(title="default. Load from config.yaml", value=RemoteFreeModel.DEFAULT)
                         ]
                     ).ask()
                     if model_remote_ticket == RemoteFreeModel.DEFAULT:

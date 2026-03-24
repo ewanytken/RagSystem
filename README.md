@@ -13,8 +13,8 @@ Also add Metrics:
     
 All parameters are being configured with use config.yaml and interactive cli choice.
 Interactive cli menu permit modify configuration and enter query to system.
-All modules can be choose by desire and anyone might gather own RAG construction.
-For Local LLM implemented GPU memory distribution with diffrent approch include accelerator.
+All modules can be chosen by desire and anyone might gather own RAG construction.
+For Local LLM implemented GPU memory distribution with different approach include accelerator.
 
 System start with command: python main.py --run
 

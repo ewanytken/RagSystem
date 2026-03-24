@@ -1,7 +1,5 @@
 import unittest
 
-import questionary
-from questionary import Choice
 from rich.console import Console
 
 from app.logger import LoggerWrapper
