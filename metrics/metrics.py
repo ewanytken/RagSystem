@@ -6,6 +6,7 @@ from sentence_transformers import SentenceTransformer
 
 from app.respondent.abstract_respondent import Respondent
 from app.utils import Utils
+from metrics.dataset_handler.dataset_handler import DatasetHandler
 
 console = Console()
 
@@ -13,22 +14,19 @@ class Metrics:
 
     def __init__(self):
         self.score: Optional[Dict] = {}
+
         self.candidate: str = ""
-        self.relevant_docs: Optional[List | str] = []
+        self.relevant_doc: Optional[List | str] = []
+
         self.config: Optional[Dict] = Utils.get_config_file()
+
         self.model_sim: Optional[Any] = None
         self.model_judge: Optional[Respondent] = None
-        self.lang: Optional[str] = "en"
 
-    def dataset_and_init_processing(self) -> None:
+    def init_processing(self) -> None:
         if self.config["metrics"]["model_sim"]:
             ticket = self.config["metrics"]["model_sim"]
             self.model_sim = SentenceTransformer(ticket)
-
-        # TODO dataset processor
-        # datasets = self.config["metrics"]["datasets"]
-        self.candidate = "Mock for test"
-        # self.relevant_docs = self.config["metrics"]
 
     def show_scores(self) -> None:
         table = Table(title="RAG Metrics Summary", border_style="cyan")
@@ -48,16 +46,16 @@ class Metrics:
     def get_score(self) -> Dict[str, float | Dict[str, float]]:
         return self.score
 
-    def set_candidates(self, candidate) -> None:
+    def set_candidates(self, candidate: str) -> None:
         self.candidate = candidate
 
     def set_relevant_docs(self, docs: List | str) -> None:
-        self.relevant_docs = docs
+        self.relevant_doc = docs
 
-    def get_relevant_docs(self) -> List[str]:
-        return self.relevant_docs
+    def get_relevant_doc(self) -> List[str]:
+        return self.relevant_doc
 
-    def get_candidates(self) -> List[str] | str:
+    def get_candidate(self) -> List[str] | str:
         return self.candidate
 
     def set_model_sim(self, model) -> None:

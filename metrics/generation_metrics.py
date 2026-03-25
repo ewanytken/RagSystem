@@ -11,6 +11,7 @@ from metrics.metrics import Metrics
 logger_metrics = LoggerMetrics()
 
 class GenerationMetrics(Metrics):
+
     def __init__(self):
         super().__init__()
         self.query: str = ""
@@ -24,7 +25,7 @@ class GenerationMetrics(Metrics):
             try:
                 self.score["BLEU"] = sentence_bleu([self.response.split()], self.candidate.split())
                 # self.score["METEOR"] =  meteor_score([self.answers], self.candidates)
-                P, R, F1 = score([self.candidate], [self.response], lang=self.lang)
+                P, R, F1 = score([self.candidate], [self.response], lang=self.config['metrics']['bert_lang'])
                 self.score["BERT_SCORE"] =  F1.mean().item()
             except Exception as e:
                 logger_metrics(f"BLEU or BERT_SCORE cause ERROR [[140]] {e}")
@@ -64,7 +65,6 @@ class GenerationMetrics(Metrics):
                 scores.append(np.mean(context_scores))
 
             self.score["Context_relevance"] = np.mean(scores)
-
             rule_groundedness = RuleBasedGroundedness(threshold=0.3)
             result = rule_groundedness.evaluate(self.response, self.context)
 
@@ -82,6 +82,3 @@ class GenerationMetrics(Metrics):
 
     def set_contexts(self, contexts) -> None:
         self.context = contexts
-
-    def set_lang(self, lang) -> None:
-        self.lang = lang

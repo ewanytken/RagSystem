@@ -17,3 +17,4 @@ config_test.yaml
 tests/test_remote.py
 ragas-eval-sys
 datasets
+config_rus.yaml

@@ -14,15 +14,15 @@ class RetrievedMetrics(Metrics):
         self.k = 5
 
     def retriever_calculation(self) -> None:
-        if self.retrieved_docs and self.relevant_docs:
+        if self.retrieved_docs and self.relevant_doc:
             try:
                 retrieved_at_k = self.retrieved_docs[:self.k]
-                relevant_retrieved = [doc for doc in retrieved_at_k if doc in self.relevant_docs]
+                relevant_retrieved = [doc for doc in retrieved_at_k if doc in self.relevant_doc]
                 self.score["Precision@K"] = len(relevant_retrieved) / self.k
-                self.score["Recall@K"] = len(relevant_retrieved) / len(self.relevant_docs)
+                self.score["Recall@K"] = len(relevant_retrieved) / len(self.relevant_doc)
 
                 reciprocal_ranks = []
-                for retrieved, relevant in zip(self.retrieved_docs, self.relevant_docs):
+                for retrieved, relevant in zip(self.retrieved_docs, self.relevant_doc):
                     for i, doc in enumerate(retrieved, 1):
                         if doc in relevant:
                             reciprocal_ranks.append(1/i)

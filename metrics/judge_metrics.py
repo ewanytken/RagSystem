@@ -34,5 +34,5 @@ class JudgeMetrics(GenerationMetrics):
             self.score['judge_groundedness'] = groundedness.evaluate(response=self.response, context=self.context)
             self.score['judge_completeness'] = self.model_judge.generate(completeness_fill)
             self.score['judge_correctness'] = self.model_judge.generate(correctness_fill)
-            self.score['judge_faithfulness'] = self.model_judge.generate(faithfulness_fill) # same groundedness advanced and simple approach for separation
+            self.score['judge_faithfulness'] = self.model_judge.generate(faithfulness_fill) # same as groundedness, advanced and simple approach for separation
             self.score['judge_relevance'] = self.model_judge.generate(relevance_fill)

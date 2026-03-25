@@ -43,6 +43,8 @@ class ApiCall(Constructor):
         self.response: Optional[str] = None
         self.all_metrics_scores: Optional[Dict] = None
 
+        self.metrics_executor = None
+
         console.print("\n[bold cyan] Building RAG System[/bold cyan]")
         self.configure_modules()
 
@@ -114,15 +116,15 @@ class ApiCall(Constructor):
                           "retrieved_docs": self.get_doc_text_retrieved(), #List[str]
                           "judge_model": self.metrics_config.get("judge_model", "empty_model")}
 
-                metrics_executor = MetricsExecutor(config)
-                metrics_executor.generation_evaluator()
-                metrics_executor.retriever_evaluator()
+                self.metrics_executor = MetricsExecutor(config)
+                self.metrics_executor.generation_evaluator()
+                self.metrics_executor.retriever_evaluator()
 
                 if self.metrics_config["judge_metrics"]:
                     console.print("\n[bold cyan] Metrics LLM Judge in processing ... [/bold cyan]")
-                    metrics_executor.judge_evaluator()
+                    self.metrics_executor.judge_evaluator()
 
-                self.all_metrics_scores = metrics_executor.get_overall_scores()
+                self.all_metrics_scores = self.metrics_executor.get_overall_scores()
                 logger_metrics(f"All obtained metrics: {self.all_metrics_scores}")
             else:
                 logger(f"Metrics doesn't calculate")
@@ -140,3 +142,10 @@ class ApiCall(Constructor):
 
     def get_query(self) -> str:
         return self.query
+
+    def get_metric_executor(self) -> MetricsExecutor | None:
+        if self.metrics_executor:
+            return self.metrics_executor
+        else:
+            logger(f"Metrics Executor doesn't initialize")
+            return None
