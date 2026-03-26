@@ -1,6 +1,6 @@
 import unittest
 
-from app.documents_processor.word_handler import WordHandler
+from app.documents_processor.word_handler import WordPdfHandler
 from app.graph.triplet_extractor import TripletExtractor
 from app.logger import LoggerWrapper
 from app.respondent.external_model.respondent_other_service import ExternalModel
@@ -13,7 +13,7 @@ class TestRAGSystem(unittest.TestCase):
 
     def setUp(self):
         self.triplet = TripletExtractor()
-        self.word_handler = WordHandler()
+        self.word_handler = WordPdfHandler()
 
     def test_document_processing(self):
         config = Utils.get_config_file()

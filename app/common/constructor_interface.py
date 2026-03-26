@@ -8,7 +8,7 @@ from rich.panel import Panel
 from rich.table import Table
 
 from app.common.installer_system import Builder, InstallerSystem
-from app.documents_processor.word_handler import WordHandler
+from app.documents_processor.word_handler import WordPdfHandler
 from app.entity.abstract_entity import AbstractEntity
 from app.entity.gliner2_entity import GlinerTwoEntity
 from app.entity.gliner_entity import GlinerEntity
@@ -60,7 +60,7 @@ class RemoteFreeModel(Enum):
 
 class Constructor:
     def __init__(self):
-        self.word_handler: Optional[WordHandler] = WordHandler()
+        self.word_handler: Optional[WordPdfHandler] = WordPdfHandler()
         self.indexer: Optional[Indexer] = Indexer()
         self.graph: Optional[GraphEntity] = GraphEntity()
 
@@ -286,7 +286,7 @@ class Constructor:
                         model = None
 
                     if model is None:
-                        raise Exception(f"Model for Metrics don't initialise")
+                        raise Exception(f"Model for Metrics don't initialize")
 
                     metrics_config.update({"judge_model": model})
 

@@ -7,7 +7,7 @@ from rich.panel import Panel
 from rich.table import Table
 
 from app.common.installer_system import Builder, InstallerSystem
-from app.documents_processor.word_handler import WordHandler
+from app.documents_processor.word_handler import WordPdfHandler
 from app.entity.abstract_entity import AbstractEntity
 from app.graph.graph_entity import GraphEntity
 from app.graph.triplet_extractor import TripletExtractor
@@ -41,7 +41,7 @@ class PromptProvider(Enum):
 
 class Constructor:
     def __init__(self):
-        self.word_handler: Optional[WordHandler] = WordHandler()
+        self.word_handler: Optional[WordPdfHandler] = WordPdfHandler()
         self.indexer: Optional[Indexer] = Indexer()
         self.graph: Optional[GraphEntity] = GraphEntity()
 

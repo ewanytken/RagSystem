@@ -1,6 +1,6 @@
 import unittest
 
-from app.documents_processor.word_handler import WordHandler
+from app.documents_processor.word_handler import WordPdfHandler
 from app.logger import LoggerWrapper
 from app.respondent.local_model.transformer_wrapper import TransformerWrapper
 from app.utils import Utils
@@ -11,7 +11,7 @@ class Test(unittest.TestCase):
 
     def setUp(self):
         self.config = Utils.get_config_file()
-        self.doc_handler = WordHandler()
+        self.doc_handler = WordPdfHandler()
         self.doc_handler.set_config(self.config)
         self.transformer_wrapper = TransformerWrapper()
 

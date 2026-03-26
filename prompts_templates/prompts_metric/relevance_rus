@@ -1,7 +1,6 @@
 """Оцените, насколько полученный контекст соответствует запросу.
 
 [ЗАПРОС]
-
 {query}
 
 [ПОЛУЧЕННЫЕ ФРАГМЕНТЫ КОНТЕКСТА]
@@ -13,8 +12,8 @@
 {{
     "chunk_scores": [score1, score2, score3, ...],
     "average_relevance": <0-10>,
-    "redundant_chunks": <count of chunks with score <3>,
-    "explanation": "Brief reason for scores"
+    "redundant_chunks": <количество отрывков с оценкой <3>,
+    "explanation": "Кратко опиши почему такая оценка"
 }}
 
 Руководство по оценке:

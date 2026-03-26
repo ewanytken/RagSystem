@@ -1,7 +1,7 @@
 import unittest
 
 from app.common.installer_system import Builder
-from app.documents_processor.word_handler import WordHandler
+from app.documents_processor.word_handler import WordPdfHandler
 from app.entity.gliner_entity import GlinerEntity
 from app.entity.regex_entity import RegexEntity
 from app.graph.graph_entity import GraphEntity
@@ -16,7 +16,7 @@ logger = LoggerWrapper()
 class Test(unittest.TestCase):
 
     def setUp(self):
-        word_handler = WordHandler()
+        word_handler = WordPdfHandler()
         regex = RegexEntity()
         llm = TransformerWrapper()
         prompt = PromptObject()

@@ -61,10 +61,11 @@ def auto_metrics() -> None:
 
             response = api.run_interactive()
             logger(f"Response from RAG: {response[:15]}")
+
             logger_auxiliary(f"Dataset Query: {query}")
             logger_auxiliary(f"Relevant Context: {context}")
             logger_auxiliary(f"Golden Answer: {answer}")
-            logger_auxiliary(f"RAG Response: {context}")
+            logger_auxiliary(f"RAG Response: {response}")
     else:
         logger(f"Dataset loaded or made not correct: {len(relevant_contexts)}, {len(query)}, {len(golden_answers)}")
 

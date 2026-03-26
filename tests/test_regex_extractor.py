@@ -1,6 +1,6 @@
 import unittest
 
-from app.documents_processor.word_handler import WordHandler
+from app.documents_processor.word_handler import WordPdfHandler
 from app.entity.regex_entity import RegexEntity
 from app.logger import LoggerWrapper
 from app.utils import Utils
@@ -11,7 +11,7 @@ class TestRAGSystem(unittest.TestCase):
 
     def setUp(self):
         self.gliner = RegexEntity()
-        self.word_handler = WordHandler()
+        self.word_handler = WordPdfHandler()
 
     def test_document_processing(self):
         config = Utils.get_config_file()

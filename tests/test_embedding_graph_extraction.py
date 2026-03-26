@@ -1,6 +1,6 @@
 import unittest
 
-from app.documents_processor.word_handler import WordHandler
+from app.documents_processor.word_handler import WordPdfHandler
 from app.entity.extractor_entity import EntityExtractor
 from app.entity.gliner2_entity import GlinerTwoEntity
 from app.entity.gliner_entity import GlinerEntity
@@ -15,7 +15,7 @@ logger = LoggerWrapper()
 class TestRAGSystem(unittest.TestCase):
 
     def setUp(self):
-        self.word_handler = WordHandler()
+        self.word_handler = WordPdfHandler()
 
         self.config = Utils.get_config_file()
 

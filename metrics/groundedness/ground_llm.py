@@ -6,6 +6,7 @@ import numpy as np
 
 from app.logger.logger_metrics import LoggerMetrics
 from app.respondent.abstract_respondent import Respondent
+from app.utils import Utils
 from metrics.groundedness.ground_base import GroundednessResult, GroundednessScore
 
 logger_metrics = LoggerMetrics()
@@ -20,11 +21,11 @@ class LLMGroundedness:
                                    answer: str,
                                    contexts: List[str]) -> str:
         context = "\n\n".join([
-            f"[Document {i + 1}]: {ctx[:500]}"
+            f"[Document {i + 1}]: {ctx[:1000]}"
             for i, ctx in enumerate(contexts[:5])
         ])
 
-        template = self.config['metrics']['prompts']['groundedness']
+        template = Utils.load_template(self.config['metrics']['prompts']['groundedness'])
         prompt = template.format(answer=answer, context=context)
         return prompt
 

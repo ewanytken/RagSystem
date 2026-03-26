@@ -56,7 +56,6 @@ class PromptObject(AbstractPrompt):
         logger(f"Chunks: {chunks_context}")
 
         self.template = Utils.load_template(self.config["templates"]["prompt_template"])
-        logger(f"Template: {self.template}")
 
         self.final_prompt = self.template.format(
             context=chunks_context,

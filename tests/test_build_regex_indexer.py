@@ -3,7 +3,7 @@ import unittest
 import torch
 
 from app.common.installer_system import Builder
-from app.documents_processor.word_handler import WordHandler
+from app.documents_processor.word_handler import WordPdfHandler
 from app.entity.regex_entity import RegexEntity
 from app.indexer.indexer_object import Indexer
 from app.logger import LoggerWrapper
@@ -15,7 +15,7 @@ logger = LoggerWrapper()
 class Test(unittest.TestCase):
 
     def setUp(self):
-        word_handler = WordHandler()
+        word_handler = WordPdfHandler()
         regex = RegexEntity()
         llm = TransformerWrapper()
         prompt = PromptObject()

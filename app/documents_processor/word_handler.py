@@ -15,13 +15,13 @@ Input: config.yaml with path to Word documents [paths][documents_dir]
 Output: List[document - str]   
 """
 
-class WordHandler(DocumentHandler):
+class WordPdfHandler(DocumentHandler):
 
     def __init__(self):
         super().__init__()
 
     def __repr__(self):
-        return f"Word (docx) Handler Component"
+        return f"Word and Pdf Handler Component"
 
     def handle_documents(self) -> None:
 

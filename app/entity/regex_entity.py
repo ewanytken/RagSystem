@@ -8,7 +8,7 @@ logger = LoggerWrapper()
 """
 Input: documents_extraction - List[str],  regex_entities - List[str] is that need extract from document_extraction  
 Output: regex entities List[Dict]. Example [{'start': 28, 'end': 48, 'text': 'USA', 'label': 'country', 'score': 0.55}, ...]
-        'score' is 0.9 always
+        'score' is 0.75 always
 """
 
 class RegexEntity(AbstractEntity):
@@ -40,20 +40,13 @@ class RegexEntity(AbstractEntity):
         ]
 
         location_patterns = [
-            r'\b(северо-запад|северо-восток|юго-запад|юго-восток|север|юг|запад|восток)\b',
             r'\b(город|поселок|деревня|район)\s+[А-ЯЁ][а-яё]+\b',
-        ]
-
-        specific_patterns = [
-            r'\b\d+\s*[А-ЯЁ]{2,6}\b',
-            r'\b[А-ЯЁ]{2,6}\b',
         ]
 
         patterns = [
             (time_patterns, "время"),
             (date_patterns, "дата"),
-            (location_patterns, "расположение"),
-            (specific_patterns, "аббревиатура")
+            (location_patterns, "расположение")
         ]
 
         for pattern_list, label in patterns:
@@ -61,13 +54,11 @@ class RegexEntity(AbstractEntity):
                 matches = re.finditer(pattern, self.document, re.IGNORECASE)
                 for match in matches:
                     text = match.group()
-                    if label == "аббревиатура":
-                        text = re.sub(r'\d+\s*', '', text.strip())
 
                     self.regex_entities.append({
                         'entity': text,
                         'label': label,
-                        'score': 0.95
+                        'score': 0.75
                     })
 
         logger(f"Entities extracted: {len(self.regex_entities)} by REGEX patterns")
