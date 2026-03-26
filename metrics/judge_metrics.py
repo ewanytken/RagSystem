@@ -15,10 +15,10 @@ class JudgeMetrics(GenerationMetrics):
         self.model_judge = model
 
     def judge_calculation(self):
-        logger(f"Answer for Judge LLM: {True if self.response else False}\n")
-        logger(f"Query for Judge LLM: {True if self.query else False}\n")
-        logger(f"Context for Judge LLM: {True if self.context else False}\n")
-        logger(f"Number of retrieved documents: {len(self.context)}\n")
+        logger(f"Answer for Judge LLM: {True if self.response else False}")
+        logger(f"Query for Judge LLM: {True if self.query else False}")
+        logger(f"Context for Judge LLM: {True if self.context else False}")
+        logger(f"Number of retrieved documents: {len(self.context)}")
 
         if self.query and self.response and self.context:
 

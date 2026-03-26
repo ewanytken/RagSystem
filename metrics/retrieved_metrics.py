@@ -20,10 +20,10 @@ class RetrievedMetrics(Metrics):
             try:
                 retrieved_at_k = self.retrieved_docs[:self.k]
                 relevant_retrieved = [doc for doc in retrieved_at_k if doc in self.relevant_doc]
-                self.score["Precision@K"] = len(relevant_retrieved) / self.k if len(relevant_retrieved) else 0
+                self.score["Precision@K"] = len(relevant_retrieved) / self.k if len(relevant_retrieved) else "Cannot calculate Precision@K"
                 logger_metrics(f"Precision@K {self.score["Precision@K"]}. Relevant_retrieved: {len(relevant_retrieved)}")
 
-                self.score["Recall@K"] = len(relevant_retrieved) / len(self.relevant_doc) if len(relevant_retrieved) else 0
+                self.score["Recall@K"] = len(relevant_retrieved) / len(self.relevant_doc) if len(relevant_retrieved) else "Cannot calculate Recall@K"
                 logger_metrics(f"Recall@K {self.score["Recall@K"]}. Relevant_retrieved: {len(relevant_retrieved)}")
 
                 reciprocal_ranks = []

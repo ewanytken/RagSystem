@@ -33,23 +33,35 @@ class TripletExtractor:
     def extract_triplets(self, query: str = None) -> None:
         if self.llm_model is not None and self.config is not None and self.documents is not None:
             try:
-                for document in self.documents:
-                    document = self.clean_text(document)
+                if query is None:
+                    for document in self.documents:
+                        document = self.clean_text(document)
+                        extraction_template = Utils.load_template(self.config["graph"]["extractor_prompt"])
+                        prompt = extraction_template.format(document=document)
+
+                        response_by_template = self.llm_model.generate(prompt)
+                        logger(f"Response after extracted for document: {response_by_template}")
+
+                        triplets = self.parse_json_response(response_by_template)
+                        extracted_relation = self.validate_triplets(triplets)
+
+                        logger(f"Extracted relation from document: {extracted_relation}")
+
+                        self.set_relation_to_graph(extracted_relation, document)
+                        self.set_relation_to_graph(self.create_inverse_relationships(extracted_relation), document)
+                else:
+                    query = self.clean_text(query)
                     extraction_template = Utils.load_template(self.config["graph"]["extractor_prompt"])
-                    prompt = extraction_template.format(document=document)
+                    prompt = extraction_template.format(document=query)
 
                     response_by_template = self.llm_model.generate(prompt)
-                    logger(f"Response after extracted: {response_by_template}")
+                    logger(f"Response after extracted for query: {response_by_template}")
+
                     triplets = self.parse_json_response(response_by_template)
                     extracted_relation = self.validate_triplets(triplets)
 
-                    logger(f"Extracted relation: {extracted_relation}")
-
-                    if query is None:
-                        self.set_relation_to_graph(extracted_relation, document)
-                        self.set_relation_to_graph(self.create_inverse_relationships(extracted_relation), document)
-                    else:
-                        self.set_relation_from_query(extracted_relation)
+                    logger(f"Extracted relation from query: {extracted_relation}")
+                    self.set_relation_from_query(extracted_relation)
             except Exception as e:
                 logger(f"Triplet extraction Exception [[91]]: {e}")
 

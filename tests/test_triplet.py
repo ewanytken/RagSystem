@@ -20,21 +20,27 @@ class TestRAGSystem(unittest.TestCase):
 
         self.word_handler.set_config(config)
         self.word_handler.handle_documents()
-        chunk = self.word_handler.get_chunked_documents()[:2]
-        logger(chunk)
-        logger(config["graph"]["extractor_prompt"])
+        doc_in_chunks = self.word_handler.get_chunked_documents()
+
         self.triplet.set_config(config)
-        self.triplet.set_documents(chunk)
+        self.triplet.set_documents(doc_in_chunks)
         # model = TransformerWrapper()
         model = ExternalModel()
+
         self.triplet.set_llm_model(model)
         self.triplet.extract_triplets()
 
-        self.triplet.search_relation_by_subject("models")
+        query = "Кто является генеральным директором АО «Селектел»?"
+        self.triplet.extract_triplets(query)
+        triplet_query = self.triplet.get_extracted_query()
         logger(self.triplet.get_extracted_relation())
+        logger(self.triplet.get_extracted_query())
+        for triplet in triplet_query:
+            self.triplet.search_relation_by_subject(triplet)
+            logger(self.triplet.get_extracted_relation())
 
-        self.triplet.search_relation_from_graph("models",  "included", "management")
-        logger(self.triplet.get_extracted_relation())
+            self.triplet.search_relation_from_graph(triplet)
+            logger(self.triplet.get_extracted_relation())
 
 if __name__ == '__main__':
     unittest.main()

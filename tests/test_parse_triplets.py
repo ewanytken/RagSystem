@@ -1,55 +1,84 @@
 import json
 import re
 import unittest
-from typing import Dict, List
+from typing import Dict, List, Any
 
 from app.logger import LoggerWrapper
 
 logger = LoggerWrapper()
 
 class Test(unittest.TestCase):
-    def extract_triplets_json(self, llm_response: str) -> List[Dict]:
-        response = llm_response.strip()
-        json_match = re.search(r'(\{.*"triplets".*\})', response, re.DOTALL)
-
+    def parse_json_response(self, content: str) -> List[Dict]:
+        json_match = re.search(r'\[.*\]', content, re.DOTALL)
         if json_match:
+            content = json_match.group()
+        try:
+            triplets = json.loads(content)
+            if isinstance(triplets, dict) and 'triplets' in triplets:
+                triplets = triplets['triplets']
+            return triplets if isinstance(triplets, list) else []
+        except json.JSONDecodeError:
+            content = content.replace("'", '"')
+            content = content.replace("“", '"')
+            content = content.replace("”", '"')
+            content = re.sub(r',\s*}', '}', content)
+            content = re.sub(r',\s*]', ']', content)
             try:
-                json_str = json_match.group(1)
-                # Remove any trailing commas (common LLM mistake)
-                json_str = re.sub(r',\s*}', '}', json_str)
-                json_str = re.sub(r',\s*]', ']', json_str)
+                return json.loads(content)
+            except Exception as e:
+                logger(f"Parse to json format ERROR [[93]]: {e}")
 
-                data = json.loads(json_str)
 
-                if "triplets" in data and isinstance(data["triplets"], list):
-                    valid_triplets = []
-                    for triplet in data["triplets"]:
-                        if all(k in triplet for k in ["subject", "predicate", "object"]):
-                            valid_triplets.append({
-                                "subject": str(triplet["subject"]),
-                                "predicate": str(triplet["predicate"]),
-                                "object": str(triplet["object"])
-                            })
-                    return valid_triplets
+    def validate_triplets(self, triplets: List[Any]) -> List[Dict[str, str]]:
+        validated = []
 
-            except json.JSONDecodeError as e:
-                logger(f" {e}")
+        try:
+            for t in triplets:
+                if not isinstance(t, dict):
+                    continue
+
+                # Ensure all required keys exist
+                triplet = {
+                    "subject": str(t.get("subject", "")).strip(),
+                    "predicate": str(t.get("predicate", "")).strip().lower().replace(" ", "_"),
+                    "object": str(t.get("object", "")).strip()
+                }
+
+                # Validate content
+                if all([triplet["subject"], triplet["predicate"], triplet["object"]]):
+                    # Clean predicate
+                    triplet["predicate"] = self.normalize_predicate(triplet["predicate"])
+                    validated.append(triplet)
+        except Exception as e:
+            logger(f"Validate triplets Error [[92]]: {e}")
+
+        return validated
+
+    def normalize_predicate(self, predicate: str) -> str:
+        predicate = predicate.lower().strip()
+        predicate = re.sub(r'\s+', '_', predicate)
+
+        return predicate
 
     def setUp(self):
         pass
 
     def test_document_processing(self):
-        content = '''json
-            {"triplets": [
-                    {"subject": "Methodology", "predicate": "for_testing", "object": "Reliability of Large Language Models"},
-                    {"subject": "Methodology", "predicate": "based_on", "object": "Principle of Automated Attacks"},
-                    {"subject": "Ivan Alekseevich Utkin", "predicate": "affiliated_with", "object": "A.F. Mozhaisky Military Space Academy"},
-                    {"subject": "Anton Mikhailovich Martynov", "predicate": "affiliated_with", "object": "A.F. Mozhaisky Military Space Academy"},
-                    {"subject": "paper", "predicate": "proposes", "object": "general approach"},
-                    {"subject": "approach", "predicate": "to_studying", "object": "reliability of LLMs"}
-            ]}'''
-        triplets = self.extract_triplets_json(content)
-        logger(triplets)
+        response_by_template = '''```json
+[
+	{"subject": "Совет директоров АО Селектел", "predicate": "утверждён", "object": "21 апреля 2025 года"},
+	{"subject": "ГОДОВОЙ ОТЧЕТ", "predicate": "по итогам деятельности за", "object": "2024 год"},
+	{"subject": "ГОДОВОЙ ОТЧЕТ", "predicate": "г.", "object": "Санкт-Петербург"},
+	{"subject": "ГОДОВОЙ ОТЧЕТ", "predicate": "год", "object": "2025 год"},
+	{"subject": "Полное фирменное наименование Общества", "predicate": "наименование", "object": "Акционерное общество Селектел"},
+]
+```'''
+        triplets = self.parse_json_response(response_by_template)
+
+        logger(f"Parse :{triplets}")
+        extracted_relation = self.validate_triplets(triplets)
+
+        logger(f"Extracted relation: {extracted_relation}")
 
     if __name__ == '__main__':
         unittest.main()

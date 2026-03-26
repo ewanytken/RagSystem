@@ -63,7 +63,7 @@ def auto_metrics() -> None:
             api.set_query(query)
 
             response = api.run_interactive()
-            logger(f"Response from RAG: {response[:15]}")
+            logger(f"Response from RAG: {response[:30]}...")
 
             logger_auxiliary(f"Dataset Query: {query}")
             logger_auxiliary(f"Relevant Context: {context}")
