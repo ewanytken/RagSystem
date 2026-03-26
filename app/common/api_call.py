@@ -112,8 +112,7 @@ class ApiCall(Constructor):
 
                 config_eval = {"response": self.get_response(), #str
                           "query": self.get_query(), #str
-                          "context": self.get_doc_text_retrieved, #List[str]
-                          "retrieved_docs": self.get_doc_text_retrieved(), #List[str]
+                          "context": self.get_doc_text_retrieved(), #List[str]
                           "judge_model": self.metrics_config.get("judge_model", "empty_model")}
 
                 self.metrics_executor.set_config_eval(config_eval)

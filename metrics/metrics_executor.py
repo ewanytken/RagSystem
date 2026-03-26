@@ -40,14 +40,14 @@ class MetricsExecutor:
 
         if self.retrieve_metric.get_relevant_doc():
             try:
-                self.retrieve_metric.set_retrieved_docs(self.config_eval['retrieved_docs'])
+                self.retrieve_metric.set_retrieved_docs(self.config_eval['context'])
                 self.retrieve_metric.retriever_calculation()
                 self.retrieve_metric.show_scores()
                 self.overall_scores.update({"RETRIEVED_EVAL": self.retrieve_metric.get_score()})
             except Exception as e:
                 logger_metrics(f"Retrieval metrics ERROR {e}")
         else:
-            logger_metrics(f"Retrieval metrics pass, don't specify relevant docs")
+            logger_metrics(f"Retrieval metrics pass, don't specify relevant docs (MetricsExecutor - retriever_evaluator)")
 
     def judge_evaluator(self) -> None:
         try:
@@ -65,7 +65,7 @@ class MetricsExecutor:
         self.generate_metric.set_candidates(candidates)
 
     def set_relevant_context(self, relevant_docs: str) -> None:
-        self.generate_metric.set_relevant_docs(relevant_docs)
+        self.retrieve_metric.set_relevant_docs(relevant_docs)
 
     def set_config_eval(self, config_eval: Dict) -> None:
         self.config_eval = config_eval

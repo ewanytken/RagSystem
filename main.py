@@ -3,11 +3,12 @@ from rich.panel import Panel
 from rich.prompt import Prompt
 
 from app.common.api_call import ApiCall
-from app.logger import LoggerWrapper
+from app.logger import LoggerWrapper, LoggerAuxiliary
 from app.utils import Utils
 from metrics.dataset_handler.csv_handler import CSVHandler
 
 logger = LoggerWrapper()
+logger_auxiliary = LoggerAuxiliary()
 
 console = Console()
 
@@ -59,7 +60,11 @@ def auto_metrics() -> None:
             api.set_query(query)
 
             response = api.run_interactive()
-            logger(f"Response from RAG: {response}")
+            logger(f"Response from RAG: {response[:15]}")
+            logger_auxiliary(f"Dataset Query: {query}")
+            logger_auxiliary(f"Relevant Context: {context}")
+            logger_auxiliary(f"Golden Answer: {answer}")
+            logger_auxiliary(f"RAG Response: {context}")
     else:
         logger(f"Dataset loaded or made not correct: {len(relevant_contexts)}, {len(query)}, {len(golden_answers)}")
 

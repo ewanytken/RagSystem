@@ -19,8 +19,8 @@ class GenerationMetrics(Metrics):
         self.context: List[str] = []
 
     def generation_calculation(self) -> None:
-        logger_metrics(f"Setup Query: {True if self.response else False}")
-        logger_metrics(f"Setup Response: {True if self.candidate else False}")
+        logger_metrics(f"Setup Query (GenerationMetrics - generation_calc): {True if self.response else False}")
+        logger_metrics(f"Setup Response (GenerationMetrics - generation_calc): {True if self.candidate else False}")
         if self.candidate:
             try:
                 self.score["BLEU"] = sentence_bleu([self.response.split()], self.candidate.split())
@@ -34,9 +34,9 @@ class GenerationMetrics(Metrics):
 
     def bert_calculation(self) -> None:
 
-        logger_metrics(f"Setup Query: {True if self.query else False}")
-        logger_metrics(f"Setup Response: {True if self.response else False}")
-        logger_metrics(f"Setup Context: {True if self.context else False}")
+        logger_metrics(f"Setup Query (GenerationMetrics - bert_calc): {True if self.query else False}")
+        logger_metrics(f"Setup Response (GenerationMetrics - bert_calc): {True if self.response else False}")
+        logger_metrics(f"Setup Context {type(self.context)} (GenerationMetrics - bert_calc): {True if self.context else False}")
 
         try:
             scores = []
@@ -61,10 +61,10 @@ class GenerationMetrics(Metrics):
                     c_emb = self.model_sim.encode(context)
                     c_emb = c_emb / np.linalg.norm(c_emb)
                     context_scores.append(np.dot(q_emb, c_emb))
-
                 scores.append(np.mean(context_scores))
 
             self.score["Context_relevance"] = np.mean(scores)
+
             rule_groundedness = RuleBasedGroundedness(threshold=0.3)
             result = rule_groundedness.evaluate(self.response, self.context)
 

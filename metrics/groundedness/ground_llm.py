@@ -36,7 +36,7 @@ class LLMGroundedness:
             else:
                 return self._fallback_parse(response)
         except Exception as e:
-            logger_metrics(f"LLM response parsing ERROR {e}")
+            logger_metrics(f"LLM response parsing ERROR (LLMGroundedness): {e}")
 
     def _fallback_parse(self, response: str) -> Dict:
         lines = response.strip().split('\n')
