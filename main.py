@@ -4,11 +4,13 @@ from rich.prompt import Prompt
 
 from app.common.api_call import ApiCall
 from app.logger import LoggerWrapper, LoggerAuxiliary
+from app.logger.logger_metrics import LoggerMetrics
 from app.utils import Utils
 from metrics.dataset_handler.csv_handler import CSVHandler
 
 logger = LoggerWrapper()
 logger_auxiliary = LoggerAuxiliary()
+logger_metrics = LoggerMetrics()
 
 console = Console()
 
@@ -53,6 +55,7 @@ def auto_metrics() -> None:
 
     if len(relevant_contexts) == len(query) == len(golden_answers):
         for query, answer, context in zip(query, golden_answers, relevant_contexts):
+            logger_metrics(f"=============================START=============================")
             metric_executor.set_candidate(answer)
             metric_executor.set_relevant_context(context)
 
@@ -66,6 +69,8 @@ def auto_metrics() -> None:
             logger_auxiliary(f"Relevant Context: {context}")
             logger_auxiliary(f"Golden Answer: {answer}")
             logger_auxiliary(f"RAG Response: {response}")
+            logger_metrics(f"=============================END=============================")
+
     else:
         logger(f"Dataset loaded or made not correct: {len(relevant_contexts)}, {len(query)}, {len(golden_answers)}")
 
