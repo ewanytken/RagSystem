@@ -8,8 +8,8 @@ from metrics.retrieved_metrics import RetrievedMetrics
 logger_metrics = LoggerMetrics()
 
 class MetricsExecutor:
-    def __init__(self, config_eval: Dict):
-        self.config_eval: Optional[Dict] = config_eval
+    def __init__(self):
+        self.config_eval: Optional[Dict] = None
 
         self.generate_metric: Optional[GenerationMetrics] = GenerationMetrics()
         self.retrieve_metric: Optional[RetrievedMetrics] = RetrievedMetrics()
@@ -66,3 +66,6 @@ class MetricsExecutor:
 
     def set_relevant_context(self, relevant_docs: str) -> None:
         self.generate_metric.set_relevant_docs(relevant_docs)
+
+    def set_config_eval(self, config_eval: Dict) -> None:
+        self.config_eval = config_eval

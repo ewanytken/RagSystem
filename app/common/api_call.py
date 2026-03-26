@@ -43,7 +43,7 @@ class ApiCall(Constructor):
         self.response: Optional[str] = None
         self.all_metrics_scores: Optional[Dict] = None
 
-        self.metrics_executor = None
+        self.metrics_executor = MetricsExecutor()
 
         console.print("\n[bold cyan] Building RAG System[/bold cyan]")
         self.configure_modules()
@@ -110,13 +110,13 @@ class ApiCall(Constructor):
             if self.metrics_config["init_metrics"]:
                 console.print("\n[bold blue] Simple Metrics Calculation in processing ... [/bold blue]")
 
-                config = {"response": self.get_response(), #str
+                config_eval = {"response": self.get_response(), #str
                           "query": self.get_query(), #str
                           "context": self.get_doc_text_retrieved, #List[str]
                           "retrieved_docs": self.get_doc_text_retrieved(), #List[str]
                           "judge_model": self.metrics_config.get("judge_model", "empty_model")}
 
-                self.metrics_executor = MetricsExecutor(config)
+                self.metrics_executor.set_config_eval(config_eval)
                 self.metrics_executor.generation_evaluator()
                 self.metrics_executor.retriever_evaluator()
 

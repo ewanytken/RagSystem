@@ -42,7 +42,7 @@ def auto_metrics() -> None:
     api = ApiCall()
 
     if api.get_metric_executor() is None:
-        raise Exception("Mode with metrics don't select")
+        raise Exception("Mode with metrics don't select or MetricExecutor don't exist")
 
     metric_executor = api.get_metric_executor()
 
