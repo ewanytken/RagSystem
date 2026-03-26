@@ -4,12 +4,12 @@ from typing import List, Dict, Optional
 
 import numpy as np
 
-from app.logger.logger_metrics import LoggerMetrics
+from app.logger import LoggerWrapper
 from app.respondent.abstract_respondent import Respondent
 from app.utils import Utils
 from metrics.groundedness.ground_base import GroundednessResult, GroundednessScore
 
-logger_metrics = LoggerMetrics()
+logger = LoggerWrapper()
 
 class LLMGroundedness:
 
@@ -37,7 +37,7 @@ class LLMGroundedness:
             else:
                 return self._fallback_parse(response)
         except Exception as e:
-            logger_metrics(f"LLM response parsing ERROR (LLMGroundedness): {e}")
+            logger(f"LLM response parsing ERROR (LLMGroundedness): {e}")
 
     def _fallback_parse(self, response: str) -> Dict:
         lines = response.strip().split('\n')

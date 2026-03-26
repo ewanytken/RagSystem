@@ -1,10 +1,11 @@
 from dataclasses import dataclass
 from typing import List, Dict, Any, Optional
 
-from app.logger import LoggerAuxiliary
+from app.logger import LoggerAuxiliary, LoggerWrapper
 from app.prompt.abstract_prompt import AbstractPrompt
 
-logger = LoggerAuxiliary()
+logger_aux = LoggerAuxiliary()
+logger = LoggerWrapper()
 
 @dataclass
 class FullContext:
@@ -26,6 +27,7 @@ class PromptAssembler:
             sections.append(self._format_document_chunks(context.chunks))
         if context.triplets:
             sections.append(self._format_triplets(context.triplets))
+        logger_aux(f"Query: {context.query}")
         sections.append(self._format_query(context.query))
         sections.append(self._get_response_format())
 
@@ -56,7 +58,7 @@ Follow these guidelines:
             formatted += f"{chunk.get('text', '')}\n"
             formatted += "-" * 50
 
-        logger(f"Extracted chunk from Retriever: {formatted}")
+        logger_aux(f"Extracted documents from Retriever: {formatted}")
         return formatted
 
     def _format_triplets(self, triplets: List[Dict[str, str]]) -> str:
@@ -73,7 +75,7 @@ Follow these guidelines:
                 formatted += triplet_context + "\n".join(documents_extracted_from_triplet)
             except Exception as e:
                 logger(f"Triplet is ERROR while add to final prompt {e}")
-            logger(f"Triplets from Graph: {formatted}")
+            logger_aux(f"Triplets from Graph: {formatted}")
         else:
             return ""
         return formatted
@@ -89,7 +91,7 @@ Follow these guidelines:
 
         formatted += "\nUse these classifications to understand the domain context of entities mentioned."
 
-        logger(f"Extracted Entities from Graph: {formatted}")
+        logger_aux(f"Extracted Entities from Graph: {formatted}")
 
         return formatted
 
@@ -129,6 +131,9 @@ class AdaptivePromptAssembler(PromptAssembler):
         query_type = self._detect_query_type(context.query)
         specific_instructions = self.query_templates[query_type]
         base_prompt = super().assemble_final_prompt(context)
+        logger_aux(f"Base prompt: {base_prompt}")
+        logger_aux(f"Specific prompt: {specific_instructions}")
+
         return base_prompt + "\n\n" + specific_instructions
 
     def _detect_query_type(self, query: str) -> str:

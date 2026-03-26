@@ -81,8 +81,8 @@ class ApiCall(Constructor):
 
                     triplets_by_full_query = self.complete_installer.find_triplets(self.query)
                     triplets_by_subject = self.complete_installer.find_triplets_by_subject(self.query)
-                    logger(f"\nNumber of retrieved triplets by full query: {len(triplets_by_full_query)}"
-                           f"\nNumber of retrieved triplets by subject: {len(triplets_by_subject)}")
+                    logger(f"Number of retrieved triplets by full query: {len(triplets_by_full_query)}")
+                    logger(f"Number of retrieved triplets by subject: {len(triplets_by_subject)}")
 
                     if triplets_by_full_query or triplets_by_subject:
                         all_triplets = triplets_by_full_query + triplets_by_subject
@@ -110,10 +110,10 @@ class ApiCall(Constructor):
             if self.metrics_config["init_metrics"]:
                 console.print("\n[bold blue] Simple Metrics Calculation in processing ... [/bold blue]")
 
-                config_eval = {"response": self.get_response(), #str
-                          "query": self.get_query(), #str
-                          "context": self.get_doc_text_retrieved(), #List[str]
-                          "judge_model": self.metrics_config.get("judge_model", "empty_model")}
+                config_eval = { "response": self.get_response(), #str
+                                "query": self.get_query(), #str
+                                "context": self.get_doc_text_retrieved(), #List[str]
+                                "judge_model": self.metrics_config.get("judge_model", "empty_model")}
 
                 self.metrics_executor.set_config_eval(config_eval)
                 self.metrics_executor.generation_evaluator()

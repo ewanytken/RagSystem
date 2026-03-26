@@ -4,9 +4,11 @@ from pathlib import Path
 from typing import Dict, Optional
 import pandas as pd
 
+from app.logger import LoggerWrapper
 from app.logger.logger_metrics import LoggerMetrics
 
-logger = LoggerMetrics()
+logger_metrics = LoggerMetrics()
+logger = LoggerWrapper()
 
 class DatasetHandler:
 
@@ -16,7 +18,7 @@ class DatasetHandler:
 
     def json_convert_to_csv(self) -> None:
         path = Path(__file__).parent.parent.parent / self.config["dataset"]["path_dataset"]
-        logger(f"Path to datasets: {path}")
+        logger_metrics(f"Path to datasets: {path}")
 
         self.data_frame  = pd.DataFrame(columns=['id', 'question', 'golden_answer', 'context'])
         for filename in os.listdir(path):

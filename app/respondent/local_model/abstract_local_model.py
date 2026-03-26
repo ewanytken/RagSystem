@@ -86,7 +86,7 @@ class AbstractLocalRespondent(Respondent):
             logger(f"Device mapping to memory: {model_accelerate.hf_device_map}")
 
         except Exception as err:
-            logger(err)
+            logger(f"Multi GPU distribution ERROR: {err}")
 
         self.device = model_accelerate.device
         return model_accelerate
@@ -112,13 +112,13 @@ class AbstractLocalRespondent(Respondent):
                     memory_distribution.update({gpu_id: "{}GiB".format(math.floor(memory_available))})
 
             except Exception as err:
-                logger(err)
+                logger(f"Memory calculation ERROR: {err}")
             finally:
                 pynvml.nvmlShutdown()
 
         if memory_allocated_overall < model_size:
             memory_distribution.update({"cpu": "{}GiB".format(math.floor(self.get_free_ram()))})
-        logger(memory_distribution)
+        logger(f"Final memory distribution: {memory_distribution}")
         return memory_distribution
 
     def get_model_size(self) -> int:

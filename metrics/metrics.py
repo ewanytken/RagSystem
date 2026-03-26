@@ -1,12 +1,13 @@
 from typing import Dict, List, Optional, Any
 
-from rich.table import Table
+import torch
 from rich.console import Console
+from rich.table import Table
 from sentence_transformers import SentenceTransformer
+from torch.cuda import device
 
 from app.respondent.abstract_respondent import Respondent
 from app.utils import Utils
-from metrics.dataset_handler.dataset_handler import DatasetHandler
 
 console = Console()
 
@@ -26,7 +27,10 @@ class Metrics:
     def init_processing(self) -> None:
         if self.config["metrics"]["model_sim"]:
             ticket = self.config["metrics"]["model_sim"]
-            self.model_sim = SentenceTransformer(ticket)
+            self.model_sim = SentenceTransformer(
+                ticket,
+                device = "cuda" if torch.cuda.is_available() else "cpu",
+            )
 
     def show_scores(self) -> None:
         table = Table(title="RAG Metrics Summary", border_style="cyan")

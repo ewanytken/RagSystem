@@ -39,7 +39,7 @@ class TripletExtractor:
                     prompt = extraction_template.format(document=document)
 
                     response_by_template = self.llm_model.generate(prompt)
-                    logger(f"response after extracted: {response_by_template}")
+                    logger(f"Response after extracted: {response_by_template}")
                     triplets = self.parse_json_response(response_by_template)
                     extracted_relation = self.validate_triplets(triplets)
 

@@ -1,11 +1,11 @@
 from typing import Optional, Dict
 
-from app.logger.logger_metrics import LoggerMetrics
+from app.logger import LoggerWrapper
 from metrics.generation_metrics import GenerationMetrics
 from metrics.judge_metrics import JudgeMetrics
 from metrics.retrieved_metrics import RetrievedMetrics
 
-logger_metrics = LoggerMetrics()
+logger = LoggerWrapper()
 
 class MetricsExecutor:
     def __init__(self):
@@ -32,9 +32,9 @@ class MetricsExecutor:
 
                 self.overall_scores.update({"GENERATION_EVAL": self.generate_metric.get_score()})
             except Exception as e:
-                logger_metrics(f"Generation metrics ERROR {e}")
+                logger(f"Generation metrics ERROR {e}")
         else:
-            logger_metrics(f"Generation metrics pass, don't specify candidates")
+            logger(f"Generation metrics pass, don't specify candidates")
 
     def retriever_evaluator(self) -> None:
 
@@ -45,18 +45,22 @@ class MetricsExecutor:
                 self.retrieve_metric.show_scores()
                 self.overall_scores.update({"RETRIEVED_EVAL": self.retrieve_metric.get_score()})
             except Exception as e:
-                logger_metrics(f"Retrieval metrics ERROR {e}")
+                logger(f"Retrieval metrics ERROR {e}")
         else:
-            logger_metrics(f"Retrieval metrics pass, don't specify relevant docs (MetricsExecutor - retriever_evaluator)")
+            logger(f"Retrieval metrics pass, don't specify relevant docs (MetricsExecutor - retriever_evaluator)")
 
     def judge_evaluator(self) -> None:
         try:
+            self.judge_metric.set_answers(self.config_eval['response'])
+            self.judge_metric.set_queries(self.config_eval['query'])
+            self.judge_metric.set_contexts(self.config_eval['context'])
+
             self.judge_metric.set_model_judge(self.config_eval['judge_model'])
             self.judge_metric.judge_calculation()
             self.judge_metric.show_scores()
             self.overall_scores.update({"JUDGE_EVAL": self.judge_metric.get_score()})
         except Exception as e:
-            logger_metrics(f"Judge LLM metrics ERROR {e}")
+            logger(f"Judge LLM metrics ERROR {e}")
 
     def get_overall_scores(self) -> Dict:
         return self.overall_scores

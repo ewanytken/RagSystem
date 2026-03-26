@@ -4,9 +4,10 @@ from typing import List, Optional, Set
 from app.entity.abstract_entity import AbstractEntity
 from app.graph.graph_entity import GraphEntity
 from app.graph.triplet_extractor import TripletExtractor
-from app.logger import LoggerWrapper
+from app.logger import LoggerWrapper, LoggerAuxiliary
 
 logger = LoggerWrapper()
+logger_aux = LoggerAuxiliary()
 
 """
 Aggregation entities extractors
@@ -45,7 +46,7 @@ class EntityExtractor:
                         self.graph.add_to_knowledge_graph(document)
 
             if self.graph is not None:
-                logger(f"Graph-entity status: {self.graph.get_knowledge_graph_stats()}")
+                logger_aux(f"Graph-entity status: {self.graph.get_knowledge_graph_stats()}")
 
             if self.triplet is not None:
                 self.triplet.set_documents(self.documents)

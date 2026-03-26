@@ -1,4 +1,6 @@
 from typing import List, Dict, Optional, TypeVar
+
+import torch
 from gliner import GLiNER
 from app.entity.abstract_entity import AbstractEntity
 from app.logger import LoggerWrapper
@@ -31,9 +33,9 @@ class GlinerEntity(AbstractEntity):
             self.gliner = GLiNER.from_pretrained(
                 model_ticker,
                 local_files_only=self.config['gliner']['local_only'],
-                # device='cuda' if torch.cuda.is_available() else 'cpu',
             )
-            logger(f"Loaded {model_ticker} Model")
+            self.gliner.to("cuda" if torch.cuda.is_available() else "cpu")
+            logger(f"Loaded {model_ticker} Model on {'GPU' if torch.cuda.is_available() else 'CPU'}")
         except Exception as e:
             logger(f"GLiNER model install ERROR [[80]]: {e}")
             raise

@@ -30,9 +30,10 @@ class GlinerTwoEntity(AbstractEntity):
             model_ticker = self.config['gliner2']['ticket']
             self.gliner = GLiNER2.from_pretrained(
                 model_ticker,
-                device='cuda' if torch.cuda.is_available() else 'cpu',
             )
-            logger(f"Loaded {model_ticker} Model")
+            self.gliner.to("cuda" if torch.cuda.is_available() else "cpu")
+
+            logger(f"Loaded {model_ticker} Model on {'GPU' if torch.cuda.is_available() else 'CPU'}")
         except Exception as e:
             logger(f"GLiNER model install ERROR [[81]]: {e}")
             raise

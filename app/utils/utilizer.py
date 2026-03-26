@@ -17,7 +17,7 @@ load_template: load prompts_templates/*_template
 class Utils:
 
     @staticmethod
-    def get_config_file(config_path: str = "config_test.yaml") -> Any:
+    def get_config_file(config_path: str = "config_rus.yaml") -> Any:
         path = Path(__file__).parent.parent.parent / config_path
         try:
             with open(path, "r", encoding='utf-8') as file:

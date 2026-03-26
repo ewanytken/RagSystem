@@ -1,7 +1,9 @@
+from app.logger import LoggerWrapper
 from app.logger.logger_metrics import LoggerMetrics
 from metrics.dataset_handler.dataset_handler import DatasetHandler
 
-logger = LoggerMetrics()
+logger_metrics = LoggerMetrics()
+logger = LoggerWrapper()
 
 class CSVHandler(DatasetHandler):
     def __init__(self):
@@ -17,7 +19,7 @@ class CSVHandler(DatasetHandler):
             self.golden_answer = self.data_frame['golden_answer'].tolist()
             self.context = self.data_frame['context'].tolist()
 
-            logger(f"Extracted {len(self.question)} questions. Extracted Golden Answers {len(self.golden_answer)}. Extracted Contexts {len(self.context)} ")
+            logger_metrics(f"Extracted {len(self.question)} questions. Extracted Golden Answers {len(self.golden_answer)}. Extracted Contexts {len(self.context)} ")
         else:
             logger(f"DataFrame don't install: {self.data_frame}")
 
@@ -43,9 +45,6 @@ class CSVHandler(DatasetHandler):
             return []
 
     def show_dataset(self):
-        logger(f"Questions: {len(self.question)}")
-        logger(f"Golden answers: {len(self.golden_answer)}")
-        logger(f"Contexts: {len(self.context)}")
-        logger(f"Path to dataset: {self.config["dataset"]["path_dataset"]}")
-        logger(f"Name saved file: {self.config["dataset"]["file_save"]}")
-        logger(f"Font format: {self.config["dataset"]["font_coding"]}")
+        logger_metrics(f"Path to dataset: {self.config["dataset"]["path_dataset"]}")
+        logger_metrics(f"Name saved file: {self.config["dataset"]["file_save"]}")
+        logger_metrics(f"Font format: {self.config["dataset"]["font_coding"]}")

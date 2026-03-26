@@ -5,7 +5,6 @@ from typing import List, Dict
 
 import numpy as np
 
-
 class GroundednessScore(Enum):
     HIGH = "HIGH"       # >0.8 - Well grounded
     MEDIUM = "MEDIUM"   # 0.5-0.8 - Partially grounded
