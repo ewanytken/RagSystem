@@ -53,8 +53,6 @@ class ApiCall(Constructor):
         except Exception as e:
             logger(f"Cannot get installer system or installer not complete [[122]] {e}")
 
-    def run_interactive(self):
-
         console.print("\n[bold cyan] Load Documents and chinking them[/bold cyan]")
         chunk, doc  = self.complete_installer.documents_processor()
 
@@ -65,6 +63,7 @@ class ApiCall(Constructor):
             console.print("\n[bold yellow] Extracting Entities and make Graphs[/bold yellow]")
             self.complete_installer.extractor_processor(chunk)
 
+    def run_interactive(self):
         try:
             if self.get_query():
                 console.print("\n[bold red] Query obtain[/bold red]")
