@@ -15,8 +15,8 @@ class OllamaModel(AbstractModelExternal, Respondent):
 
         self.config = Utils.get_config_file()
 
-        self.set_model_ticker(self.config["ollama"]["model"])
-        self.set_base_url(self.config["ollama"]["url"])
+        self.set_model_ticker(self.config['ollama']['model'])
+        self.set_base_url(self.config['ollama']['url'])
 
         super().__init__()
 

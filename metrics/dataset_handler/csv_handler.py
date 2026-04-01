@@ -45,6 +45,6 @@ class CSVHandler(DatasetHandler):
             return []
 
     def show_dataset(self):
-        logger_metrics(f"Path to dataset: {self.config["dataset"]["path_dataset"]}")
-        logger_metrics(f"Name saved file: {self.config["dataset"]["file_save"]}")
-        logger_metrics(f"Font format: {self.config["dataset"]["font_coding"]}")
+        logger_metrics(f"Path to dataset: {self.config['dataset']['path_dataset']}")
+        logger_metrics(f"Name saved file: {self.config['dataset']['file_save']}")
+        logger_metrics(f"Font format: {self.config['dataset']['font_coding']}")

@@ -17,7 +17,7 @@ class DatasetHandler:
         self.data_frame: Optional[pd.DataFrame] = None
 
     def json_convert_to_csv(self) -> None:
-        path = Path(__file__).parent.parent.parent / self.config["dataset"]["path_dataset"]
+        path = Path(__file__).parent.parent.parent / self.config['dataset']['path_dataset']
         logger_metrics(f"Path to datasets: {path}")
 
         self.data_frame  = pd.DataFrame(columns=['id', 'question', 'golden_answer', 'context'])
@@ -36,8 +36,8 @@ class DatasetHandler:
                 finally:
                     file.close()
 
-        path_to_save = path / self.config["dataset"]["file_save"]
-        self.data_frame.to_csv(path_to_save, encoding=self.config["dataset"]["font_coding"], index=False)
+        path_to_save = path / self.config['dataset']['file_save']
+        self.data_frame.to_csv(path_to_save, encoding=self.config['dataset']['font_coding'], index=False)
 
     def set_config(self, config: Dict) -> None:
         self.config = config

@@ -45,7 +45,7 @@ class TransformerWrapper(Respondent):
         }
 
         if quantization_config:
-            model_kwargs["quantization_config"] = quantization_config
+            model_kwargs['quantization_config'] = quantization_config
 
         logger(f"Model ticket: {self.model_name}")
 

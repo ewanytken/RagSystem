@@ -2,6 +2,9 @@ import json
 from typing import Optional, Dict, List, Any
 import re
 import networkx as nx
+import numpy as np
+from sentence_transformers import SentenceTransformer
+from sklearn.metrics.pairwise import cosine_similarity
 
 from app.logger import LoggerWrapper
 from app.respondent.abstract_respondent import Respondent
@@ -23,9 +26,9 @@ class TripletExtractor:
         self.graph = nx.MultiDiGraph()
 
         self.documents: Optional[List[str]] = None
-        self.extracted_relation: Optional[List] = []
+        self.triplets_from_graph: Optional[List] = []
 
-        self.extracted_query: Optional[List] = []
+        self.triplets_from_query: Optional[List] = []
 
     def __repr__(self):
         return f"Graph Triplet Component"
@@ -36,7 +39,7 @@ class TripletExtractor:
                 if query is None:
                     for document in self.documents:
                         document = self.clean_text(document)
-                        extraction_template = Utils.load_template(self.config["graph"]["extractor_prompt"])
+                        extraction_template = Utils.load_template(self.config['graph']['extractor_prompt'])
                         prompt = extraction_template.format(document=document)
 
                         response_by_template = self.llm_model.generate(prompt)
@@ -51,7 +54,7 @@ class TripletExtractor:
                         self.set_relation_to_graph(self.create_inverse_relationships(extracted_relation), document)
                 else:
                     query = self.clean_text(query)
-                    extraction_template = Utils.load_template(self.config["graph"]["extractor_prompt"])
+                    extraction_template = Utils.load_template(self.config['graph']['extractor_prompt'])
                     prompt = extraction_template.format(document=query)
 
                     response_by_template = self.llm_model.generate(prompt)
@@ -73,13 +76,13 @@ class TripletExtractor:
             self.graph.add_edge(subj, obj, label=pred, text=document)
 
     def set_relation_from_query(self, extracted_relation: List) -> None:
-        self.extracted_query = []
+        self.triplets_from_query = []
         try:
             for relation in extracted_relation:
                 subj = relation.get("subject", "None subject")
                 obj = relation.get("object", "None object")
                 pred = relation.get("predicate", "None predicate")
-                self.extracted_query.append([subj, obj, pred])
+                self.triplets_from_query.append([subj, obj, pred])
         except Exception as e:
             logger(f"Cannot set extracted triplet from query [[94]]: {e}")
 
@@ -87,7 +90,7 @@ class TripletExtractor:
                       subject_pattern: Optional[str] = None,
                       relation_pattern: Optional[str] = None,
                       object_pattern: Optional[str] = None) -> None:
-        self.extracted_relation = []
+        self.triplets_from_graph = []
         try:
             for u, v, data in self.graph.edges(data=True):
                 if subject_pattern and not re.search(subject_pattern, str(u), re.IGNORECASE):
@@ -100,33 +103,37 @@ class TripletExtractor:
                 if object_pattern and not re.search(object_pattern, str(v), re.IGNORECASE):
                     continue
 
-                self.extracted_relation.append({
+                self.triplets_from_graph.append({
                     'subject': u,
                     'predicate': pred,
                     'object': v,
                     'document': data.get('text', "No document")
                 })
 
-            if self.config["graph"]["limit"]:
-                self.extracted_relation = self.extracted_relation[:self.config["graph"]["limit"]]
+            if self.config['graph']['limit']:
+                self.triplets_from_graph = self.triplets_from_graph[:self.config['graph']['limit']]
             else:
-                self.extracted_relation = self.extracted_relation[:15]
+                self.triplets_from_graph = self.triplets_from_graph[:3]
         except Exception as e:
             logger(f"Search triple Error [[90]]: {e}")
-        logger(f"Extracted triplets: {len(self.extracted_relation)}")
+        logger(f"Extracted triplets by subject, predicate, object: {len(self.triplets_from_graph)}")
 
 
     def search_relation_by_subject(self, subject: str) -> None:
-        self.extracted_relation = []
+        self.triplets_from_graph = []
         for u, v, data in self.graph.edges(data=True):
             if subject.lower() in str(u).lower():
-                self.extracted_relation.append({
+                self.triplets_from_graph.append({
                     'subject': u,
                     'predicate': data.get('label', ''),
                     'object': v,
                     'document': data.get('text', "No document")
                 })
-        logger(f"Extracted triplets: {len(self.extracted_relation)}")
+        if self.config['graph']['limit']:
+            self.triplets_from_graph = self.triplets_from_graph[:self.config['graph']['limit']]
+        else:
+            self.triplets_from_graph = self.triplets_from_graph[:3]
+        logger(f"Extracted triplets by subject only: {len(self.triplets_from_graph)}")
 
     def clean_text(self, text: str) -> str:
         # Remove extra whitespace
@@ -172,9 +179,9 @@ class TripletExtractor:
                 }
 
                 # Validate content
-                if all([triplet["subject"], triplet["predicate"], triplet["object"]]):
+                if all([triplet['subject'], triplet['predicate'], triplet['object']]):
                     # Clean predicate
-                    triplet["predicate"] = self.normalize_predicate(triplet["predicate"])
+                    triplet['predicate'] = self.normalize_predicate(triplet['predicate'])
                     validated.append(triplet)
         except Exception as e:
             logger(f"Validate triplets Error [[92]]: {e}")
@@ -203,6 +210,14 @@ class TripletExtractor:
             })
         return reverse_triplet
 
+    def summary_graph_triplets(self) -> Dict:
+        return {
+            'nodes': self.graph.number_of_nodes(),
+            'edges': self.graph.number_of_edges(),
+            'label_nodes': len([u for u, d in self.graph.nodes(data=True) if d.get('type') == 'label']),
+            'document_nodes': len([u for u, d in self.graph.nodes(data=True) if d.get('type') == 'text'])
+        }
+
     def set_documents(self, documents: List[str]) -> None:
         self.documents = documents
 
@@ -215,8 +230,8 @@ class TripletExtractor:
     def set_config(self, config: Dict) -> None:
         self.config = config
 
-    def get_extracted_relation(self) -> List:
-        return self.extracted_relation
+    def get_triplets_from_graph(self) -> List:
+        return self.triplets_from_graph
 
-    def get_extracted_query(self) -> List:
-        return self.extracted_query
+    def get_triplets_from_query(self) -> List:
+        return self.triplets_from_query

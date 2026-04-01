@@ -46,7 +46,7 @@ class EntityExtractor:
                         self.graph.add_to_knowledge_graph(document)
 
             if self.graph is not None:
-                logger_aux(f"Graph-entity status: {self.graph.get_knowledge_graph_stats()}")
+                logger_aux(f"Graph-entity status: {self.graph.summary_graph_entities()}")
 
             if self.triplet is not None:
                 self.triplet.set_documents(self.documents)

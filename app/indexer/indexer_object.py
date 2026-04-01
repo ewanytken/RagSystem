@@ -73,4 +73,4 @@ class Indexer:
         return self.retrieve_documents
 
     def get_retrieved_text_only(self) -> List[str]:
-        return [doc["text"] for doc in self.retrieve_documents]
+        return [doc['text'] for doc in self.retrieve_documents]

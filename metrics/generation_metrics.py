@@ -26,13 +26,13 @@ class GenerationMetrics(Metrics):
 
         if self.candidate:
             try:
-                self.score["BLEU"] = sentence_bleu([self.response.split()], self.candidate.split())
-                logger_metrics(f"BLEU {self.score["BLEU"]}")
+                self.score['BLEU'] = sentence_bleu([self.response.split()], self.candidate.split())
+                logger_metrics(f"BLEU {self.score['BLEU']}")
 
-                # self.score["METEOR"] =  meteor_score([self.answers], self.candidates)
+                # self.score['METEOR'] =  meteor_score([self.answers], self.candidates)
                 P, R, F1 = score([self.candidate], [self.response], lang=self.config['metrics']['bert_lang'])
-                self.score["BERT_SCORE"] =  F1.mean().item()
-                logger_metrics(f"BERT_SCORE {self.score["BERT_SCORE"]}")
+                self.score['BERT_SCORE'] =  F1.mean().item()
+                logger_metrics(f"BERT_SCORE {self.score['BERT_SCORE']}")
 
             except Exception as e:
                 logger_metrics(f"BLEU or BERT_SCORE cause ERROR [[140]] {e}")
@@ -57,8 +57,8 @@ class GenerationMetrics(Metrics):
                 similarity = np.dot(q_emb, a_emb)
                 scores.append(similarity)
 
-            self.score["Answer_relevance"] = np.mean(scores)
-            logger_metrics(f"Answer relevance {self.score["Answer_relevance"]}")
+            self.score['Answer_relevance'] = np.mean(scores)
+            logger_metrics(f"Answer relevance {self.score['Answer_relevance']}")
 
             scores = []
             for query, context_list in zip(self.query, self.context):
@@ -71,14 +71,14 @@ class GenerationMetrics(Metrics):
                     context_scores.append(np.dot(q_emb, c_emb))
                 scores.append(np.mean(context_scores))
 
-            self.score["Context_relevance"] = np.mean(scores)
-            logger_metrics(f"Context relevance {self.score["Context_relevance"]}")
+            self.score['Context_relevance'] = np.mean(scores)
+            logger_metrics(f"Context relevance {self.score['Context_relevance']}")
 
             rule_groundedness = RuleBasedGroundedness(threshold=0.3)
             result = rule_groundedness.evaluate(self.response, self.context)
 
-            self.score["Groundedness_score"] = result.score
-            logger_metrics(f"Groundedness score: {self.score["Groundedness_score"]}")
+            self.score['Groundedness_score'] = result.score
+            logger_metrics(f"Groundedness score: {self.score['Groundedness_score']}")
             logger_metrics(f"Groundedness details: {result.details}")
 
         except Exception as e:

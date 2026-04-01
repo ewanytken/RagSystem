@@ -25,13 +25,13 @@ class ExternalModel(Respondent):
 
         elif model_ticker: # condition for remote service
             self.set_model_ticker(model_ticker)
-            self.set_base_url(self.config["external_service"]["url"])
-            self.set_api_key(self.config["external_service"]["api_key"])
+            self.set_base_url(self.config['external_service']['url'])
+            self.set_api_key(self.config['external_service']['api_key'])
 
         else:
-            self.set_model_ticker(self.config["external_service"]["model"])
-            self.set_base_url(self.config["external_service"]["url"])
-            self.set_api_key(self.config["external_service"]["api_key"])
+            self.set_model_ticker(self.config['external_service']['model'])
+            self.set_base_url(self.config['external_service']['url'])
+            self.set_api_key(self.config['external_service']['api_key'])
 
         super().__init__()
 

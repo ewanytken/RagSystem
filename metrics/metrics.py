@@ -25,8 +25,8 @@ class Metrics:
         self.model_judge: Optional[Respondent] = None
 
     def init_processing(self) -> None:
-        if self.config["metrics"]["model_sim"]:
-            ticket = self.config["metrics"]["model_sim"]
+        if self.config['metrics']['model_sim']:
+            ticket = self.config['metrics']['model_sim']
             self.model_sim = SentenceTransformer(
                 ticket,
                 device = "cuda" if torch.cuda.is_available() else "cpu",

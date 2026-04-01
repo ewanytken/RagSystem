@@ -107,7 +107,7 @@ class ApiCall(Constructor):
 
     def metric_processor(self):
         try:
-            if self.metrics_config["init_metrics"]:
+            if self.metrics_config['init_metrics']:
                 console.print("\n[bold blue] Simple Metrics Calculation in processing ... [/bold blue]")
 
                 config_eval = { "response": self.get_response(), #str
@@ -119,7 +119,7 @@ class ApiCall(Constructor):
                 self.metrics_executor.generation_evaluator()
                 self.metrics_executor.retriever_evaluator()
 
-                if self.metrics_config["judge_metrics"]:
+                if self.metrics_config['judge_metrics']:
                     console.print("\n[bold cyan] Metrics LLM Judge in processing ... [/bold cyan]")
                     self.metrics_executor.judge_evaluator()
 

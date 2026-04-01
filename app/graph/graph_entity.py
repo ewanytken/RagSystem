@@ -95,7 +95,7 @@ class GraphEntity:
     def set_entities(self, entities) -> None:
         self.entities = entities
 
-    def get_knowledge_graph_stats(self) -> Dict:
+    def summary_graph_entities(self) -> Dict:
         return {
             'nodes': self.graph.number_of_nodes(),
             'edges': self.graph.number_of_edges(),

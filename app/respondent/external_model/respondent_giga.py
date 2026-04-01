@@ -50,7 +50,7 @@ class GigaRest:
         except Exception as e:
             logger(f"Request to GigaChat server ERROR: {e}")
 
-        return token.json()["access_token"]
+        return token.json()['access_token']
 
     def get_message(self, message: str, system_message: str = None) -> str:
         response = None
@@ -96,5 +96,5 @@ class GigaRest:
 
         assert response is not None, "Empty response from GigaChat"
 
-        return response.json()["choices"][0]["message"]["content"]
+        return response.json()['choices'][0]['message']['content']
 

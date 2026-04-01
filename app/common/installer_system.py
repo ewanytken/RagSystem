@@ -101,10 +101,10 @@ class InstallerSystem:
     def find_triplets(self, query: str) -> list[dict]:
         if self.triplet_graph is not None:
             self.triplet_graph.extract_triplets(query)
-            triplet = self.triplet_graph.get_extracted_query()
+            triplet = self.triplet_graph.get_triplets_from_query()
             for t in triplet:
                 self.triplet_graph.search_relation_from_graph(t[0], t[1], t[2])
-            return self.triplet_graph.get_extracted_relation()
+            return self.triplet_graph.get_triplets_from_graph()
         else:
             logger(f"Triplets Graph don't install. Return empty list.")
             return []
@@ -112,10 +112,10 @@ class InstallerSystem:
     def find_triplets_by_subject(self, query: str) -> list[dict]:
         if self.triplet_graph is not None:
             self.triplet_graph.extract_triplets(query)
-            triplet = self.triplet_graph.get_extracted_query()
+            triplet = self.triplet_graph.get_triplets_from_query()
             for t in triplet:
                 self.triplet_graph.search_relation_by_subject(t[0])
-            return self.triplet_graph.get_extracted_relation()
+            return self.triplet_graph.get_triplets_from_graph()
         else:
             logger(f"Triplets Graph don't install. Return empty list.")
             return []

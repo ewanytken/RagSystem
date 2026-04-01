@@ -80,11 +80,11 @@ class LLMGroundedness:
 
         # Categorize claims
         supported_claims = [
-            c["text"] for c in claims_data
+            c['text'] for c in claims_data
             if c.get("supported", False) and "text" in c
         ]
         unsupported_claims = [
-            c["text"] for c in claims_data
+            c['text'] for c in claims_data
             if not c.get("supported", True) and "text" in c
         ]
         if score >= 0.8:

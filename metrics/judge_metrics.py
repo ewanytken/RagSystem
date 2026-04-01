@@ -37,18 +37,18 @@ class JudgeMetrics(GenerationMetrics):
 
             if self.model_judge:
                 self.score['judge_groundedness'] = groundedness.evaluate(response=self.response, context=self.context)
-                logger_metrics(f"Judge Groundedness {self.score["judge_groundedness"]}")
+                logger_metrics(f"Judge Groundedness {self.score['judge_groundedness']}")
 
                 self.score['judge_completeness'] = self.model_judge.generate(completeness_fill)
-                logger_metrics(f"Judge Completeness {self.score["judge_completeness"]}")
+                logger_metrics(f"Judge Completeness {self.score['judge_completeness']}")
 
                 self.score['judge_correctness'] = self.model_judge.generate(correctness_fill)
-                logger_metrics(f"Judge Correctness {self.score["judge_correctness"]}")
+                logger_metrics(f"Judge Correctness {self.score['judge_correctness']}")
 
                 self.score['judge_faithfulness'] = self.model_judge.generate(faithfulness_fill) # same as groundedness, advanced and simple approach for separation
-                logger_metrics(f"Judge Faithfulness {self.score["judge_faithfulness"]}")
+                logger_metrics(f"Judge Faithfulness {self.score['judge_faithfulness']}")
 
                 self.score['judge_relevance'] = self.model_judge.generate(relevance_fill)
-                logger_metrics(f"Judge Relevance {self.score["judge_relevance"]}")
+                logger_metrics(f"Judge Relevance {self.score['judge_relevance']}")
             else:
                 logger(f"Judge model don't install")

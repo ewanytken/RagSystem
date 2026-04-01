@@ -1,6 +1,4 @@
 from abc import abstractmethod, ABC
-from typing import Optional, Dict, Any
-from app.utils import Utils
 
 class Respondent(ABC):
 

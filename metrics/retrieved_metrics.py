@@ -20,11 +20,11 @@ class RetrievedMetrics(Metrics):
             try:
                 retrieved_at_k = self.retrieved_docs[:self.k]
                 relevant_retrieved = [doc for doc in retrieved_at_k if doc in self.relevant_doc]
-                self.score["Precision@K"] = len(relevant_retrieved) / self.k if len(relevant_retrieved) else "Cannot calculate Precision@K"
-                logger_metrics(f"Precision@K {self.score["Precision@K"]}. Relevant_retrieved: {len(relevant_retrieved)}")
+                self.score['Precision@K'] = len(relevant_retrieved) / self.k if len(relevant_retrieved) else "Cannot calculate Precision@K"
+                logger_metrics(f"Precision@K {self.score['Precision@K']}. Relevant_retrieved: {len(relevant_retrieved)}")
 
-                self.score["Recall@K"] = len(relevant_retrieved) / len(self.relevant_doc) if len(relevant_retrieved) else "Cannot calculate Recall@K"
-                logger_metrics(f"Recall@K {self.score["Recall@K"]}. Relevant_retrieved: {len(relevant_retrieved)}")
+                self.score['Recall@K'] = len(relevant_retrieved) / len(self.relevant_doc) if len(relevant_retrieved) else "Cannot calculate Recall@K"
+                logger_metrics(f"Recall@K {self.score['Recall@K']}. Relevant_retrieved: {len(relevant_retrieved)}")
 
                 reciprocal_ranks = []
                 for retrieved, relevant in zip(self.retrieved_docs, self.relevant_doc):
@@ -34,8 +34,8 @@ class RetrievedMetrics(Metrics):
                             break
                     else:
                         reciprocal_ranks.append(0)
-                self.score["MRR"] = sum(reciprocal_ranks) / len(reciprocal_ranks)
-                logger_metrics(f"MRR {self.score["MRR"]}. Reciprocal_ranks: {len(reciprocal_ranks)}")
+                self.score['MRR'] = sum(reciprocal_ranks) / len(reciprocal_ranks)
+                logger_metrics(f"MRR {self.score['MRR']}. Reciprocal_ranks: {len(reciprocal_ranks)}")
 
             except Exception as e:
                 logger(f"Retrieved metrics caused an ERROR {e}")
@@ -48,7 +48,7 @@ class RetrievedMetrics(Metrics):
         idcg = sum((2 ** rel - 1) / np.log2(i + 2)
                    for i, rel in enumerate(ideal_scores[:self.k]))
 
-        self.score["NDCG"] =  dcg / idcg if idcg > 0 else 0
+        self.score['NDCG'] =  dcg / idcg if idcg > 0 else 0
 
     def set_k(self, k: int) -> None:
         self.k = k
