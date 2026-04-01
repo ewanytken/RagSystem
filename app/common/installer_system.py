@@ -70,14 +70,17 @@ class InstallerSystem:
                     ext.set_gliner_label(label_for_gliner)
 
             self.extractor.set_extractors(self.extractors)
-            self.extractor.set_documents(documents)
         else:
-            raise Exception("Extractor don't install. Next methods cannot be call")
+            logger(f"Entities Extractors doesn't install {len(self.extractors)}")
 
-        if self.graph_entity is not None:
+        self.extractor.set_documents(documents)
+
+        if self.graph_entity:
             self.extractor.set_graph(self.graph_entity)
 
-        if self.triplet_graph is not None:
+        if self.triplet_graph:
+            self.triplet_graph.set_config(self.config)
+            self.triplet_graph.set_documents(documents)
             self.extractor.set_triple_graph(self.triplet_graph)
 
         self.extractor.entities_and_graphs_extractor()
@@ -99,7 +102,7 @@ class InstallerSystem:
             return set()
 
     def find_triplets(self, query: str) -> list[dict]:
-        if self.triplet_graph is not None:
+        if self.triplet_graph:
             self.triplet_graph.extract_triplets(query)
             triplet = self.triplet_graph.get_triplets_from_query()
             for t in triplet:
@@ -110,7 +113,7 @@ class InstallerSystem:
             return []
 
     def find_triplets_by_subject(self, query: str) -> list[dict]:
-        if self.triplet_graph is not None:
+        if self.triplet_graph:
             self.triplet_graph.extract_triplets(query)
             triplet = self.triplet_graph.get_triplets_from_query()
             for t in triplet:

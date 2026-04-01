@@ -29,8 +29,6 @@ class EntityExtractor:
         self.graph: Optional[GraphEntity] = None
         self.triplet: Optional[TripletExtractor] = None
 
-        logger(f"Number of Entity Extractor downloaded: {len(self.extractors)} ")
-
     def entities_and_graphs_extractor(self) -> None:
         if self.documents and self.extractors:
             logger(f"Document's Entities extracting...")
@@ -47,10 +45,13 @@ class EntityExtractor:
 
             if self.graph is not None:
                 logger_aux(f"Graph-entity status: {self.graph.summary_graph_entities()}")
+        else:
+            logger(
+                f"Documents {len(self.documents) if self.documents else 0} or Extractors {len(self.extractors) if self.extractors else 0} doesn't initialize")
 
-            if self.triplet is not None:
-                self.triplet.set_documents(self.documents)
-                self.triplet.extract_triplets()
+        if self.triplet:
+            self.triplet.extract_triplets()
+            logger_aux(f"Graph-triplet status: {self.triplet.summary_graph_triplets()}")
 
     # maybe it don't need
     def query_extractor(self, query: str) -> None:

@@ -134,10 +134,8 @@ class TestRAGSystem(unittest.TestCase):
         self.word_handler.set_config(config)
         self.word_handler.handle_documents()
         doc_in_chunks = self.word_handler.get_chunked_documents()
-        print(len(doc_in_chunks))
         self.triplet.set_config(config)
         self.triplet.set_documents(doc_in_chunks[:1])
-        # model = TransformerWrapper()
         model = ExternalModel()
 
         self.triplet.set_llm_model(model)
@@ -145,21 +143,20 @@ class TestRAGSystem(unittest.TestCase):
 
         print(self.summary_graph_triplets(self.triplet.graph))
 
-
-        self.visualize_graph(self.triplet.graph)
-
-        # self.visualize_word_neighbors(self.triplet.graph, "Общество")
-
-        # query = "Кто является генеральным директором АО «Селектел»?"
-        # self.triplet.extract_triplets(query)
-        # triplet_query = self.triplet.get_triplets_from_query()
-        # logger(self.triplet.get_triplets_from_query())
-        # for triplet in triplet_query:
-        #     self.triplet.search_relation_by_subject(triplet[0])
-        #     logger(self.triplet.get_triplets_from_graph())
+        # self.visualize_graph(self.triplet.graph)
         #
-        #     self.triplet.search_relation_from_graph(triplet[0], triplet[1], triplet[2])
-        #     logger(self.triplet.get_triplets_from_graph())
+        # self.visualize_word_neighbors(self.triplet.graph, "Селектел")
+
+        query = "Кто является генеральным директором АО «Селектел»?"
+        self.triplet.extract_triplets(query)
+        triplet_query = self.triplet.get_triplets_from_query()
+        logger(self.triplet.get_triplets_from_query())
+        for triplet in triplet_query:
+            self.triplet.search_relation_by_subject(triplet[0])
+            logger(self.triplet.get_triplets_from_graph())
+
+            self.triplet.search_relation_from_graph(triplet[0], triplet[1], triplet[2])
+            logger(self.triplet.get_triplets_from_graph())
 
 if __name__ == '__main__':
     unittest.main()

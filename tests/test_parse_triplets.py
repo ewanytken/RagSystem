@@ -60,6 +60,7 @@ class Test(unittest.TestCase):
 
         return predicate
 
+
     def setUp(self):
         pass
 
@@ -71,6 +72,8 @@ class Test(unittest.TestCase):
 	{"subject": "ГОДОВОЙ ОТЧЕТ", "predicate": "г.", "object": "Санкт-Петербург"},
 	{"subject": "ГОДОВОЙ ОТЧЕТ", "predicate": "год", "object": "2025 год"},
 	{"subject": "Полное фирменное наименование Общества", "predicate": "наименование", "object": "Акционерное общество Селектел"},
+    {"subject": "subject", "predicate": "predicate", "object": "object"},
+
 ]
 ```'''
         triplets = self.parse_json_response(response_by_template)
@@ -80,5 +83,45 @@ class Test(unittest.TestCase):
 
         logger(f"Extracted relation: {extracted_relation}")
 
+        query_triplet = [{"subject": "АО Селектел", "predicate": "утверждён", "object": "года"},
+                         {"subject": "ОТЧЕТ", "predicate": "год", "object": " год"}]
+
+        subject = extracted_relation[-1]['subject']
+        relation = extracted_relation[-1]['predicate']
+        object = extracted_relation[-1]['object']
+
+        # print(re.search(r'\bАО Селектел\b', str('Совет директоров АО Селектел'), re.IGNORECASE))
+        # print(re.search(r'\bутверждён\b', str('утверждён'), re.IGNORECASE))
+        # print(re.search(r'года', str('21 апреля 2025 года'), re.IGNORECASE))
+
+        print(subject, relation, object)
+
+        subject_pattern = r'{s}'.format(s=subject)
+        relation_pattern = r'{r}'.format(r=relation)
+        object_pattern = r'{o}'.format(o=object)
+
+        print(subject_pattern, relation_pattern, object_pattern)
+
+        for u, v, pred in extracted_relation:
+            print("u, v, pred: ", u, v, pred)
+
+
+            print(re.search(subject_pattern, str(u), re.IGNORECASE),
+                  re.search(relation_pattern, str(v), re.IGNORECASE),
+                  re.search(object_pattern, str(pred), re.IGNORECASE))
+
+            if subject_pattern and not re.search(subject_pattern, str(u), re.IGNORECASE):
+                continue
+
+            if relation_pattern and not re.search(relation_pattern, str(pred), re.IGNORECASE):
+                continue
+
+            if object_pattern and not re.search(object_pattern, str(v), re.IGNORECASE):
+                continue
+
+            logger({'SUBJECT': u,
+                'PREDICATE': pred,
+                'OBJECT': v
+                })
     if __name__ == '__main__':
         unittest.main()

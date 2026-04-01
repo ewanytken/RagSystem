@@ -9,7 +9,9 @@ from app.graph.triplet_extractor import TripletExtractor
 from app.indexer.indexer_object import Indexer
 from app.logger import LoggerWrapper
 from app.prompt.prompt_object import PromptObject
+from app.respondent.external_model.respondent_other_service import ExternalModel
 from app.respondent.local_model.transformer_wrapper import TransformerWrapper
+from app.utils import Utils
 
 logger = LoggerWrapper()
 
@@ -18,12 +20,14 @@ class Test(unittest.TestCase):
     def setUp(self):
         word_handler = WordPdfHandler()
         regex = RegexEntity()
-        llm = TransformerWrapper()
+        llm = ExternalModel()
         prompt = PromptObject()
         indexer = Indexer()
         gliner = GlinerEntity()
         graph = GraphEntity()
         triplet = TripletExtractor()
+        triplet.set_llm_model(ExternalModel())
+        triplet.set_config(Utils.get_config_file())
 
         self.installer_system = (Builder()
                                  .set_indexer(indexer)
@@ -38,23 +42,26 @@ class Test(unittest.TestCase):
 
     def test_document_processing(self):
         chunk, doc = self.installer_system.documents_processor()
+        chunk = chunk[:2]
         self.installer_system.indexer_installer_processor(chunk)
         entities = self.installer_system.extractor_processor(chunk)
         logger(f"Entities: {entities}")
-        query = "What's ASR?"
-        retrieved_doc = self.installer_system.indexer_query(query)
-        entities_from_graph = self.installer_system.find_entities_from_graph(query)
+        query = "Кто является генеральным директором АО «Селектел»?"
+        retrieved_doc, retrieved_doc_text = self.installer_system.indexer_query(query)
+        entities_from_graph = self.installer_system.find_entities_from_graph(retrieved_doc_text)
         logger(f"Entities from graph: {entities_from_graph}")
-        entities.update(entities_from_graph)
+        entities.extend(entities_from_graph)
 
-        triplets = self.installer_system.find_triplets(query)
+        triplets_full = self.installer_system.find_triplets(query)
+        triplets_by_subject = self.installer_system.find_triplets_by_subject(query)
+        triplets = triplets_full + triplets_by_subject
         logger(f"Triplets: {triplets}")
         final_prompt = self.installer_system.prompt_processor(query=query,
-                                                              context=retrieved_doc,
+                                                              retrieved_docs=retrieved_doc,
                                                               entities=entities,
                                                               triplets=triplets)
-
-        logger(self.installer_system.llm_model_processor(final_prompt))
+        logger(f"Final Prompt: {final_prompt}")
+        # logger(self.installer_system.llm_model_processor(final_prompt))
 
 if __name__ == '__main__':
     unittest.main()

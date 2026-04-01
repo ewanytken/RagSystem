@@ -4,7 +4,7 @@ from app.logger import LoggerAuxiliary
 from app.prompt.abstract_prompt import AbstractPrompt
 from app.utils import Utils
 
-logger = LoggerAuxiliary()
+logger_aux = LoggerAuxiliary()
 
 """
 Input: str - user_query, str - context, str - entities, document in dir - template 
@@ -30,7 +30,7 @@ class PromptObject(AbstractPrompt):
             for i, entity in enumerate(self.entities, 1):
                 entities_context += f"{i}. {entity['entity']} --> {entity['label']} --> Score: {entity['score']} \n"
 
-        logger(f"Entities: {entities_context}")
+        logger_aux(f"Entities: {entities_context}")
 
         triplet_context = ""
         if self.triplets is not None:
@@ -41,7 +41,7 @@ class PromptObject(AbstractPrompt):
             triplet_context = (triplet_context +
                                "\nBase document:"+ "\n".join(documents_extracted_from_triplet))
 
-        logger(f"Triplets: {triplet_context}")
+        logger_aux(f"Triplets: {triplet_context}")
 
         chunks_context = ""
         if self.chunks is not None:
@@ -53,7 +53,7 @@ class PromptObject(AbstractPrompt):
                 chunks_context += f"{chunk.get('text', '')}\n"
                 chunks_context += "-" * 50
 
-        logger(f"Chunks: {chunks_context}")
+        logger_aux(f"Chunks: {chunks_context}")
 
         self.template = Utils.load_template(self.config['templates']['prompt_template'])
 
@@ -63,7 +63,7 @@ class PromptObject(AbstractPrompt):
             query=self.user_query,
             triplets=triplet_context,
         )
-        logger(f"FINAL PROMPT: {self.final_prompt}")
+        logger_aux(f"FINAL PROMPT: {self.final_prompt}")
 
     def get_final_prompt(self) -> str:
         return self.final_prompt

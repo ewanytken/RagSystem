@@ -59,9 +59,8 @@ class ApiCall(Constructor):
         console.print("\n[bold yellow] Indexing documents with embedding model[/bold yellow]")
         self.complete_installer.indexer_installer_processor(chunk)
 
-        if self.complete_installer.get_extractors():
-            console.print("\n[bold yellow] Extracting Entities and make Graphs[/bold yellow]")
-            self.complete_installer.extractor_processor(chunk)
+        console.print("\n[bold yellow] Extracting Entities and make Graphs[/bold yellow]")
+        self.complete_installer.extractor_processor(chunk)
 
     def run_interactive(self):
         try:
