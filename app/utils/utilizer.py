@@ -1,7 +1,9 @@
 import json
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
+import pynvml
+import torch
 import yaml
 
 from app.logger import LoggerWrapper
@@ -63,3 +65,34 @@ class Utils:
             logger(f"An error occurred: {e}")
         finally:
             file.close()
+
+    @staticmethod
+    def get_gpu_id(size: int = 10_000_000_000) -> int | bool:
+        logger("Memory distribution is working...")
+        if torch.cuda.is_available():
+            find_gpu_id: Optional[int] = None
+            try:
+                pynvml.nvmlInit()
+                for gpu_id in range(torch.cuda.device_count()):
+                    handle = pynvml.nvmlDeviceGetHandleByIndex(gpu_id)
+                    info = pynvml.nvmlDeviceGetMemoryInfo(handle)
+                    vram_not_allocated = torch.cuda.get_device_properties(
+                        gpu_id).total_memory - torch.cuda.memory_allocated(gpu_id)
+                    vram_not_reserved = torch.cuda.get_device_properties(
+                        gpu_id).total_memory - torch.cuda.memory.memory_reserved(gpu_id)
+                    vram_not_placed = info.free
+                    if (vram_not_allocated > size and vram_not_reserved > size
+                            and vram_not_placed > size ):
+                        find_gpu_id = gpu_id
+                        break
+            except Exception as e:
+                logger(
+                    f"Cannot search GPU or don't have video memory [[10]]. Current Device: {find_gpu_id}. Tracestack {e}")
+            finally:
+                pynvml.nvmlShutdown()
+
+            logger(f"Current GPU: {find_gpu_id if find_gpu_id is not None else False}")
+            return find_gpu_id if find_gpu_id is not None else False
+        else:
+            logger(f"Current device is CPU")
+            return False

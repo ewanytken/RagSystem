@@ -4,6 +4,7 @@ import torch
 from gliner2 import GLiNER2
 from app.entity.abstract_entity import AbstractEntity
 from app.logger import LoggerWrapper
+from app.utils import Utils
 
 logger = LoggerWrapper()
 
@@ -31,7 +32,7 @@ class GlinerTwoEntity(AbstractEntity):
             self.gliner = GLiNER2.from_pretrained(
                 model_ticker,
             )
-            self.gliner.to("cuda" if torch.cuda.is_available() else "cpu")
+            self.gliner.to(Utils.get_gpu_id(self.config['gpu']['memory_reserved']) if torch.cuda.is_available() else "cpu")
 
             logger(f"Loaded {model_ticker} Model on {'GPU' if torch.cuda.is_available() else 'CPU'}")
         except Exception as e:

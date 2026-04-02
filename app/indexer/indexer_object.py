@@ -2,6 +2,7 @@ from typing import Optional, Dict, List
 import torch
 from txtai import Embeddings
 from app.logger import LoggerWrapper
+from app.utils import Utils
 
 logger = LoggerWrapper()
 
@@ -25,7 +26,7 @@ class Indexer:
             model_ticker = self.config['embedding']['models']
             self.embeddings = Embeddings({
                 "path": model_ticker,
-                "gpu": torch.cuda.is_available(),
+                "gpu": Utils.get_gpu_id(self.config['gpu']['memory_reserved']) if torch.cuda.is_available() else False,
                 "content": True,
                 "batch_size": self.config['embedding']['batch_size'],
             })
