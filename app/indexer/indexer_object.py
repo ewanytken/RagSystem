@@ -24,13 +24,15 @@ class Indexer:
     def set_embedding_model(self) -> None:
         try:
             model_ticker = self.config['embedding']['models']
+            device = Utils.get_gpu_id(self.config['gpu']['memory_reserved']) if torch.cuda.is_available() else "cpu"
+
             self.embeddings = Embeddings({
                 "path": model_ticker,
-                "gpu": Utils.get_gpu_id(self.config['gpu']['memory_reserved']) if torch.cuda.is_available() else False,
+                "gpu": device,
                 "content": True,
                 "batch_size": self.config['embedding']['batch_size'],
             })
-            logger(f"Model loaded {model_ticker} on {'GPU' if torch.cuda.is_available() else 'CPU'}. Batch size by default is 32")
+            logger(f"Loaded {model_ticker} Embedding model on {device if device is not False else 'CPU'}")
         except Exception as e:
             logger(f"Embedding model install ERROR 60: {e}")
             raise

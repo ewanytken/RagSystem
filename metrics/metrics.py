@@ -4,11 +4,12 @@ import torch
 from rich.console import Console
 from rich.table import Table
 from sentence_transformers import SentenceTransformer
-from torch.cuda import device
 
+from app.logger import LoggerWrapper
 from app.respondent.abstract_respondent import Respondent
 from app.utils import Utils
 
+logger = LoggerWrapper()
 console = Console()
 
 class Metrics:
@@ -26,11 +27,14 @@ class Metrics:
 
     def init_processing(self) -> None:
         if self.config['metrics']['model_sim']:
-            ticket = self.config['metrics']['model_sim']
+            model_ticker = self.config['metrics']['model_sim']
+            device = Utils.get_gpu_id(self.config['gpu']['memory_reserved']) if torch.cuda.is_available() else "cpu"
+
             self.model_sim = SentenceTransformer(
-                ticket,
-                device = "cuda" if torch.cuda.is_available() else "cpu",
+                model_ticker,
+                device = device,
             )
+            logger(f"Loaded {model_ticker} similarity model on {device if device is not False else 'CPU'}")
 
     def show_scores(self) -> None:
         table = Table(title="RAG Metrics Summary", border_style="cyan")

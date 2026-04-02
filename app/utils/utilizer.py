@@ -67,7 +67,7 @@ class Utils:
             file.close()
 
     @staticmethod
-    def get_gpu_id(size: int = 10_000_000_000) -> int | bool:
+    def get_gpu_id(size: int = 1_000_000_000) -> int | bool:
         logger("Memory distribution is working...")
         if torch.cuda.is_available():
             find_gpu_id: Optional[int] = None

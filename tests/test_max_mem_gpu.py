@@ -3,6 +3,7 @@ from typing import Optional
 
 import pynvml
 import torch
+from joblib.externals.cloudpickle import instance
 from txtai import Embeddings
 
 from app.logger import LoggerWrapper
@@ -46,13 +47,15 @@ class Test(unittest.TestCase):
     def setUp(self):
         config = Utils.get_config_file("config_rus.yaml")
         model_ticker = config['embedding']['models']
-
+        device = get_gpu_id(config['gpu']['memory_reserved']) if torch.cuda.is_available() else False
         self.embeddings = Embeddings({
             "path": model_ticker,
-            "gpu": get_gpu_id() if torch.cuda.is_available() else False,
+            "gpu": device,
             "content": True,
             "batch_size": config['embedding']['batch_size'],
         })
+
+        logger(f"Loaded {model_ticker} Model on {device if device is not False else 'CPU'}")
 
     def test_document_processing(self):
         print(self.embeddings.info())

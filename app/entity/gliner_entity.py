@@ -31,15 +31,16 @@ class GlinerEntity(AbstractEntity):
     def set_gliner_model(self):
         try:
             model_ticker = self.config['gliner']['ticket']
+            device = Utils.get_gpu_id(self.config['gpu']['memory_reserved']) if torch.cuda.is_available() else "cpu"
+
             self.gliner = GLiNER.from_pretrained(
                 model_ticker,
                 local_files_only=self.config['gliner']['local_only'],
             )
-            self.gliner.to(Utils.get_gpu_id(self.config['gpu']['memory_reserved']) if torch.cuda.is_available() else "cpu")
-            logger(f"Loaded {model_ticker} Model on {'GPU' if torch.cuda.is_available() else 'CPU'}")
+            self.gliner.to(device)
+            logger(f"Loaded {model_ticker} Gliner on {device if device is not False else 'CPU'}")
         except Exception as e:
             logger(f"GLiNER model install ERROR [[80]]: {e}")
-            raise
 
     def extractor_entity(self) -> None:
         try:
