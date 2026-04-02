@@ -21,20 +21,19 @@ class Metrics:
         self.relevant_doc: Optional[List | str] = []
 
         self.config: Optional[Dict] = Utils.get_config_file()
-
+        self.device = Utils.get_gpu_id(self.config['gpu']['memory_reserved']) if torch.cuda.is_available() else "cpu"
         self.model_sim: Optional[Any] = None
         self.model_judge: Optional[Respondent] = None
 
     def init_processing(self) -> None:
         if self.config['metrics']['model_sim']:
             model_ticker = self.config['metrics']['model_sim']
-            device = Utils.get_gpu_id(self.config['gpu']['memory_reserved']) if torch.cuda.is_available() else "cpu"
 
             self.model_sim = SentenceTransformer(
                 model_ticker,
-                device = device,
+                device = "cuda:{num}".format(num=self.device) if self.device is not "cpu" else "cpu",
             )
-            logger(f"Loaded {model_ticker} similarity model on {device if device is not False else 'CPU'}")
+            logger(f"Loaded {model_ticker} similarity model on {self.device if self.device is not False else 'CPU'}")
 
     def show_scores(self) -> None:
         table = Table(title="RAG Metrics Summary", border_style="cyan")

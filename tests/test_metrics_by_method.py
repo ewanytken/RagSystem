@@ -1,9 +1,7 @@
 import unittest
 
-import numpy as np
-from bert_score import score
-from huggingface_hub.cli.cache import verify
 from nltk.translate.bleu_score import sentence_bleu
+
 from app.logger import LoggerWrapper
 from metrics.groundedness.ground_base import RuleBasedGroundedness
 

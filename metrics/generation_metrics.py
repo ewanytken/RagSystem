@@ -30,7 +30,9 @@ class GenerationMetrics(Metrics):
                 logger_metrics(f"BLEU {self.score['BLEU']}")
 
                 # self.score['METEOR'] =  meteor_score([self.answers], self.candidates)
-                P, R, F1 = score([self.candidate], [self.response], lang=self.config['metrics']['bert_lang'])
+                P, R, F1 = score([self.candidate], [self.response], lang=self.config['metrics']['bert_lang'],
+                                 device="cuda:{num}".format(num=self.device) if self.device is not "cpu" else "cpu")
+
                 self.score['BERT_SCORE'] =  F1.mean().item()
                 logger_metrics(f"BERT_SCORE {self.score['BERT_SCORE']}")
 
