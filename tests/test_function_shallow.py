@@ -16,7 +16,7 @@ class Test(unittest.TestCase):
         pass
 
     def test_document_processing(self):
-        Utils.convert_datasets_to_csv()
-
+        config = Utils.get_config_file()
+        print(config.get('metrics', {}).get("model_judge_local"))
     if __name__ == '__main__':
         unittest.main()

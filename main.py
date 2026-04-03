@@ -54,7 +54,7 @@ def auto_metrics() -> None:
     query = dataset_handler.get_questions()
 
     if len(relevant_contexts) == len(query) == len(golden_answers):
-        for query, answer, context in zip(query, golden_answers, relevant_contexts):
+        for i, (query, answer, context) in enumerate(zip(query, golden_answers, relevant_contexts), 1):
             logger_metrics(f"=============================START=============================")
             metric_executor.set_candidate(answer)
             metric_executor.set_relevant_context(context)
@@ -63,7 +63,8 @@ def auto_metrics() -> None:
             api.set_query(query)
 
             response = api.run_interactive()
-            logger(f"Response from RAG: {response[:30]}...")
+            logger(f"# {i} FROM DATASET\n")
+            logger(f"Response from RAG: {response[:50]}...")
 
             logger_auxiliary(f"Dataset Query: {query}")
             logger_auxiliary(f"Relevant Context: {context}")

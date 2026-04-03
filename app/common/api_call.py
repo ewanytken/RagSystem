@@ -113,6 +113,7 @@ class ApiCall(Constructor):
                                 "context": self.get_doc_text_retrieved(), #List[str]
                                 "judge_model": self.metrics_config.get("judge_model", "empty_model")}
 
+                logger(f"Model for Judge Evaluation: {str(config_eval.get('judge_model'))}")
                 self.metrics_executor.set_config_eval(config_eval)
                 self.metrics_executor.generation_evaluator()
                 self.metrics_executor.retriever_evaluator()
