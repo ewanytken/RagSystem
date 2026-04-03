@@ -45,6 +45,7 @@ class Indexer:
             logger(f"Documents Indexing Error 61: {e}")
 
     def documents_retriever(self, user_query: str) -> None:
+        self.retrieve_documents = []
         limit = self.config['rag']['retrieval_limit']
         try:
             results = self.embeddings.search(user_query, limit=limit * 2)

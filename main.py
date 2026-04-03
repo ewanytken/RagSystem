@@ -1,6 +1,7 @@
 from rich.console import Console
 from rich.panel import Panel
 from rich.prompt import Prompt
+from tqdm import tqdm
 
 from app.common.api_call import ApiCall
 from app.logger import LoggerWrapper, LoggerAuxiliary
@@ -54,7 +55,7 @@ def auto_metrics() -> None:
     query = dataset_handler.get_questions()
 
     if len(relevant_contexts) == len(query) == len(golden_answers):
-        for i, (query, answer, context) in enumerate(zip(query, golden_answers, relevant_contexts), 1):
+        for i, (query, answer, context) in enumerate(tqdm(zip(query, golden_answers, relevant_contexts)), 1):
             logger_metrics(f"=============================START=============================")
             metric_executor.set_candidate(answer)
             metric_executor.set_relevant_context(context)
