@@ -18,3 +18,4 @@ tests/test_remote.py
 ragas-eval-sys
 datasets
 config_rus.yaml
+tests/triplet_graph.graphml

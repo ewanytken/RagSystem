@@ -1,5 +1,6 @@
 import json
 import re
+from pathlib import Path
 from typing import Optional, Dict, List, Any
 
 import networkx as nx
@@ -34,6 +35,10 @@ class TripletExtractor:
         if self.llm_model and self.config and self.documents:
             try:
                 if query is None:
+                    if Path("triplet_graph.graphml").is_file():
+                        self.graph = nx.read_graphml("triplet_graph.graphml")
+                        return
+
                     for document in self.documents:
                         document = self.clean_text(document)
                         extraction_template = Utils.load_template(self.config['graph']['extractor_prompt'])
@@ -49,6 +54,7 @@ class TripletExtractor:
 
                         self.set_relation_to_graph(extracted_relation, document)
                         self.set_relation_to_graph(self.create_inverse_relationships(extracted_relation), document)
+                    nx.write_graphml(self.graph, "triplet_graph.graphml")
                 else:
                     query = self.clean_text(query)
                     extraction_template = Utils.load_template(self.config['graph']['extractor_prompt'])

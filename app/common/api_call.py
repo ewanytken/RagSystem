@@ -77,14 +77,11 @@ class ApiCall(Constructor):
                 if self.complete_installer.get_triplet_graph():
                     console.print("\n[bold cyan] Find triplets by Obtain Query in Triplets Graph[/bold cyan]")
 
-                    triplets_by_full_query = self.complete_installer.find_triplets(self.query)
-                    triplets_by_subject = self.complete_installer.find_triplets_by_subject(self.query)
-                    logger(f"Number of retrieved triplets by full query: {len(triplets_by_full_query)}")
-                    logger(f"Number of retrieved triplets by subject: {len(triplets_by_subject)}")
+                    triplets_query = self.complete_installer.find_triplets(self.query)
+                    logger(f"Number of retrieved triplets by full query: {len(triplets_query)}")
 
-                    if triplets_by_full_query or triplets_by_subject:
-                        all_triplets = triplets_by_full_query + triplets_by_subject
-                        self.extracted_triplets = [dict(t) for t in set(frozenset(d.items()) for d in all_triplets)]
+                    if triplets_query:
+                        self.extracted_triplets = [dict(t) for t in set(frozenset(d.items()) for d in triplets_query)]
 
                 console.print("\n[bold red] Assembling final prompt from all available information[/bold red]")
                 assembled_prompt: Optional[str] = self.complete_installer.prompt_processor(self.query,
@@ -127,7 +124,7 @@ class ApiCall(Constructor):
             else:
                 logger(f"Metrics doesn't calculate")
         except Exception as e:
-            logger(f"Metrics processing ERROR: {e}")
+            logger(f"Metrics processing ERROR [[124]]: {e}")
 
     def get_response(self) -> str:
         return self.response

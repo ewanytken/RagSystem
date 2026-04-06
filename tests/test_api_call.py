@@ -187,14 +187,7 @@ class ApiCall(Constructor):
 
                 if self.complete_installer.get_triplet_graph():
                     console.print("\n[bold cyan] Find triplets by Obtain Query in Triplets Graph[/bold cyan]")
-
-                    triplets_by_full_query = self.complete_installer.find_triplets(self.query)
-                    triplets_by_subject = self.complete_installer.find_triplets_by_subject(self.query)
-
-                    if triplets_by_full_query and triplets_by_subject:
-                        triplets = triplets_by_full_query + triplets_by_subject
-                    else:
-                        triplets = triplets_by_subject if triplets_by_subject else triplets_by_full_query
+                    triplets = self.complete_installer.find_triplets(self.query)
 
                 console.print("\n[bold cyan] Assembling final prompt from all available information[/bold cyan]")
                 assembled_prompt: Optional[str] = self.complete_installer.prompt_processor(self.query, doc_dict_by_query, entities_by_document_search, triplets)

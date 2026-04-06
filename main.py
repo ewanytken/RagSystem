@@ -74,7 +74,7 @@ def auto_metrics() -> None:
             logger_metrics(f"=============================END=============================")
 
     else:
-        logger(f"Dataset loaded or made not correct: {len(relevant_contexts)}, {len(query)}, {len(golden_answers)}")
+        logger(f"Dataset loaded or don't correct made: {len(relevant_contexts)}, {len(query)}, {len(golden_answers)}")
 
 def main() -> None:
     import argparse

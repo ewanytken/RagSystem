@@ -102,23 +102,16 @@ class InstallerSystem:
             return set()
 
     def find_triplets(self, query: str) -> list[dict]:
-        if self.triplet_graph:
-            self.triplet_graph.extract_triplets(query)
-            triplet = self.triplet_graph.get_triplets_from_query()
-            for t in triplet:
-                self.triplet_graph.search_relation_from_graph(t[0], t[1], t[2])
-            return self.triplet_graph.get_triplets_from_graph()
-        else:
-            logger(f"Triplets Graph don't install. Return empty list.")
-            return []
-
-    def find_triplets_by_subject(self, query: str) -> list[dict]:
+        triplets = []
         if self.triplet_graph:
             self.triplet_graph.extract_triplets(query)
             triplet = self.triplet_graph.get_triplets_from_query()
             for t in triplet:
                 self.triplet_graph.search_relation_by_subject(t[0])
-            return self.triplet_graph.get_triplets_from_graph()
+                triplets.extend(self.triplet_graph.get_triplets_from_graph())
+                self.triplet_graph.search_relation_from_graph(t[0], t[1], t[2])
+                triplets.extend(self.triplet_graph.get_triplets_from_graph())
+            return triplet
         else:
             logger(f"Triplets Graph don't install. Return empty list.")
             return []

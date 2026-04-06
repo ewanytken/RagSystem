@@ -53,8 +53,7 @@ class Test(unittest.TestCase):
         entities.extend(entities_from_graph)
 
         triplets_full = self.installer_system.find_triplets(query)
-        triplets_by_subject = self.installer_system.find_triplets_by_subject(query)
-        triplets = triplets_full + triplets_by_subject
+        triplets = triplets_full
         logger(f"Triplets: {triplets}")
         final_prompt = self.installer_system.prompt_processor(query=query,
                                                               retrieved_docs=retrieved_doc,

@@ -267,21 +267,38 @@ class Constructor:
             ).ask()
 
             if judge_metrics:
+                config = Utils.get_config_file()
+
                 metrics_config.update({"judge_metrics": judge_metrics})
                 try:
                     provider = questionary.select(
                         "Select LOCAL or REMOTE model:",
                         choices=[
                             Choice(title="Local metric model (default from config.yaml)", value=ModelProvider.LOCAL),
-                            Choice(title="Remote metric model (default from config.yaml)", value=ModelProvider.REMOTE),
+                            Choice(title="Remote metric model", value=ModelProvider.REMOTE),
                         ]
                     ).ask()
+                    if provider == ModelProvider.REMOTE:
+                        model_remote_ticket = questionary.select(
+                            "Select OpenRouter's model or default remote model:",
+                            choices=[
+                                Choice(title="Open AI 120B OSS", value=RemoteFreeModel.OPENAI),
+                                Choice(title="LLAMA 3.3 70B", value=RemoteFreeModel.LLAMA),
+                                Choice(title="QWEN 3 80B", value=RemoteFreeModel.QWEN),
+                                Choice(title="GEMMA 3 27B", value=RemoteFreeModel.GEMMA),
+                                Choice(title="STEPFUN 3.5", value=RemoteFreeModel.STEPFUN),
+                                Choice(title="OpRouter HUNTER", value=RemoteFreeModel.HUNTER),
+                                Choice(title="default. Load from config.yaml", value=RemoteFreeModel.DEFAULT)
+                            ]
+                        ).ask()
+                        if model_remote_ticket == RemoteFreeModel.DEFAULT:
+                            model = ExternalModel(config.get('metrics', {}).get("model_judge_remote"))
+                        else:
+                            model = ExternalModel(model_remote_ticket.value)
 
-                    config = Utils.get_config_file()
-                    if provider == ModelProvider.LOCAL:
+                    elif provider == ModelProvider.LOCAL:
                         model = TransformerWrapper(config.get('metrics', {}).get("model_judge_local"))
-                    elif provider == ModelProvider.REMOTE:
-                        model = ExternalModel(config.get('metrics', {}).get("model_judge_remote"))
+
                     else:
                         model = None
 
@@ -304,7 +321,7 @@ class Constructor:
         table.add_column("Component", style="green")
         table.add_column("Status", style="yellow")
 
-        components = {"Prompter component": self.prompter, "Respondent component": self.respondent, "Word(docx) component": self.word_handler,
+        components = {"Prompter component": self.prompter, "Respondent component": self.respondent, "Document(docx, pdf) component": self.word_handler,
                       "Regex component": self.regex, "Gliner component": self.gliner, "Gliner2 component": self.gliner_two,
                       "Indexer component": self.indexer,
                       "EntityGraph component": self.graph, "Triplets component": self.triplets}
