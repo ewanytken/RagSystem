@@ -19,3 +19,4 @@ ragas-eval-sys
 datasets
 config_rus.yaml
 tests/triplet_graph.graphml
+triplet_graph.graphml

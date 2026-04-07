@@ -77,8 +77,8 @@ class ApiCall(Constructor):
                 if self.complete_installer.get_triplet_graph():
                     console.print("\n[bold cyan] Find triplets by Obtain Query in Triplets Graph[/bold cyan]")
 
-                    triplets_query = self.complete_installer.find_triplets(self.query)
-                    logger(f"Number of retrieved triplets by full query: {len(triplets_query)}")
+                    triplets_query: Optional[List[Dict]] = self.complete_installer.find_triplets(self.query)
+                    logger(f"Length of list with triplets by query: {len(triplets_query)}")
 
                     if triplets_query:
                         self.extracted_triplets = [dict(t) for t in set(frozenset(d.items()) for d in triplets_query)]
