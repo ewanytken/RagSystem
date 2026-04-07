@@ -288,13 +288,15 @@ class Constructor:
                                 Choice(title="GEMMA 3 27B", value=RemoteFreeModel.GEMMA),
                                 Choice(title="STEPFUN 3.5", value=RemoteFreeModel.STEPFUN),
                                 Choice(title="OpRouter HUNTER", value=RemoteFreeModel.HUNTER),
-                                Choice(title="default. Load from config.yaml", value=RemoteFreeModel.DEFAULT)
+                                Choice(title="default. Server model", value=RemoteFreeModel.DEFAULT)
                             ]
                         ).ask()
                         if model_remote_ticket == RemoteFreeModel.DEFAULT:
                             model = ExternalModel(config.get('metrics', {}).get("model_judge_remote"))
                         else:
-                            model = ExternalModel(model_remote_ticket.value)
+                            model = ExternalModel(model_remote_ticket.value,
+                                                  config.get('metrics', {}).get("url_judge_remote"),
+                                                  config.get('metrics', {}).get("api_key_judge_remote"))
 
                     elif provider == ModelProvider.LOCAL:
                         model = TransformerWrapper(config.get('metrics', {}).get("model_judge_local"))
